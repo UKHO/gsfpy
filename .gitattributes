@@ -1,0 +1,8 @@
+*.py eol=lf
+*.md eol=lf
+*.in eol=lf
+*.cfg eol=lf
+*.txt eol=lf
+*.html eol=lf
+*.ipynb eol=lf
+*.sh eol=lf

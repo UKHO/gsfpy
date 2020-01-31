@@ -1,0 +1,2 @@
+# Constants
+GSF_MAX_PING_ARRAY_SUBRECORDS = 27
