@@ -1,10 +1,11 @@
 from ctypes import *
+from os import path
 
 from . import enums
 from . import gsfDataID
 from . import gsfRecords
 
-gsf_libpath = 'gsfpy/libgsf3_06/libgsf3_06.so'
+gsf_libpath = path.join(path.abspath(path.dirname(__file__)), 'libgsf3_06/libgsf3_06.so')
 gsflib = CDLL(gsf_libpath)
 
 '''
