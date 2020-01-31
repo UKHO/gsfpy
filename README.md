@@ -2,7 +2,8 @@
 Python wrapper for the C implementation of the Generic Sensor Format library.
 
 ## Install as pip package into external project
-    pip install git+https://github.com/UKHO/gsfpy.git@master
+    SSH: pip install git+ssh://git@github.com/UKHO/gsfpy.git@master
+    HTTPS: pip install git+https://github.com/UKHO/gsfpy.git@master
 
 ## Development environment
 Set up the gsfpy project in a local development environment as follows:
