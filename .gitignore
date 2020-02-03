@@ -1,5 +1,7 @@
-*.pyc
 *.egg-info/
+*.pyc
+.idea/
+.python-version
 bin/
 include/
 lib/
