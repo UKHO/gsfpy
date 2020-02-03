@@ -1,18 +1,15 @@
-import gsfpy
 import os
-import random
 import tempfile
-
 from ctypes import *
-from datetime import time
 from glob import glob
-from gsfpy.enums import FileMode, RecordType, SeekOption
-from gsfpy.gsfComment import c_gsfComment
-from gsfpy.gsfDataID import c_gsfDataID
-from gsfpy.gsfRecords import c_gsfRecords
-from gsfpy.timespec import c_timespec
 from os import path
 from unittest import TestCase
+
+import gsfpy
+from gsfpy.enums import FileMode, RecordType, SeekOption
+from gsfpy.gsfDataID import c_gsfDataID
+from gsfpy.gsfRecords import c_gsfRecords
+
 
 class Test(TestCase):
     def setup_method(self, method):

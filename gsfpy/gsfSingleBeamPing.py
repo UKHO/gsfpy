@@ -1,7 +1,8 @@
 from ctypes import *
 
-from . import timespec
 from . import gsfSBSensorSpecific
+from . import timespec
+
 
 class c_gsfSingleBeamPing(Structure):
     _fields_ = [('ping_time',                   timespec.c_timespec),

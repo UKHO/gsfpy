@@ -2,6 +2,7 @@ from ctypes import *
 
 from . import timespec
 
+
 class c_gsfAttitude(Structure):
     _fields_ = [('num_measurements',        c_short),
                 ('attitude_time',           POINTER(timespec.c_timespec)),

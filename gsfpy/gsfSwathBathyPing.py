@@ -1,9 +1,10 @@
 from ctypes import *
 
+from . import gsfBRBIntensity
 from . import gsfScaleFactors
 from . import gsfSensorSpecific
-from . import gsfBRBIntensity
 from . import timespec
+
 
 class c_gsfSwathBathyPing(Structure):
     _fields_ = [('ping_time', timespec.c_timespec),                          # Seconds and nanoseconds. */

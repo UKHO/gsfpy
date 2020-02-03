@@ -1,17 +1,17 @@
 from ctypes import *
 
-from . import gsfHeader
-from . import gsfSwathBathySummary
-from . import gsfSwathBathyPing
-from . import gsfSingleBeamPing
-from . import gsfSVP
-from . import gsfProcessingParameters
-from . import gsfSensorParameters
 from . import gsfComment
+from . import gsfHVNavigationError
+from . import gsfHeader
 from . import gsfHistory
 from . import gsfNavigationError
-from . import gsfHVNavigationError
-from . import gsfAttitude
+from . import gsfProcessingParameters
+from . import gsfSVP
+from . import gsfSensorParameters
+from . import gsfSingleBeamPing
+from . import gsfSwathBathyPing
+from . import gsfSwathBathySummary
+
 
 class c_gsfRecords(Structure):
     _fields_ = [('head',                    gsfHeader.c_gsfHeader),

@@ -1,4 +1,5 @@
 from ctypes import *
+
 from . import timespec
 
 TIMESERIESINTENSITYSPAREBYTES = c_ubyte * 8

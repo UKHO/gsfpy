@@ -2,6 +2,7 @@ from ctypes import *
 
 from . import timespec
 
+
 class c_gsfSeaBeamSpecific(Structure):
     _fields_ = [('EclipseTime',         c_ushort)]
 

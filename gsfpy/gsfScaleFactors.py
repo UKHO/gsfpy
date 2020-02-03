@@ -1,5 +1,7 @@
 from ctypes import *
+
 from . import constants
+
 
 class c_gsfScaleInfo(Structure):
     _fields_ = [('compressionFlag', c_ubyte),           # Specifies bytes of storage in high order nibble and type of compression in low order nibble. */

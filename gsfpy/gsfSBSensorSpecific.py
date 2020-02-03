@@ -1,6 +1,5 @@
 from ctypes import *
 
-from . import timespec
 
 class c_gsfEchotracSpecific(Structure):
     _fields_ = [('navigation_error',        c_int),

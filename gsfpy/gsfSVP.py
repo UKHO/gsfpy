@@ -2,6 +2,7 @@ from ctypes import *
 
 from . import timespec
 
+
 class c_gsfSVP(Structure):
     _fields_ = [('observation_time',    timespec.c_timespec),
                 ('application_time',    timespec.c_timespec),
