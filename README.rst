@@ -1,27 +1,37 @@
-# gsfpy
+================================
+Generic Sensor Format for Python
+================================
+
+
+.. image:: https://github.com/UKHO/gsfpy/workflows/Python%20package/badge.svg
+     :target: https://github.com/UKHO/gsfpy/actions?query=workflow%3A%22Python+package%22
+
 Python wrapper for the C implementation of the Generic Sensor Format library.
 
-## Install as pip package into external project
+
+* Free software: MIT license
+
+Features
+--------
+
+* TODO
+
+Install
+-------
+
+.. code-block:: bash
+
     SSH: pip install git+ssh://git@github.com/UKHO/gsfpy.git@master
     HTTPS: pip install git+https://github.com/UKHO/gsfpy.git@master
 
-## Development environment
-Set up the gsfpy project in a local development environment as follows:
+Examples of usage
+-----------------
 
-    git clone git@github.com:UKHO/gsfpy.git
-    virtualenv gsfpy/ (--always-copy)
-    cd gsfpy/
-    source bin/activate
-    python3 -m pip install -e .
+Open/close a GSF file
+^^^^^^^^^^^^^^^^^^^^^
 
-## Run tests
-Set up the development environment as above, then:
+.. code-block:: python
 
-    python3 -m pip install pytest
-    python3 -m pytest -s --verbose ./tests/
-
-## Examples of usage
-### Open/close a GSF file
     import gsfpy
     from ctypes import *
     from gsfpy.enums import FileMode
@@ -34,7 +44,12 @@ Set up the development environment as above, then:
     retValOpen = gsfpy.gsfOpen(b'path/to/file.gsf', mode, p_gsf_fileref)
     retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
 
-### Read from a GSF file
+
+Read from a GSF file
+^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
     import gsfpy
     from ctypes import *
     from gsfpy.enums import FileMode, RecordType
@@ -42,7 +57,7 @@ Set up the development environment as above, then:
     mode = FileMode.GSF_READONLY
     c_int_ptr = POINTER(c_int)
     p_gsf_fileref = c_int_ptr(c_int(0))
-    
+
     commentID = c_gsfDataID()
     commentID.recordID = c_uint(RecordType.GSF_RECORD_COMMENT.value)
 
@@ -64,7 +79,11 @@ Set up the development environment as above, then:
 
     retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
 
-### Write to a GSF file
+Write to a GSF file
+^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
     import gsfpy
     from ctypes import *
     from gsfpy.enums import FileMode, RecordType
@@ -91,7 +110,11 @@ Set up the development environment as above, then:
     bytesWritten = gsfpy.gsfWrite(p_gsf_fileref[0], p_dataID, p_rec)
     retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
 
-### Troubleshoot
+Troubleshoot
+^^^^^^^^^^^^
+
+.. code-block:: python
+
     # The gsfIntError() and gsfStringError() functions are useful for
     # diagnostics. They return an error code and corresponding error
     # message, respectively.
@@ -99,12 +122,56 @@ Set up the development environment as above, then:
     retValStringError = gsfpy.gsfStringError()
     print(retValStringError)
 
-## Generic Sensor Format Documentation
+Generic Sensor Format Documentation
+-----------------------------------
+
 Generic Sensor Format specification: see https://github.com/schwehr/generic-sensor-format/blob/master/doc/GSF_lib_03-06.pdf
 
 Generic Sensor Format C library v3.06 specification: see https://github.com/schwehr/generic-sensor-format/blob/master/doc/GSF_spec_03-06.pdf
 
-## Acknowledgements
-C implementation of the GSF library provided by [Leidos](https://www.leidos.com/products/ocean-marine) under the LGPL license v2.1.
+Dev Setup
+---------
 
-libgsf3_06.so was built from the Leidos C code using Make scripts based on those from [schwehr/generic-sensor-format](https://github.com/schwehr/generic-sensor-format/)
+Pyenv (Recommended)
+^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+    git clone git@github.com:UKHO/gsfpy.git
+    cd gsfpy/
+    pyenv install 3.8.1
+    pyenv virtualenv 3.8.1 gsfpy
+    pyenv local gsfpy
+    pip install -r requirements-dev.txt
+
+Virtualenv
+^^^^^^^^^^
+
+.. code-block:: bash
+
+    git clone git@github.com:UKHO/gsfpy.git
+    virtualenv gsfpy/ (--always-copy)
+    cd gsfpy/
+    source bin/activate
+    pip install -r requirements-dev.txt
+
+Run tests
+---------
+
+.. code-block:: bash
+
+    make test
+
+Credits
+-------
+
+C implementation of the GSF library provided by Leidos_ under the LGPL license v2.1.
+
+libgsf3_06.so was built from the Leidos_ C code using Make scripts based on those from `schwehr/generic-sensor-format`_
+
+This package was created with Cookiecutter_ and the `UKHO/cookiecutter-pypackage`_ project template.
+
+.. _Leidos: https://www.leidos.com/products/ocean-marine
+.. _`schwehr/generic-sensor-format`: https://github.com/schwehr/generic-sensor-format/
+.. _Cookiecutter: https://github.com/cookiecutter/cookiecutter
+.. _`UKHO/cookiecutter-pypackage`: https://github.com/UKHO/cookiecutter-pypackage
