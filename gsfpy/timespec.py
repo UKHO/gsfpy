@@ -1,6 +1,10 @@
-from ctypes import *
+"""Types"""
+from ctypes import Structure, c_int, c_long
 
-# Types
+
 class c_timespec(Structure):
-    _fields_ = [('tv_sec', c_int),                  # FIXME - defined as time_t in gsf.h, but equivalent to int
-                ('tv_nsec', c_long)]
+    _fields_ = [
+        # FIXME - defined as time_t in gsf.h, but equivalent to int
+        ("tv_sec", c_int),
+        ("tv_nsec", c_long),
+    ]
