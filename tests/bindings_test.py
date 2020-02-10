@@ -5,7 +5,7 @@ from glob import glob
 from os import path
 from unittest import TestCase
 
-import gsfpy
+import gsfpy.bindings
 from gsfpy.enums import FileMode, RecordType, SeekOption
 from gsfpy.gsfDataID import c_gsfDataID
 from gsfpy.gsfRecords import c_gsfRecords
@@ -34,8 +34,8 @@ class Test(TestCase):
         p_gsf_fileref = c_int_ptr(c_int(0))
 
         # Act
-        retValOpen = gsfpy.gsfOpen(self.test_data_path, mode, p_gsf_fileref)
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        retValOpen = gsfpy.bindings.gsfOpen(self.test_data_path, mode, p_gsf_fileref)
+        retValClose = gsfpy.bindings.gsfClose(p_gsf_fileref[0])
 
         # Assert
         self.assertEqual(0, retValOpen)  # 0 == success
@@ -53,10 +53,10 @@ class Test(TestCase):
         buf_size = 100
 
         # Act
-        retValOpenBuffered = gsfpy.gsfOpenBuffered(
+        retValOpenBuffered = gsfpy.bindings.gsfOpenBuffered(
             self.test_data_path, mode, p_gsf_fileref, buf_size
         )
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        retValClose = gsfpy.bindings.gsfClose(p_gsf_fileref[0])
 
         # Assert
         self.assertEqual(0, retValOpenBuffered)  # 0 == success
@@ -74,9 +74,9 @@ class Test(TestCase):
         p_gsf_fileref = c_int_ptr(c_int(0))
 
         # Act
-        retValOpen = gsfpy.gsfOpen(self.test_data_path, mode, p_gsf_fileref)
-        retValSeek = gsfpy.gsfSeek(p_gsf_fileref[0], seekOption)
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        retValOpen = gsfpy.bindings.gsfOpen(self.test_data_path, mode, p_gsf_fileref)
+        retValSeek = gsfpy.bindings.gsfSeek(p_gsf_fileref[0], seekOption)
+        retValClose = gsfpy.bindings.gsfClose(p_gsf_fileref[0])
 
         # Assert
         self.assertEqual(0, retValOpen)  # 0 == success
@@ -94,9 +94,9 @@ class Test(TestCase):
         p_gsf_fileref = c_int_ptr(c_int(0))
 
         # Act
-        retValOpen = gsfpy.gsfOpen(b"non-existent.gsf", mode, p_gsf_fileref)
-        retValIntError = gsfpy.gsfIntError()
-        retValStringError = gsfpy.gsfStringError()
+        retValOpen = gsfpy.bindings.gsfOpen(b"non-existent.gsf", mode, p_gsf_fileref)
+        retValIntError = gsfpy.bindings.gsfIntError()
+        retValStringError = gsfpy.bindings.gsfStringError()
 
         # Assert
         self.assertEqual(-1, retValOpen)  # -1 == fail
@@ -131,8 +131,8 @@ class Test(TestCase):
         )
 
         # Act
-        retValOpen = gsfpy.gsfOpen(self.test_data_path, mode, p_gsf_fileref)
-        bytesRead = gsfpy.gsfRead(
+        retValOpen = gsfpy.bindings.gsfOpen(self.test_data_path, mode, p_gsf_fileref)
+        bytesRead = gsfpy.bindings.gsfRead(
             p_gsf_fileref[0],
             c_int(RecordType.GSF_RECORD_COMMENT.value),
             p_dataID,
@@ -140,7 +140,7 @@ class Test(TestCase):
             p_stream,
             0,
         )
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        retValClose = gsfpy.bindings.gsfClose(p_gsf_fileref[0])
 
         # Assert
         self.assertEqual(0, retValOpen)
@@ -172,9 +172,9 @@ class Test(TestCase):
         tmpgsffilepath = path.join(os.fsencode(tempfile.gettempdir()), b"temp.gsf")
 
         # Act
-        retValOpenCreate = gsfpy.gsfOpen(tmpgsffilepath, createMode, p_gsf_fileref)
-        bytesWritten = gsfpy.gsfWrite(p_gsf_fileref[0], p_dataID, p_rec)
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        retValOpenCreate = gsfpy.bindings.gsfOpen(tmpgsffilepath, createMode, p_gsf_fileref)
+        bytesWritten = gsfpy.bindings.gsfWrite(p_gsf_fileref[0], p_dataID, p_rec)
+        retValClose = gsfpy.bindings.gsfClose(p_gsf_fileref[0])
 
         # Assert
         self.assertEqual(0, retValOpenCreate)
@@ -194,10 +194,10 @@ class Test(TestCase):
         c_ubyte_ptr = POINTER(c_ubyte)
         p_stream = c_ubyte_ptr()
 
-        retValOpenCreate = gsfpy.gsfOpen(
+        retValOpenCreate = gsfpy.bindings.gsfOpen(
             tmpgsffilepath, FileMode.GSF_READONLY, p_gsf_fileref
         )
-        gsfpy.gsfRead(
+        gsfpy.bindings.gsfRead(
             p_gsf_fileref[0],
             c_int(RecordType.GSF_RECORD_COMMENT.value),
             p_dataID,
@@ -205,6 +205,6 @@ class Test(TestCase):
             p_stream,
             0,
         )
-        gsfpy.gsfClose(p_gsf_fileref[0])
+        gsfpy.bindings.gsfClose(p_gsf_fileref[0])
 
         self.assertEqual(b"My first comment", string_at(p_rec.contents.comment.comment))
