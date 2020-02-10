@@ -1,34 +1,48 @@
 from ctypes import CDLL, POINTER, c_char_p, c_int, c_ubyte
 from os import path
 
-from . import gsfDataID, gsfRecords
+from .enums import FileMode, RecordType, SeekOption
+from .gsfDataID import c_gsfDataID
+from .gsfRecords import c_gsfRecords
 
 _gsf_lib_rel_path = "libgsf3_06/libgsf3_06.so"
 _gsf_lib_abs_path = path.join(path.abspath(path.dirname(__file__)), _gsf_lib_rel_path)
 _gsf_lib = CDLL(_gsf_lib_abs_path)
 
+_gsf_lib.gsfOpen.argtypes = [c_char_p, c_int, POINTER(c_int)]
+_gsf_lib.gsfOpen.restype = c_int
 
-def gsfOpen(filename, mode, handle):
+
+def gsfOpen(filename: bytes, mode: FileMode, p_handle):
     """
     filename: bytestring e.g. b'path/to/file.gsf'
     mode: gsfpy.enums.FileMode
-    handle: Instance of POINTER(c_int)
+    p_handle: Instance of POINTER(c_int)
     returns: 0 if successful, otherwise -1
     """
-    return _gsf_lib.gsfOpen(filename, mode, handle)
+    return _gsf_lib.gsfOpen(filename, mode, p_handle)
 
 
-def gsfOpenBuffered(filename, mode, handle, buf_size):
+_gsf_lib.gsfOpenBuffered.argtypes = [c_char_p, c_int, POINTER(c_int), c_int]
+_gsf_lib.gsfOpenBuffered.restype = c_int
+
+
+def gsfOpenBuffered(filename: bytes, mode: FileMode, p_handle, buf_size: c_int):
     """
     filename: bytestring e.g. b'path/to/file.gsf'
     mode: gsfpy.enums.FileMode
-    handle: Instance of POINTER(c_int)
+    p_handle: Instance of POINTER(c_int)
+    buf_size: c_int
     returns: 0 if successful, otherwise -1
     """
-    return _gsf_lib.gsfOpenBuffered(filename, mode, handle, buf_size)
+    return _gsf_lib.gsfOpenBuffered(filename, mode, p_handle, buf_size)
 
 
-def gsfClose(handle):
+_gsf_lib.gsfClose.argtypes = [c_int]
+_gsf_lib.gsfClose.restype = c_int
+
+
+def gsfClose(handle: c_int):
     """
     handle: c_int
     returns: 0 if successful, otherwise -1
@@ -36,13 +50,21 @@ def gsfClose(handle):
     return _gsf_lib.gsfClose(handle)
 
 
-def gsfSeek(handle, option):
+_gsf_lib.gsfSeek.argtypes = [c_int, c_int]
+_gsf_lib.gsfSeek.restype = c_int
+
+
+def gsfSeek(handle: c_int, option: SeekOption):
     """
     handle: c_int
     option: gsfpy.enums.SeekOption
     returns: 0 if successful, otherwise -1
     """
     return _gsf_lib.gsfSeek(handle, option)
+
+
+_gsf_lib.gsfIntError.argtypes = []
+_gsf_lib.gsfIntError.restype = c_int
 
 
 def gsfIntError():
@@ -52,60 +74,63 @@ def gsfIntError():
     return _gsf_lib.gsfIntError()
 
 
+_gsf_lib.gsfStringError.argtypes = []
+_gsf_lib.gsfStringError.restype = c_char_p
+
+
 def gsfStringError():
     """
     returns: The last value that the GSF error message was set to (c_char_p).
     """
-    gsfStringErrorC = _gsf_lib.gsfStringError
-    gsfStringErrorC.argtypes = []
-    gsfStringErrorC.restype = c_char_p
-    return gsfStringErrorC()
+    return _gsf_lib.gsfStringError()
 
 
-def gsfRead(handle, desiredRecord, p_dataID, p_rec, p_stream, max_size):
+_gsf_lib.gsfRead.argtypes = [
+    c_int,
+    c_int,
+    POINTER(c_gsfDataID),
+    POINTER(c_gsfRecords),
+    POINTER(c_ubyte),
+    c_int,
+]
+_gsf_lib.gsfRead.restype = c_int
+
+
+def gsfRead(
+    handle: c_int,
+    desired_record: RecordType,
+    p_data_id,
+    p_records,
+    p_stream=None,
+    max_size=None,
+):
     """
-    handle: int
-    desiredRecord: gsfpy.enums.RecordType
-    p_dataID: POINTER(gsfpy.gsfDataID.c_gsfDataID)
-    p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
-    p_stream: POINTER(c_ubyte)
-    max_size: int
+    handle : int
+    desired_record : gsfpy.enums.RecordType
+    p_data_id : POINTER(gsfpy.gsfDataID.c_gsfDataID)
+    p_records : POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    p_stream : POINTER(c_ubyte)
+    max_size : int
     returns: number of bytes read if successful, otherwise -1. Note that contents of the
-             POINTER parameters p_dataID, p_rec and p_stream will be updated upon
+             POINTER parameters p_data_id, p_records and p_stream will be updated upon
              successful read.
     """
-    gsfReadC = _gsf_lib.gsfRead
-    gsfReadC.argtypes = [
-        c_int,
-        c_int,
-        POINTER(gsfDataID.c_gsfDataID),
-        POINTER(gsfRecords.c_gsfRecords),
-        POINTER(c_ubyte),
-        c_int,
-    ]
-    gsfReadC.resType = c_int
-    return gsfReadC(
-        handle, c_int(desiredRecord.value), p_dataID, p_rec, p_stream, max_size
+    return _gsf_lib.gsfRead(
+        handle, desired_record, p_data_id, p_records, p_stream, max_size,
     )
 
 
-def gsfWrite(handle, p_dataID, p_rec):
+_gsf_lib.gsfWrite.argtypes = [c_int, POINTER(c_gsfDataID), POINTER(c_gsfRecords)]
+_gsf_lib.gsfWrite.restype = c_int
+
+
+def gsfWrite(handle: c_int, p_data_id, p_records) -> c_int:
     """
-    handle: int
-    desiredRecord: gsfpy.enums.RecordType
-    p_dataID: POINTER(gsfpy.gsfDataID.c_gsfDataID)
-    p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
-    p_stream: POINTER(c_ubyte)
-    max_size: int
-    returns: number of bytes read if successful, otherwise -1. Note that contents of the
-             POINTER parameters p_dataID, p_rec and p_stream will be updated upon
+    handle: c_int
+    p_data_id: POINTER(gsfpy.gsfDataID.c_gsfDataID)
+    p_records: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    returns: number of bytes written if successful, otherwise -1. Note that contents of
+             the POINTER parameters p_data_id and p_records will be updated upon
              successful read.
     """
-    gsfWriteC = _gsf_lib.gsfWrite
-    gsfWriteC.argtypes = [
-        c_int,
-        POINTER(gsfDataID.c_gsfDataID),
-        POINTER(gsfRecords.c_gsfRecords),
-    ]
-    gsfWriteC.resType = c_int
-    return gsfWriteC(handle, p_dataID, p_rec)
+    return _gsf_lib.gsfWrite(handle, p_data_id, p_records)
