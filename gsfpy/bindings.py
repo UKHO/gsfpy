@@ -1,7 +1,3 @@
-__author__ = """UK Hydrographic Office"""
-__email__ = "datascienceandengineering@ukho.gov.uk"
-__version__ = "1.0.0"
-
 from ctypes import CDLL, POINTER, c_char_p, c_int, c_ubyte
 from os import path
 
