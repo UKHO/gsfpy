@@ -14,7 +14,7 @@ _gsf_lib.gsfOpen.argtypes = [c_char_p, c_int, POINTER(c_int)]
 _gsf_lib.gsfOpen.restype = c_int
 
 
-def gsfOpen(filename: bytes, mode: FileMode, p_handle):
+def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     """
     :param filename: bytestring e.g. b'path/to/file.gsf'
     :param mode: gsfpy.enums.FileMode
@@ -28,7 +28,7 @@ _gsf_lib.gsfOpenBuffered.argtypes = [c_char_p, c_int, POINTER(c_int), c_int]
 _gsf_lib.gsfOpenBuffered.restype = c_int
 
 
-def gsfOpenBuffered(filename: bytes, mode: FileMode, p_handle, buf_size: c_int):
+def gsfOpenBuffered(filename: bytes, mode: FileMode, p_handle, buf_size: c_int) -> int:
     """
     :param filename: bytestring e.g. b'path/to/file.gsf'
     :param mode: gsfpy.enums.FileMode
@@ -43,7 +43,7 @@ _gsf_lib.gsfClose.argtypes = [c_int]
 _gsf_lib.gsfClose.restype = c_int
 
 
-def gsfClose(handle: c_int):
+def gsfClose(handle: c_int) -> int:
     """
     :param handle: c_int
     :return: 0 if successful, otherwise -1
@@ -55,7 +55,7 @@ _gsf_lib.gsfSeek.argtypes = [c_int, c_int]
 _gsf_lib.gsfSeek.restype = c_int
 
 
-def gsfSeek(handle: c_int, option: SeekOption):
+def gsfSeek(handle: c_int, option: SeekOption) -> int:
     """
     :param handle: c_int
     :param option: gsfpy.enums.SeekOption
@@ -68,7 +68,7 @@ _gsf_lib.gsfIntError.argtypes = []
 _gsf_lib.gsfIntError.restype = c_int
 
 
-def gsfIntError():
+def gsfIntError() -> int:
     """
     :return: The last value that the GSF error code was set to (c_int).
     """
@@ -79,7 +79,7 @@ _gsf_lib.gsfStringError.argtypes = []
 _gsf_lib.gsfStringError.restype = c_char_p
 
 
-def gsfStringError():
+def gsfStringError() -> str:
     """
     :return: The last value that the GSF error message was set to (c_char_p).
     """
@@ -104,7 +104,7 @@ def gsfRead(
     p_records,
     p_stream=None,
     max_size=None,
-):
+) -> int:
     """
     :param handle: int
     :param desired_record: gsfpy.enums.RecordType or
@@ -126,7 +126,7 @@ _gsf_lib.gsfWrite.argtypes = [c_int, POINTER(c_gsfDataID), POINTER(c_gsfRecords)
 _gsf_lib.gsfWrite.restype = c_int
 
 
-def gsfWrite(handle: c_int, p_data_id, p_records) -> c_int:
+def gsfWrite(handle: c_int, p_data_id, p_records) -> int:
     """
     :param handle: c_int
     :param p_data_id: POINTER(gsfpy.gsfDataID.c_gsfDataID)
