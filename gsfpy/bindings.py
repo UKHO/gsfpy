@@ -28,7 +28,7 @@ _gsf_lib.gsfOpenBuffered.argtypes = [c_char_p, c_int, POINTER(c_int), c_int]
 _gsf_lib.gsfOpenBuffered.restype = c_int
 
 
-def gsfOpenBuffered(filename: bytes, mode: FileMode, p_handle, buf_size: c_int) -> int:
+def gsfOpenBuffered(filename: bytes, mode: FileMode, p_handle, buf_size: int) -> int:
     """
     :param filename: bytestring e.g. b'path/to/file.gsf'
     :param mode: gsfpy.enums.FileMode
@@ -103,7 +103,7 @@ def gsfRead(
     p_data_id,
     p_records,
     p_stream=None,
-    max_size=None,
+    max_size=0,
 ) -> int:
     """
     :param handle: int

@@ -5,10 +5,17 @@ from glob import glob
 from os import path
 from unittest import TestCase
 
+from assertpy import assert_that
+
 import gsfpy.bindings
 from gsfpy.enums import FileMode, RecordType, SeekOption
 from gsfpy.gsfDataID import c_gsfDataID
 from gsfpy.gsfRecords import c_gsfRecords
+
+SUCCESS_RET_VAL = 0
+ERROR_RET_VAL = -1
+
+GSF_FOPEN_ERROR = -1
 
 
 class Test(TestCase):
@@ -38,9 +45,8 @@ class Test(TestCase):
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
         # Assert
-        self.assertEqual(0, ret_val_open)  # 0 == success
-        self.assertEqual(1, file_handle.value)  # 1 == total number of open GSF files
-        self.assertEqual(0, ret_val_close)  # 0 == success
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
     def test_gsfOpenBuffered_success(self):
         """
@@ -57,9 +63,8 @@ class Test(TestCase):
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
         # Assert
-        self.assertEqual(0, ret_val_open_buffered)  # 0 == success
-        self.assertEqual(1, file_handle.value)  # 1 == total number of open GSF files
-        self.assertEqual(0, ret_val_close)  # 0 == success
+        assert_that(ret_val_open_buffered).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
     def test_gsfSeek_success(self):
         """
@@ -76,9 +81,9 @@ class Test(TestCase):
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
         # Assert
-        self.assertEqual(0, ret_val_open)  # 0 == success
-        self.assertEqual(0, ret_val_seek)  # 0 == success
-        self.assertEqual(0, ret_val_close)  # 0 == success
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_seek).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
     def test_gsfError(self):
         """
@@ -96,9 +101,11 @@ class Test(TestCase):
         ret_val_string_error = gsfpy.bindings.gsfStringError()
 
         # Assert
-        self.assertEqual(-1, ret_val_open)  # -1 == fail
-        self.assertEqual(-1, ret_val_int_error)  # -1 == failed to open file
-        self.assertEqual(b"GSF Unable to open requested file", ret_val_string_error)
+        assert_that(ret_val_open).is_equal_to(ERROR_RET_VAL)
+        assert_that(ret_val_int_error).is_equal_to(GSF_FOPEN_ERROR)
+        assert_that(ret_val_string_error).is_equal_to(
+            b"GSF Unable to open requested file"
+        )
 
     def test_gsfRead_success(self):
         """
@@ -112,12 +119,6 @@ class Test(TestCase):
 
         records = c_gsfRecords()
 
-        expected_comment = (
-            b"Bathy converted from HIPS file: "
-            b"M:\\CCOM_Processing\\CARIS_v8\\HIPS\\81\\HDCS_Data\\EX1502L2"
-            b"\\Okeanos_March_2011\\2015-081\\0175_20150322_232639_EX1502L2_MB"
-        )
-
         # Act
         ret_val_open = gsfpy.bindings.gsfOpen(
             self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
@@ -128,10 +129,17 @@ class Test(TestCase):
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
         # Assert
-        self.assertEqual(0, ret_val_open)
-        self.assertEqual(168, bytes_read)
-        self.assertEqual(expected_comment, string_at(records.comment.comment))
-        self.assertEqual(0, ret_val_close)
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(168)
+        assert_that(string_at(records.comment.comment)).is_equal_to(
+            (
+                b"Bathy converted from HIPS file: "
+                b"M:\\CCOM_Processing\\CARIS_v8\\HIPS\\81\\HDCS_Data\\EX1502L2"
+                b"\\Okeanos_March_2011\\2015-081\\0175_20150322_232639_EX1502L2_MB"
+            )
+        )
+
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
     def test_gsfWrite_success(self):
         """
@@ -160,9 +168,9 @@ class Test(TestCase):
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
         # Assert
-        self.assertEqual(0, ret_val_open_create)
-        self.assertEqual(40, bytes_written)
-        self.assertEqual(0, ret_val_close)
+        assert_that(ret_val_open_create).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_written).is_equal_to(40)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
         # Read comment from newly created file to check it is as expected
         data_id = c_gsfDataID()
@@ -178,4 +186,4 @@ class Test(TestCase):
         )
         gsfpy.bindings.gsfClose(file_handle)
 
-        self.assertEqual(b"My first comment", string_at(records.comment.comment))
+        assert_that(string_at(records.comment.comment)).is_equal_to(b"My first comment")

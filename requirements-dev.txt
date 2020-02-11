@@ -1,5 +1,6 @@
 Pygments==2.5.2
 Sphinx==1.8.5
+assertpy==1.0
 black==19.10b0
 bump2version==0.5.11
 coverage==4.5.4
