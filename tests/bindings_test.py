@@ -11,11 +11,7 @@ import gsfpy.bindings
 from gsfpy.enums import FileMode, RecordType, SeekOption
 from gsfpy.gsfDataID import c_gsfDataID
 from gsfpy.gsfRecords import c_gsfRecords
-
-SUCCESS_RET_VAL = 0
-ERROR_RET_VAL = -1
-
-GSF_FOPEN_ERROR = -1
+from tests import ERROR_RET_VAL, GSF_FOPEN_ERROR, SUCCESS_RET_VAL
 
 
 class Test(TestCase):
@@ -113,10 +109,7 @@ class Test(TestCase):
         """
         # Arrange
         file_handle = c_int(0)
-
         data_id = c_gsfDataID()
-        data_id.recordID = RecordType.GSF_RECORD_COMMENT
-
         records = c_gsfRecords()
 
         # Act
@@ -151,10 +144,11 @@ class Test(TestCase):
         data_id = c_gsfDataID()
         data_id.recordID = RecordType.GSF_RECORD_COMMENT
 
+        comment = b"My first comment"
         records = c_gsfRecords()
         records.comment.comment_time.tvsec = c_int(1000)
-        records.comment.comment_length = c_int(17)
-        records.comment.comment = create_string_buffer(b"My first comment")
+        records.comment.comment_length = c_int(len(comment))
+        records.comment.comment = create_string_buffer(comment)
 
         tmp_gsf_file_path = path.join(os.fsencode(tempfile.gettempdir()), b"temp.gsf")
 
@@ -169,7 +163,7 @@ class Test(TestCase):
 
         # Assert
         assert_that(ret_val_open_create).is_equal_to(SUCCESS_RET_VAL)
-        assert_that(bytes_written).is_equal_to(40)
+        assert_that(bytes_written).is_equal_to(36)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
         # Read comment from newly created file to check it is as expected
@@ -186,4 +180,4 @@ class Test(TestCase):
         )
         gsfpy.bindings.gsfClose(file_handle)
 
-        assert_that(string_at(records.comment.comment)).is_equal_to(b"My first comment")
+        assert_that(string_at(records.comment.comment)).is_equal_to(comment)

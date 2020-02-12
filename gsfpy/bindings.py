@@ -79,7 +79,7 @@ _gsf_lib.gsfStringError.argtypes = []
 _gsf_lib.gsfStringError.restype = c_char_p
 
 
-def gsfStringError() -> str:
+def gsfStringError() -> bytes:
     """
     :return: The last value that the GSF error message was set to (c_char_p).
     """
