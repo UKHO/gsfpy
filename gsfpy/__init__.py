@@ -26,9 +26,17 @@ class GsfException(Exception):
     """
 
     def __init__(self):
-        error_code = gsfIntError()
-        error_message = gsfStringError().decode()
-        super().__init__(f"[{error_code}] {error_message}")
+        self._error_code = gsfIntError()
+        self._error_message = gsfStringError().decode()
+        super().__init__(f"[{self._error_code}] {self._error_message}")
+
+    @property
+    def error_code(self) -> int:
+        return self._error_code
+
+    @property
+    def error_message(self) -> str:
+        return self._error_message
 
 
 class GsfFile:
@@ -36,8 +44,16 @@ class GsfFile:
     Represents an open connection to a GSF file
     """
 
-    def __init__(self, handle):
+    def __init__(self, handle: c_int, file_mode: FileMode):
         self._handle = handle
+        self._file_mode = file_mode
+
+    @property
+    def file_mode(self) -> FileMode:
+        """
+        Mode the file has been opened in
+        """
+        return self._file_mode
 
     def close(self):
         """
@@ -100,16 +116,17 @@ def open_gsf(
         else gsfOpenBuffered(path.encode(), mode, byref(handle), buffer_size)
     )
 
-    return GsfFile(handle)
+    return GsfFile(handle, mode)
 
 
 _ERROR_CODE = -1
 
 
-def _handle_failure(response_code: int):
+def _handle_failure(return_code: int):
     """
     Error handling logic
-    :param response_code: The return code from one of "bindings.gsf*()" functions
+    :param return_code: The return code from one of functions in the gsfpy.bindings
+                        package
     """
-    if response_code == _ERROR_CODE:
+    if return_code == _ERROR_CODE:
         raise GsfException()
