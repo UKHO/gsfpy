@@ -71,6 +71,7 @@ class GsfFile:
 
     def read(self, desired_record: RecordType) -> Tuple[c_gsfDataID, c_gsfRecords]:
         """
+        Can be used with any file mode
         :param desired_record: Record type or id to read
         :return: Tuple of c_gsfDataID and c_gsfRecords
         :raises GsfException: Raised if anything went wrong

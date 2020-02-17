@@ -65,7 +65,7 @@ class Test(TestCase):
         """
         # Act
         gsf_file = open_gsf(self.test_data_path)
-        (_, record) = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
+        _, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
         gsf_file.close()
 
         # Assert
@@ -93,7 +93,7 @@ class Test(TestCase):
         # Assert
         # Read comment from newly created file to check it is as expected
         gsf_file = open_gsf(tmp_gsf_file_path)
-        (data_id, record) = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
+        data_id, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
         gsf_file.close()
 
         assert_that(string_at(record.comment.comment)).is_equal_to(comment)
@@ -127,13 +127,13 @@ class Test(TestCase):
         # Read sequentially
         gsf_file = open_gsf(tmp_gsf_file_path)
 
-        (_, record_1) = gsf_file.read(RecordType.GSF_NEXT_RECORD)
+        _, record_1 = gsf_file.read(RecordType.GSF_NEXT_RECORD)
         assert_that(string_at(record_1.comment.comment)).is_equal_to(comment_1)
 
-        (_, record_2) = gsf_file.read(RecordType.GSF_NEXT_RECORD)
+        _, record_2 = gsf_file.read(RecordType.GSF_NEXT_RECORD)
         assert_that(string_at(record_2.comment.comment)).is_equal_to(comment_4)
 
-        (_, record_3) = gsf_file.read(RecordType.GSF_NEXT_RECORD)
+        _, record_3 = gsf_file.read(RecordType.GSF_NEXT_RECORD)
         assert_that(string_at(record_3.comment.comment)).is_equal_to(comment_3)
 
         assert_that(gsf_file.read).raises(GsfException).when_called_with(
@@ -143,7 +143,7 @@ class Test(TestCase):
         # Read using direct access
         gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_READONLY_INDEX)
 
-        (_, direct_access_record) = gsf_file.direct_read(
+        _, direct_access_record = gsf_file.direct_read(
             RecordType.GSF_RECORD_COMMENT, 2
         )
         assert_that(string_at(direct_access_record.comment.comment)).is_equal_to(
