@@ -69,7 +69,9 @@ class GsfFile:
         """
         _handle_failure(gsfSeek(self._handle, option))
 
-    def read(self, desired_record: RecordType) -> Tuple[c_gsfDataID, c_gsfRecords]:
+    def read(
+        self, desired_record: RecordType = RecordType.GSF_NEXT_RECORD
+    ) -> Tuple[c_gsfDataID, c_gsfRecords]:
         """
         Can be used with any file mode
         :param desired_record: Record type or id to read

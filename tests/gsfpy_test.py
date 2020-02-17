@@ -127,25 +127,23 @@ class Test(TestCase):
         # Read sequentially
         gsf_file = open_gsf(tmp_gsf_file_path)
 
-        _, record_1 = gsf_file.read(RecordType.GSF_NEXT_RECORD)
+        _, record_1 = gsf_file.read()
         assert_that(string_at(record_1.comment.comment)).is_equal_to(comment_1)
 
-        _, record_2 = gsf_file.read(RecordType.GSF_NEXT_RECORD)
+        _, record_2 = gsf_file.read()
         assert_that(string_at(record_2.comment.comment)).is_equal_to(comment_4)
 
-        _, record_3 = gsf_file.read(RecordType.GSF_NEXT_RECORD)
+        _, record_3 = gsf_file.read()
         assert_that(string_at(record_3.comment.comment)).is_equal_to(comment_3)
 
-        assert_that(gsf_file.read).raises(GsfException).when_called_with(
-            RecordType.GSF_NEXT_RECORD
-        ).is_equal_to("[-23] GSF End of File Encountered")
+        assert_that(gsf_file.read).raises(GsfException).when_called_with().is_equal_to(
+            "[-23] GSF End of File Encountered"
+        )
 
         # Read using direct access
         gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_READONLY_INDEX)
 
-        _, direct_access_record = gsf_file.direct_read(
-            RecordType.GSF_RECORD_COMMENT, 2
-        )
+        _, direct_access_record = gsf_file.direct_read(RecordType.GSF_RECORD_COMMENT, 2)
         assert_that(string_at(direct_access_record.comment.comment)).is_equal_to(
             comment_4
         )
