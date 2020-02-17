@@ -3,14 +3,12 @@ import tempfile
 from ctypes import c_int, create_string_buffer, string_at
 from glob import glob
 from os import path
-from typing import Tuple, List
 from unittest import TestCase
 
 from assertpy import assert_that
 
 from gsfpy import GsfException, open_gsf
 from gsfpy.enums import FileMode, RecordType, SeekOption
-from gsfpy.gsfDataID import c_gsfDataID
 from gsfpy.gsfRecords import c_gsfRecords
 from tests import GSF_FOPEN_ERROR
 
@@ -67,11 +65,11 @@ class Test(TestCase):
         """
         # Act
         gsf_file = open_gsf(self.test_data_path)
-        (_, records) = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
+        (_, record) = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
         gsf_file.close()
 
         # Assert
-        assert_that(string_at(records.comment.comment)).is_equal_to(
+        assert_that(string_at(record.comment.comment)).is_equal_to(
             (
                 b"Bathy converted from HIPS file: "
                 b"M:\\CCOM_Processing\\CARIS_v8\\HIPS\\81\\HDCS_Data\\EX1502L2"
@@ -87,26 +85,23 @@ class Test(TestCase):
         tmp_gsf_file_path = path.join(tempfile.gettempdir(), "temp.gsf")
 
         comment = b"My first comment"
-        (in_data_id, in_records) = _create_comment_records(comment)
-
         # Act
         gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE)
-        gsf_file.write(in_data_id, in_records)
+        gsf_file.write(RecordType.GSF_RECORD_COMMENT, _new_comment_record(comment))
         gsf_file.close()
 
         # Assert
         # Read comment from newly created file to check it is as expected
         gsf_file = open_gsf(tmp_gsf_file_path)
-        (out_data_id, out_records) = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
+        (data_id, record) = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
         gsf_file.close()
 
-        assert_that(string_at(out_records.comment.comment)).is_equal_to(comment)
+        assert_that(string_at(record.comment.comment)).is_equal_to(comment)
 
-    def test_direct_access_success(self):
+    def test_direct_access_write_and_read_success(self):
         """
-        Overwrite a single comment record in a GSF file
+        Create, update and read. First sequentially, then using direct access
         """
-        # Arrange
         tmp_gsf_file_path = path.join(tempfile.gettempdir(), "temp.gsf")
 
         # Create a file with 3 records
@@ -114,61 +109,53 @@ class Test(TestCase):
         comment_2 = b"Comment #2"
         comment_3 = b"Comment #3"
         comment_4 = b"Comment #4"
+
+        # Write sequentially
         gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE)
-        gsf_file.write(
-            _create_comment_data_id(),
-            _create_comment_records(comment_1)
-        )
-        gsf_file.write(
-            _create_comment_data_id(),
-            _create_comment_records(comment_2)
-        )
-        existing_data_id = _create_comment_data_id()
-        gsf_file.write(
-            existing_data_id,
-            _create_comment_records(comment_3)
-        )
+        gsf_file.write(RecordType.GSF_RECORD_COMMENT, _new_comment_record(comment_1))
+        gsf_file.write(RecordType.GSF_RECORD_COMMENT, _new_comment_record(comment_2))
+        gsf_file.write(RecordType.GSF_RECORD_COMMENT, _new_comment_record(comment_3))
         gsf_file.close()
 
-        # Create reference to existing record
-        in_data_id = c_gsfDataID()
-        in_data_id.recordID = RecordType.GSF_RECORD_COMMENT
-        # in_data_id.record_number = existing_data_id.record_number # does not work
-        in_data_id.record_number = 2
-
-        # Act
+        # Update using direct access
         gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_UPDATE_INDEX)
-        gsf_file.write(
-            in_data_id,
-            _create_comment_records(comment_4)
+        gsf_file.direct_write(
+            RecordType.GSF_RECORD_COMMENT, 2, _new_comment_record(comment_4)
         )
         gsf_file.close()
 
-        # Assert
-        # Read all comments from newly created file to check it is as expected
+        # Read sequentially
         gsf_file = open_gsf(tmp_gsf_file_path)
-        (_, out_records_1) = gsf_file.read(RecordType.GSF_NEXT_RECORD)
-        (_, out_records_2) = gsf_file.read(RecordType.GSF_NEXT_RECORD)
-        (_, out_records_3) = gsf_file.read(RecordType.GSF_NEXT_RECORD)
-        assert_that(gsf_file.read).raises(GsfException)\
-            .when_called_with(RecordType.GSF_NEXT_RECORD)\
-            .is_equal_to("[-23] GSF End of File Encountered")
+
+        (_, record_1) = gsf_file.read(RecordType.GSF_NEXT_RECORD)
+        assert_that(string_at(record_1.comment.comment)).is_equal_to(comment_1)
+
+        (_, record_2) = gsf_file.read(RecordType.GSF_NEXT_RECORD)
+        assert_that(string_at(record_2.comment.comment)).is_equal_to(comment_4)
+
+        (_, record_3) = gsf_file.read(RecordType.GSF_NEXT_RECORD)
+        assert_that(string_at(record_3.comment.comment)).is_equal_to(comment_3)
+
+        assert_that(gsf_file.read).raises(GsfException).when_called_with(
+            RecordType.GSF_NEXT_RECORD
+        ).is_equal_to("[-23] GSF End of File Encountered")
+
+        # Read using direct access
+        gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_READONLY_INDEX)
+
+        (_, direct_access_record) = gsf_file.direct_read(
+            RecordType.GSF_RECORD_COMMENT, 2
+        )
+        assert_that(string_at(direct_access_record.comment.comment)).is_equal_to(
+            comment_4
+        )
+
         gsf_file.close()
 
-        assert_that(string_at(out_records_1.comment.comment)).is_equal_to(comment_1)
-        assert_that(string_at(out_records_2.comment.comment)).is_equal_to(comment_4)
-        assert_that(string_at(out_records_3.comment.comment)).is_equal_to(comment_3)
 
-
-def _create_comment_data_id() -> c_gsfDataID:
-    data_id = c_gsfDataID()
-    data_id.recordID = RecordType.GSF_RECORD_COMMENT
-    return data_id
-
-
-def _create_comment_records(comment: bytes) -> c_gsfRecords:
-    records = c_gsfRecords()
-    records.comment.comment_time.tvsec = c_int(1000)
-    records.comment.comment_length = c_int(len(comment))
-    records.comment.comment = create_string_buffer(comment)
-    return records
+def _new_comment_record(comment: bytes) -> c_gsfRecords:
+    record = c_gsfRecords()
+    record.comment.comment_time.tvsec = c_int(1000)
+    record.comment.comment_length = c_int(len(comment))
+    record.comment.comment = create_string_buffer(comment)
+    return record

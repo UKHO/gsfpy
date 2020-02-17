@@ -3,7 +3,7 @@ __email__ = "datascienceandengineering@ukho.gov.uk"
 __version__ = "1.0.0"
 
 from ctypes import byref, c_int
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 from gsfpy.bindings import (
     gsfClose,
@@ -69,9 +69,7 @@ class GsfFile:
         """
         _handle_failure(gsfSeek(self._handle, option))
 
-    def read(
-        self, desired_record: Union[RecordType, c_int]
-    ) -> Tuple[c_gsfDataID, c_gsfRecords]:
+    def read(self, desired_record: RecordType) -> Tuple[c_gsfDataID, c_gsfRecords]:
         """
         :param desired_record: Record type or id to read
         :return: Tuple of c_gsfDataID and c_gsfRecords
@@ -86,13 +84,53 @@ class GsfFile:
 
         return data_id, records
 
-    def write(self, data_id: c_gsfDataID, records: c_gsfRecords):
+    def direct_read(
+        self, desired_record: RecordType, record_number: int
+    ) -> Tuple[c_gsfDataID, c_gsfRecords]:
         """
-        :param data_id: c_gsfDataID where the recordID field specifies the record to
-                        write to
+        For use when the file is open in GSF_READONLY_INDEX or GSF_UPDATE_INDEX mode
+        :param desired_record: Record type or id to read
+        :param record_number: nth occurrence of the record to read from, starting from 1
+        :return: Tuple of c_gsfDataID and c_gsfRecords
+        :raises GsfException: Raised if anything went wrong
+        """
+        data_id = c_gsfDataID()
+        data_id.record_number = record_number
+
+        records = c_gsfRecords()
+
+        _handle_failure(
+            gsfRead(self._handle, desired_record, byref(data_id), byref(records))
+        )
+
+        return data_id, records
+
+    def write(self, record_type: RecordType, records: c_gsfRecords):
+        """
+        For use when the file is open in GSF_CREATE, GSF_UPDATE or GSF_UPDATE_INDEX mode
+        :param record_type: Specifies the type of record to write
         :param records: Data to write
         :raises GsfException: Raised if anything went wrong
         """
+        data_id = c_gsfDataID()
+        data_id.recordID = record_type
+
+        _handle_failure(gsfWrite(self._handle, byref(data_id), byref(records)))
+
+    def direct_write(
+        self, record_type: RecordType, record_number: int, records: c_gsfRecords
+    ):
+        """
+        For use when the file is open in GSF_UPDATE_INDEX mode
+        :param record_type: Specifies the type of record to write to
+        :param record_number: nth occurrence of the record to write to, starting from 1
+        :param records: Data to write
+        :raises GsfException: Raised if anything went wrong
+        """
+        data_id = c_gsfDataID()
+        data_id.recordID = record_type
+        data_id.record_number = record_number
+
         _handle_failure(gsfWrite(self._handle, byref(data_id), byref(records)))
 
 

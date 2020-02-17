@@ -1,6 +1,5 @@
 from ctypes import CDLL, POINTER, c_char_p, c_int, c_ubyte
 from os import path
-from typing import Union
 
 from .enums import FileMode, RecordType, SeekOption
 from .gsfDataID import c_gsfDataID
@@ -10,7 +9,8 @@ _gsf_lib_rel_path = "libgsf3_06/libgsf3_06.so"
 _gsf_lib_abs_path = path.join(path.abspath(path.dirname(__file__)), _gsf_lib_rel_path)
 _gsf_lib = CDLL(_gsf_lib_abs_path)
 
-_gsf_lib.gsfOpen.argtypes = [c_char_p, c_int, POINTER(c_int)]
+
+_gsf_lib.gsfOpen.argtypes = [c_char_p, c_int, (POINTER(c_int))]
 _gsf_lib.gsfOpen.restype = c_int
 
 
@@ -24,7 +24,7 @@ def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     return _gsf_lib.gsfOpen(filename, mode, p_handle)
 
 
-_gsf_lib.gsfOpenBuffered.argtypes = [c_char_p, c_int, POINTER(c_int), c_int]
+_gsf_lib.gsfOpenBuffered.argtypes = [c_char_p, c_int, (POINTER(c_int)), c_int]
 _gsf_lib.gsfOpenBuffered.restype = c_int
 
 
@@ -99,7 +99,7 @@ _gsf_lib.gsfRead.restype = c_int
 
 def gsfRead(
     handle: c_int,
-    desired_record: Union[RecordType, c_int],
+    desired_record: RecordType,
     p_data_id,
     p_records,
     p_stream=None,
@@ -107,8 +107,7 @@ def gsfRead(
 ) -> int:
     """
     :param handle: int
-    :param desired_record: gsfpy.enums.RecordType or
-                           gsfpy.gsfDataID.c_gsfDataID.recordID
+    :param desired_record: gsfpy.enums.RecordType
     :param p_data_id: POINTER(gsfpy.gsfDataID.c_gsfDataID)
     :param p_records: POINTER(gsfpy.gsfRecords.c_gsfRecords)
     :param p_stream: POINTER(c_ubyte)
