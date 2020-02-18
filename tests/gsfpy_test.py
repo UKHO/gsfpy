@@ -87,7 +87,7 @@ class Test(TestCase):
         comment = b"My first comment"
         # Act
         gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE)
-        gsf_file.write(RecordType.GSF_RECORD_COMMENT, _new_comment_record(comment))
+        gsf_file.write(_new_comment_record(comment), RecordType.GSF_RECORD_COMMENT)
         gsf_file.close()
 
         # Assert
@@ -112,16 +112,14 @@ class Test(TestCase):
 
         # Write sequentially
         gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE)
-        gsf_file.write(RecordType.GSF_RECORD_COMMENT, _new_comment_record(comment_1))
-        gsf_file.write(RecordType.GSF_RECORD_COMMENT, _new_comment_record(comment_2))
-        gsf_file.write(RecordType.GSF_RECORD_COMMENT, _new_comment_record(comment_3))
+        gsf_file.write(_new_comment_record(comment_1), RecordType.GSF_RECORD_COMMENT)
+        gsf_file.write(_new_comment_record(comment_2), RecordType.GSF_RECORD_COMMENT)
+        gsf_file.write(_new_comment_record(comment_3), RecordType.GSF_RECORD_COMMENT)
         gsf_file.close()
 
         # Update using direct access
         gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_UPDATE_INDEX)
-        gsf_file.direct_write(
-            RecordType.GSF_RECORD_COMMENT, 2, _new_comment_record(comment_4)
-        )
+        gsf_file.write(_new_comment_record(comment_4), RecordType.GSF_RECORD_COMMENT, 2)
         gsf_file.close()
 
         # Read sequentially
@@ -143,7 +141,7 @@ class Test(TestCase):
         # Read using direct access
         gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_READONLY_INDEX)
 
-        _, direct_access_record = gsf_file.direct_read(RecordType.GSF_RECORD_COMMENT, 2)
+        _, direct_access_record = gsf_file.read(RecordType.GSF_RECORD_COMMENT, 2)
         assert_that(string_at(direct_access_record.comment.comment)).is_equal_to(
             comment_4
         )

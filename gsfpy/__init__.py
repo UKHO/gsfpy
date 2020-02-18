@@ -70,29 +70,15 @@ class GsfFile:
         _handle_failure(gsfSeek(self._handle, option))
 
     def read(
-        self, desired_record: RecordType = RecordType.GSF_NEXT_RECORD
+        self,
+        desired_record: RecordType = RecordType.GSF_NEXT_RECORD,
+        record_number: int = 0,
     ) -> Tuple[c_gsfDataID, c_gsfRecords]:
         """
-        Can be used with any file mode
-        :param desired_record: Record type or id to read
-        :return: Tuple of c_gsfDataID and c_gsfRecords
-        :raises GsfException: Raised if anything went wrong
-        """
-        data_id = c_gsfDataID()
-        records = c_gsfRecords()
-
-        _handle_failure(
-            gsfRead(self._handle, desired_record, byref(data_id), byref(records))
-        )
-
-        return data_id, records
-
-    def direct_read(
-        self, desired_record: RecordType, record_number: int
-    ) -> Tuple[c_gsfDataID, c_gsfRecords]:
-        """
-        For use when the file is open in GSF_READONLY_INDEX or GSF_UPDATE_INDEX mode
-        :param desired_record: Record type or id to read
+        When the file is open in GSF_READONLY_INDEX or GSF_UPDATE_INDEX mode then the
+        record_number parameter may be used to indicate which instance of the record to
+        read.
+        :param desired_record: Record type to read
         :param record_number: nth occurrence of the record to read from, starting from 1
         :return: Tuple of c_gsfDataID and c_gsfRecords
         :raises GsfException: Raised if anything went wrong
@@ -108,26 +94,15 @@ class GsfFile:
 
         return data_id, records
 
-    def write(self, record_type: RecordType, records: c_gsfRecords):
-        """
-        For use when the file is open in GSF_CREATE, GSF_UPDATE or GSF_UPDATE_INDEX mode
-        :param record_type: Specifies the type of record to write
-        :param records: Data to write
-        :raises GsfException: Raised if anything went wrong
-        """
-        data_id = c_gsfDataID()
-        data_id.recordID = record_type
-
-        _handle_failure(gsfWrite(self._handle, byref(data_id), byref(records)))
-
-    def direct_write(
-        self, record_type: RecordType, record_number: int, records: c_gsfRecords
+    def write(
+        self, records: c_gsfRecords, record_type: RecordType, record_number: int = 0
     ):
         """
-        For use when the file is open in GSF_UPDATE_INDEX mode
+        When the file is open in GSF_UPDATE_INDEX mode then the record_number parameter
+        may be used to indicate which instance of the record to write over.
+        :param records: Data to write
         :param record_type: Specifies the type of record to write to
         :param record_number: nth occurrence of the record to write to, starting from 1
-        :param records: Data to write
         :raises GsfException: Raised if anything went wrong
         """
         data_id = c_gsfDataID()
