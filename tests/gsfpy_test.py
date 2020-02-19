@@ -1,21 +1,21 @@
 import os
 import tempfile
-from ctypes import POINTER, c_int, c_ubyte, c_uint, create_string_buffer, string_at
+from ctypes import c_int, create_string_buffer, string_at
 from glob import glob
 from os import path
 from unittest import TestCase
 
-import gsfpy
+from assertpy import assert_that
+
+from gsfpy import GsfException, open_gsf
 from gsfpy.enums import FileMode, RecordType, SeekOption
-from gsfpy.gsfDataID import c_gsfDataID
 from gsfpy.gsfRecords import c_gsfRecords
+from tests import GSF_FOPEN_ERROR
 
 
 class Test(TestCase):
     def setup_method(self, method):
-        self.test_data_path = path.join(
-            os.fsencode(path.dirname(__file__)), b"gsfpy_test_data.gsf"
-        )
+        self.test_data_path = path.join(path.dirname(__file__), "gsfpy_test_data.gsf")
 
     @classmethod
     def teardown_class(cls):
@@ -24,187 +24,134 @@ class Test(TestCase):
             print("cleaning up, removing {0}".format(gsf))
             os.remove(gsf)
 
-    def test_gsfOpenClose_success(self):
+    def test_open_gsf_success(self):
         """
         Open the test GSF file, then close.
         """
-        # Arrange
-        mode = FileMode.GSF_READONLY
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
-
         # Act
-        retValOpen = gsfpy.gsfOpen(self.test_data_path, mode, p_gsf_fileref)
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        gsf_file = open_gsf(self.test_data_path)
+        gsf_file.close()
 
-        # Assert
-        self.assertEqual(0, retValOpen)  # 0 == success
-        self.assertEqual(1, p_gsf_fileref[0])  # 1 == total number of open GSF files
-        self.assertEqual(0, retValClose)  # 0 == success
-
-    def test_gsfOpenBuffered_success(self):
+    def test_open_gsf_buffered_success(self):
         """
-        Open the test GSF file, then close.
+        Open the test GSF file in buffered mode, then close.
         """
-        # Arrange
-        mode = FileMode.GSF_READONLY
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
-        buf_size = 100
-
         # Act
-        retValOpenBuffered = gsfpy.gsfOpenBuffered(
-            self.test_data_path, mode, p_gsf_fileref, buf_size
-        )
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        gsf_file = open_gsf(self.test_data_path, buffer_size=100)
+        gsf_file.close()
 
-        # Assert
-        self.assertEqual(0, retValOpenBuffered)  # 0 == success
-        self.assertEqual(1, p_gsf_fileref[0])  # 1 == total number of open GSF files
-        self.assertEqual(0, retValClose)  # 0 == success
-
-    def test_gsfSeek_success(self):
+    def test_seek_success(self):
         """
         Open the test GSF file, seek to end of file, then close.
         """
-        # Arrange
-        mode = FileMode.GSF_READONLY
-        seekOption = SeekOption.GSF_END_OF_FILE
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
-
         # Act
-        retValOpen = gsfpy.gsfOpen(self.test_data_path, mode, p_gsf_fileref)
-        retValSeek = gsfpy.gsfSeek(p_gsf_fileref[0], seekOption)
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        gsf_file = open_gsf(self.test_data_path)
+        gsf_file.seek(SeekOption.GSF_END_OF_FILE)
+        gsf_file.close()
 
-        # Assert
-        self.assertEqual(0, retValOpen)  # 0 == success
-        self.assertEqual(0, retValSeek)  # 0 == success
-        self.assertEqual(0, retValClose)  # 0 == success
-
-    def test_gsfError(self):
+    def test_GsfException(self):
         """
-        Try to open a non-existent GSF file and check that gsfError() returns the
-        correct error code and error message.
+        Try to open a non-existent GSF file, ensure a GsfException is raised and check
+        that it contains the correct error code and error message.
         """
-        # Arrange
-        mode = FileMode.GSF_READONLY
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
-
-        # Act
-        retValOpen = gsfpy.gsfOpen(b"non-existent.gsf", mode, p_gsf_fileref)
-        retValIntError = gsfpy.gsfIntError()
-        retValStringError = gsfpy.gsfStringError()
-
         # Assert
-        self.assertEqual(-1, retValOpen)  # -1 == fail
-        self.assertEqual(-1, retValIntError)  # -1 == failed to open file
-        self.assertEqual(b"GSF Unable to open requested file", retValStringError)
+        assert_that(open_gsf).raises(GsfException).when_called_with(
+            "non-existent.gsf"
+        ).is_equal_to(f"[{GSF_FOPEN_ERROR}] GSF Unable to open requested file")
 
-    def test_gsfRead_success(self):
+    def test_read_success(self):
         """
         Read a comment record from a GSF file.
         """
-        # Arrange
-        mode = FileMode.GSF_READONLY
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
-
-        commentID = c_gsfDataID()
-        commentID.recordID = c_uint(RecordType.GSF_RECORD_COMMENT.value)
-
-        c_gsfDataID_ptr = POINTER(c_gsfDataID)
-        p_dataID = c_gsfDataID_ptr(commentID)
-
-        c_gsfRecords_ptr = POINTER(c_gsfRecords)
-        p_rec = c_gsfRecords_ptr(c_gsfRecords())
-
-        c_ubyte_ptr = POINTER(c_ubyte)
-        p_stream = c_ubyte_ptr()
-
-        expected_comment = (
-            b"Bathy converted from HIPS file: "
-            b"M:\\CCOM_Processing\\CARIS_v8\\HIPS\\81\\HDCS_Data\\EX1502L2"
-            b"\\Okeanos_March_2011\\2015-081\\0175_20150322_232639_EX1502L2_MB"
-        )
-
         # Act
-        retValOpen = gsfpy.gsfOpen(self.test_data_path, mode, p_gsf_fileref)
-        bytesRead = gsfpy.gsfRead(
-            p_gsf_fileref[0],
-            c_int(RecordType.GSF_RECORD_COMMENT.value),
-            p_dataID,
-            p_rec,
-            p_stream,
-            0,
-        )
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        gsf_file = open_gsf(self.test_data_path)
+        _, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
+        gsf_file.close()
 
         # Assert
-        self.assertEqual(0, retValOpen)
-        self.assertEqual(168, bytesRead)
-        self.assertEqual(expected_comment, string_at(p_rec.contents.comment.comment))
-        self.assertEqual(0, retValClose)
+        assert_that(string_at(record.comment.comment)).is_equal_to(
+            (
+                b"Bathy converted from HIPS file: "
+                b"M:\\CCOM_Processing\\CARIS_v8\\HIPS\\81\\HDCS_Data\\EX1502L2"
+                b"\\Okeanos_March_2011\\2015-081\\0175_20150322_232639_EX1502L2_MB"
+            )
+        )
 
-    def test_gsfWrite_success(self):
+    def test_write_success(self):
         """
         Write a single comment record to a new GSF file
         """
         # Arrange
-        createMode = FileMode.GSF_CREATE
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
+        tmp_gsf_file_path = path.join(tempfile.gettempdir(), "temp.gsf")
 
-        commentID = c_gsfDataID()
-        commentID.recordID = c_uint(RecordType.GSF_RECORD_COMMENT.value)
-
-        c_gsfDataID_ptr = POINTER(c_gsfDataID)
-        p_dataID = c_gsfDataID_ptr(commentID)
-
-        c_gsfRecords_ptr = POINTER(c_gsfRecords)
-        p_rec = c_gsfRecords_ptr(c_gsfRecords())
-        p_rec.contents.comment.comment_time.tvsec = c_int(1000)
-        p_rec.contents.comment.comment_length = c_int(17)
-        p_rec.contents.comment.comment = create_string_buffer(b"My first comment")
-
-        tmpgsffilepath = path.join(os.fsencode(tempfile.gettempdir()), b"temp.gsf")
-
+        comment = b"My first comment"
         # Act
-        retValOpenCreate = gsfpy.gsfOpen(tmpgsffilepath, createMode, p_gsf_fileref)
-        bytesWritten = gsfpy.gsfWrite(p_gsf_fileref[0], p_dataID, p_rec)
-        retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE)
+        gsf_file.write(_new_comment_record(comment), RecordType.GSF_RECORD_COMMENT)
+        gsf_file.close()
 
         # Assert
-        self.assertEqual(0, retValOpenCreate)
-        self.assertEqual(40, bytesWritten)
-        self.assertEqual(0, retValClose)
-
         # Read comment from newly created file to check it is as expected
-        commentID = c_gsfDataID()
-        commentID.recordID = c_uint(RecordType.GSF_RECORD_COMMENT.value)
+        gsf_file = open_gsf(tmp_gsf_file_path)
+        data_id, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
+        gsf_file.close()
 
-        c_gsfDataID_ptr = POINTER(c_gsfDataID)
-        p_dataID = c_gsfDataID_ptr(commentID)
+        assert_that(string_at(record.comment.comment)).is_equal_to(comment)
 
-        c_gsfRecords_ptr = POINTER(c_gsfRecords)
-        p_rec = c_gsfRecords_ptr(c_gsfRecords())
+    def test_direct_access_write_and_read_success(self):
+        """
+        Create, update and read. First sequentially, then using direct access
+        """
+        tmp_gsf_file_path = path.join(tempfile.gettempdir(), "temp.gsf")
 
-        c_ubyte_ptr = POINTER(c_ubyte)
-        p_stream = c_ubyte_ptr()
+        # Create a file with 3 records
+        comment_1 = b"Comment #1"
+        comment_2 = b"Comment #2"
+        comment_3 = b"Comment #3"
+        comment_4 = b"Comment #4"
 
-        retValOpenCreate = gsfpy.gsfOpen(
-            tmpgsffilepath, FileMode.GSF_READONLY, p_gsf_fileref
+        # Write sequentially
+        gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE)
+        gsf_file.write(_new_comment_record(comment_1), RecordType.GSF_RECORD_COMMENT)
+        gsf_file.write(_new_comment_record(comment_2), RecordType.GSF_RECORD_COMMENT)
+        gsf_file.write(_new_comment_record(comment_3), RecordType.GSF_RECORD_COMMENT)
+        gsf_file.close()
+
+        # Update using direct access
+        gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_UPDATE_INDEX)
+        gsf_file.write(_new_comment_record(comment_4), RecordType.GSF_RECORD_COMMENT, 2)
+        gsf_file.close()
+
+        # Read sequentially
+        gsf_file = open_gsf(tmp_gsf_file_path)
+
+        _, record_1 = gsf_file.read()
+        assert_that(string_at(record_1.comment.comment)).is_equal_to(comment_1)
+
+        _, record_2 = gsf_file.read()
+        assert_that(string_at(record_2.comment.comment)).is_equal_to(comment_4)
+
+        _, record_3 = gsf_file.read()
+        assert_that(string_at(record_3.comment.comment)).is_equal_to(comment_3)
+
+        assert_that(gsf_file.read).raises(GsfException).when_called_with().is_equal_to(
+            "[-23] GSF End of File Encountered"
         )
-        gsfpy.gsfRead(
-            p_gsf_fileref[0],
-            c_int(RecordType.GSF_RECORD_COMMENT.value),
-            p_dataID,
-            p_rec,
-            p_stream,
-            0,
-        )
-        gsfpy.gsfClose(p_gsf_fileref[0])
 
-        self.assertEqual(b"My first comment", string_at(p_rec.contents.comment.comment))
+        # Read using direct access
+        gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_READONLY_INDEX)
+
+        _, direct_access_record = gsf_file.read(RecordType.GSF_RECORD_COMMENT, 2)
+        assert_that(string_at(direct_access_record.comment.comment)).is_equal_to(
+            comment_4
+        )
+
+        gsf_file.close()
+
+
+def _new_comment_record(comment: bytes) -> c_gsfRecords:
+    record = c_gsfRecords()
+    record.comment.comment_time.tvsec = c_int(1000)
+    record.comment.comment_length = c_int(len(comment))
+    record.comment.comment = create_string_buffer(comment)
+    return record
