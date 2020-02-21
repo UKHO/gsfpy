@@ -1,4 +1,5 @@
 import os
+import os
 import shutil
 import tempfile
 import unittest
@@ -9,17 +10,17 @@ import assertpy
 
 import gsfpy
 from gsfpy.enums import FileMode, RecordType, SeekOption
-from gsfpy.gsfDataID import c_gsfDataID
-from gsfpy.gsfRecords import c_gsfRecords
 
 
 class TestGsfSwathBathyPing(unittest.TestCase):
 
     def setUp(self):
-        test_data_306_path = path.join(os.fsencode(path.dirname(__file__)),
-                                       b"0029_20160323_185603_EX1604_MB.gsf.mb121")
-        self.test_data_306_path = test_data_306_path
-        self.test_data_306 = (test_data_306_path, 432)
+        test_data_306_path = path.join(path.dirname(__file__),
+                                       "0029_20160323_185603_EX1604_MB.gsf.mb121")
+        self.test_data_306 = {'path': test_data_306_path, 'num_beams': 432}
+        test_data_307_path = path.join(path.dirname(__file__),
+                                       "0059_20181102_212138_EX1811_MB_EM302.gsf.mb121")
+        self.test_data_307 = {'path': test_data_307_path, 'num_beams': 432}
 
     def tearDown(self):
         temp_gsf_files = [f for f in os.listdir(tempfile.gettempdir()) if f.startswith('temp_gsf')]
@@ -30,108 +31,133 @@ class TestGsfSwathBathyPing(unittest.TestCase):
                 print(f'Unable to delete temp file {gsf_file} : {str(io_err)}')
 
     def test_gsf_swathbathyping_read(self):
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
-        # Read the SwathBathyPing records
-        open_ret_val = gsfpy.gsfOpen(self.test_data_306_path, FileMode.GSF_READONLY, p_gsf_fileref)
-        self.assertEqual(open_ret_val, 0)
+        gsf_file = gsfpy.open_gsf(self.test_data_306['path'], FileMode.GSF_READONLY)
+        data_id, gsf_records = gsf_file.read(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, 1)
+        gsf_file.close()
 
-        gsf_data_id = c_gsfDataID()
-        gsf_data_id.recordID = c_uint(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING.value)
-
-        c_gsfDataID_ptr = POINTER(c_gsfDataID)
-        p_dataID = c_gsfDataID_ptr(gsf_data_id)
-
-        c_gsfRecords_ptr = POINTER(c_gsfRecords)
-        p_records = c_gsfRecords_ptr(c_gsfRecords())
-
-        bytes_read = gsfpy.gsfRead(
-                                    c_int(p_gsf_fileref[0]),
-                                    RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
-                                    p_dataID,
-                                    p_records
-                                    )
-        close_ret_val = gsfpy.gsfClose(c_int(p_gsf_fileref[0]))
-        assertpy.assert_that(close_ret_val).is_equal_to(0)
-
-        swath_bathymetry_ping_record = p_records.contents.mb_ping
+        swath_bathymetry_ping_record = gsf_records.mb_ping
 
         num_beams = swath_bathymetry_ping_record.number_beams
 
-        assertpy.assert_that(bytes_read).is_greater_than(0)
-        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306[1])
+        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306['num_beams'])
         beam_angles = swath_bathymetry_ping_record.beam_angle[:num_beams]
 
         beam_angles_in_range = [180 >= x >= -180 for x in beam_angles]
         assertpy.assert_that(False).is_not_in(beam_angles_in_range)
 
-    def test_gsf_swathbathyping_write_update(self):
+    def test_gsf_swathbathyping_write_update_sequential(self):
         tmp_file_path = '/tmp/temp_gsf_306_test_data_update.gsf'
-        shutil.copyfile(self.test_data_306_path, tmp_file_path)
+        shutil.copyfile(self.test_data_306['path'], tmp_file_path)
+        gsf_file = gsfpy.open_gsf(tmp_file_path, FileMode.GSF_UPDATE)
+        record_num = 0
+        data_id, gsf_records = gsf_file.read(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, record_num)
 
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
+        num_beams = gsf_records.mb_ping.number_beams
 
-        open_ret_val = gsfpy.gsfOpen(self.test_data_306_path, FileMode.GSF_UPDATE, p_gsf_fileref)
-        self.assertEqual(open_ret_val, 0)
+        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306['num_beams'])
 
-        gsf_data_id = c_gsfDataID()
-        gsf_data_id.recordID = c_uint(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING.value)
+        original_values = gsf_records.mb_ping.beam_flags[:num_beams]
 
-        c_gsfDataID_ptr = POINTER(c_gsfDataID)
-        p_data_id = c_gsfDataID_ptr(gsf_data_id)
-
-        c_gsfRecords_ptr = POINTER(c_gsfRecords)
-        p_records = c_gsfRecords_ptr(c_gsfRecords())
-
-        bytes_read = gsfpy.gsfRead(
-                                    c_int(p_gsf_fileref[0]),
-                                    RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
-                                    p_data_id,
-                                    p_records
-                                    )
-        self.assertTrue(bytes_read > 0)
-
-        swath_bathymetry_ping_record = p_records.contents.mb_ping
-        num_beams = swath_bathymetry_ping_record.number_beams
-
-        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306[1])
-
-        original_values = swath_bathymetry_ping_record.beam_flags[:num_beams]
-
-        update_beams = {'3': 1, '4': 9, '5': 9, '6': 9}
+        update_beams = {'3': 1, '4': 1, '5': 1, '6': 1}
         for i in update_beams.keys():
-            swath_bathymetry_ping_record.beam_flags[int(i)] = c_ubyte(update_beams[i])
+            gsf_records.mb_ping.beam_flags[int(i)] = c_ubyte(update_beams[i])
 
-        seek_return_value = gsfpy.bindings.gsfSeek(c_int(p_gsf_fileref[0]), SeekOption.GSF_PREVIOUS_RECORD)
-        bytes_written = gsfpy.bindings.gsfWrite(c_int(p_gsf_fileref[0]), p_data_id, p_records)
-        close_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_fileref[0]))
-        assertpy.assert_that(seek_return_value).is_equal_to(0)
-        assertpy.assert_that(close_return_value).is_equal_to(0)
-        assertpy.assert_that(bytes_written).is_greater_than(0)
+        gsf_file.seek(SeekOption.GSF_PREVIOUS_RECORD)
+        gsf_file.write(gsf_records, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, record_num)
+        gsf_file.close()
 
-        p_gsf_read_file_ref = c_int_ptr(c_int(0))
-        open_ret_val = gsfpy.gsfOpen(self.test_data_306_path, FileMode.GSF_READONLY, p_gsf_read_file_ref)
-        gsf_read_data_id = c_gsfDataID()
-        gsf_read_data_id.recordID = c_uint(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING.value)
-        p_read_data_id = c_gsfDataID_ptr(gsf_read_data_id)
-        p_read_records = c_gsfRecords_ptr(c_gsfRecords())
-
-        bytes_read = gsfpy.gsfRead(
-                                    c_int(p_gsf_read_file_ref[0]),
-                                    RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
-                                    p_read_data_id,
-                                    p_read_records)
-        close_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_read_file_ref[0]))
-
-        assertpy.assert_that(open_ret_val).is_equal_to(0)
-        assertpy.assert_that(bytes_written).is_equal_to(bytes_read)
-        assertpy.assert_that(close_return_value).is_equal_to(0)
-
-        read_ping_record = p_read_records.contents.mb_ping
+        reopened_gsf_file = gsfpy.open_gsf(tmp_file_path, FileMode.GSF_READONLY)
+        read_data_id, read_gsf_records = reopened_gsf_file.read(
+                                                                    RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+                                                                    record_num
+                                                                    )
+        read_ping_record = read_gsf_records.mb_ping
 
         for i in range(read_ping_record.number_beams):
             if str(i) in update_beams.keys():
                 self.assertEqual(update_beams[str(i)], read_ping_record.beam_flags[i])
             else:
                 self.assertEqual(original_values[i], read_ping_record.beam_flags[i])
+
+    def test_gsf_swathbathyping_update_by_index(self):
+        tmp_file_path = '/tmp/temp_gsf_306_test_data_update_idx.gsf'
+        shutil.copyfile(self.test_data_306['path'], tmp_file_path)
+        gsf_file = gsfpy.open_gsf(tmp_file_path, FileMode.GSF_UPDATE_INDEX)
+        record_num = 3
+        data_id, gsf_records = gsf_file.read(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, record_num)
+
+        num_beams = gsf_records.mb_ping.number_beams
+
+        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306['num_beams'])
+
+        original_values = gsf_records.mb_ping.beam_flags[:num_beams]
+
+        update_beams = {'3': 1, '4': 1, '5': 1, '6': 1}
+        for i in update_beams.keys():
+            gsf_records.mb_ping.beam_flags[int(i)] = c_ubyte(update_beams[i])
+
+        gsf_file.write(gsf_records, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, record_num)
+        gsf_file.close()
+
+        reopened_gsf_file = gsfpy.open_gsf(tmp_file_path, FileMode.GSF_READONLY_INDEX)
+        read_data_id, read_gsf_records = reopened_gsf_file.read(
+                                                                    RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+                                                                    record_num
+                                                                    )
+        read_ping_record = read_gsf_records.mb_ping
+        updated_flags = read_ping_record.beam_flags[:num_beams]
+
+        for i in range(read_ping_record.number_beams):
+            if str(i) in update_beams.keys():
+                self.assertEqual(update_beams[str(i)], read_ping_record.beam_flags[i])
+            else:
+                self.assertEqual(original_values[i], read_ping_record.beam_flags[i])
+
+        first_data_id, first_gsf_records = reopened_gsf_file.read(
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            1  # 1-indexed
+        )
+        first_rec_flags = first_gsf_records.mb_ping.beam_flags[:num_beams]
+        self.assertNotEqual(first_rec_flags, updated_flags)
+
+    # Reading by index on files created with different GSF versions
+    def test_gsf_read_swathbathyping_by_index_306(self):
+        self._gsf_swathbathyping_read_by_index(self.test_data_306)
+
+    def test_gsf_read_swathbathyping_by_index_307(self):
+        self._gsf_swathbathyping_read_by_index(self.test_data_307)
+
+    def _gsf_swathbathyping_read_by_index(self, test_data_info):
+        gsf_file = gsfpy.open_gsf(test_data_info['path'], FileMode.GSF_READONLY)
+
+        # Read a couple of records forwards, so its at position 3. Records are 1-indexed.
+        # This is using read because Seek only does start/end/previous not next.
+        record_index = 3
+        gsf_file.read(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING)
+        gsf_file.read(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING)
+
+        data_id, gsf_records = gsf_file.read(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING)
+        gsf_file.close()
+
+        swath_bathymetry_ping_record = gsf_records.mb_ping
+
+        num_beams = swath_bathymetry_ping_record.number_beams
+
+        assertpy.assert_that(num_beams).is_equal_to(test_data_info['num_beams'])
+        beam_angles = swath_bathymetry_ping_record.beam_angle[:num_beams]
+        beam_flags = swath_bathymetry_ping_record.beam_flags[:num_beams]
+
+        gsf_file_by_index = gsfpy.open_gsf(test_data_info['path'], FileMode.GSF_READONLY_INDEX)
+        index_data_id, gsf_index_records = gsf_file_by_index.read(
+                                                                    RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+                                                                    record_index
+                                                                  )
+
+        record_by_index = gsf_index_records.mb_ping
+        beam_angles_by_index = record_by_index.beam_angle[:num_beams]
+        beam_flags_by_index = record_by_index.beam_flags[:num_beams]
+
+        num_beams_from_index = record_by_index.number_beams
+        assertpy.assert_that(num_beams).is_equal_to(num_beams_from_index)
+        self.assertSequenceEqual(beam_angles, beam_angles_by_index)
+        self.assertSequenceEqual(beam_flags, beam_flags_by_index)
