@@ -7,6 +7,7 @@ from typing import Optional, Tuple
 
 from gsfpy.bindings import (
     gsfClose,
+    gsfGetNumberRecords,
     gsfIntError,
     gsfOpen,
     gsfOpenBuffered,
@@ -110,6 +111,17 @@ class GsfFile:
         data_id.record_number = record_number
 
         _handle_failure(gsfWrite(self._handle, byref(data_id), byref(records)))
+
+    def number_of_records(self, desired_record: RecordType) -> int:
+        """
+        May only be used when the file is open for direct access (GSF_READONLY_INDEX or
+        GSF_UPDATE_INDEX).
+        :param desired_record: Specifies the type of record to count
+        :return: Number of records of type desired_record, otherwise -1
+        """
+        count = gsfGetNumberRecords(self._handle, desired_record)
+        _handle_failure(count)
+        return count
 
 
 def open_gsf(
