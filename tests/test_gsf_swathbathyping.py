@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from ctypes import c_ubyte, c_double
+from ctypes import c_ubyte
 from os import path
 
 import assertpy
