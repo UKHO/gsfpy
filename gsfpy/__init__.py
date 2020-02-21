@@ -1,6 +1,6 @@
 __author__ = """UK Hydrographic Office"""
 __email__ = "datascienceandengineering@ukho.gov.uk"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 from ctypes import byref, c_int
 from typing import Optional, Tuple
@@ -112,7 +112,7 @@ class GsfFile:
 
         _handle_failure(gsfWrite(self._handle, byref(data_id), byref(records)))
 
-    def number_of_records(self, desired_record: RecordType) -> int:
+    def get_number_records(self, desired_record: RecordType) -> int:
         """
         May only be used when the file is open for direct access (GSF_READONLY_INDEX or
         GSF_UPDATE_INDEX).

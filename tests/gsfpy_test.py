@@ -148,21 +148,21 @@ class Test(TestCase):
 
         gsf_file.close()
 
-    def test_number_of_records_success(self):
+    def test_get_number_records_success(self):
         """
         Open the test GSF file in GSF_READONLY_INDEX mode, count the number of
         GSF_RECORD_SWATH_BATHYMETRY_PING records, then close.
         """
         # Act
         gsf_file = open_gsf(self.test_data_path, FileMode.GSF_READONLY_INDEX)
-        number_of_pings = gsf_file.number_of_records(
+        number_of_pings = gsf_file.get_number_records(
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
         )
         gsf_file.close()
 
         assert_that(number_of_pings).is_equal_to(4)
 
-    def test_number_of_records_failure(self):
+    def test_get_number_records_failure(self):
         """
         Open the test GSF file in GSF_READONLY mode, attempt to count the number of
         GSF_RECORD_SWATH_BATHYMETRY_PING records and verify the exception.
@@ -170,7 +170,7 @@ class Test(TestCase):
         # Act
         gsf_file = open_gsf(self.test_data_path)
 
-        assert_that(gsf_file.number_of_records).raises(GsfException).when_called_with(
+        assert_that(gsf_file.get_number_records).raises(GsfException).when_called_with(
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
         ).is_equal_to("[-3] GSF Error illegal access mode")
 
