@@ -31,7 +31,6 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         start_time = end_time - 60
         start_ts = c_timespec(tv_sec=c_int32(start_time), tv_nsec=c_long(506))
         end_ts = c_timespec(tv_sec=c_int32(end_time), tv_nsec=c_long(509))
-        # TODO: tv_nsec should be c_int according to filespec. Check.
 
         self.summary_to_save = {
             "min_lat": -14.02349,
