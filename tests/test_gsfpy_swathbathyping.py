@@ -193,7 +193,7 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
         p_stream = c_ubyte_ptr()
 
         open_return_value = gsfpy.bindings.gsfOpen(
-            os.fsencode(self.test_data_306['path']), mode, p_gsf_fileref
+            os.fsencode(self.test_data_306["path"]), mode, p_gsf_fileref
         )
         bytes_read = gsfpy.bindings.gsfRead(
             c_int(p_gsf_fileref[0]),
@@ -213,7 +213,7 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
         num_beams = swath_bathy_record.number_beams
 
         assertpy.assert_that(bytes_read).is_greater_than(0)
-        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306['num_beams'])
+        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306["num_beams"])
         beam_angles = swath_bathy_record.beam_angle[:num_beams]
 
         assertpy.assert_that(beam_angles)
