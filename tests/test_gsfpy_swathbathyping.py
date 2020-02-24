@@ -2,16 +2,17 @@ import os
 import shutil
 import tempfile
 import unittest
-from ctypes import c_ubyte
+from ctypes import POINTER, c_int, c_ubyte, c_uint
 from os import path
 
 import assertpy
 
 import gsfpy
+from gsfpy import c_gsfRecords, c_gsfDataID
 from gsfpy.enums import FileMode, RecordType, SeekOption
 
 
-class TestGsfSwathBathyPing(unittest.TestCase):
+class TestGsfpySwathBathyPing(unittest.TestCase):
     def setUp(self):
         test_data_306_path = path.join(
             path.dirname(__file__), "0029_20160323_185603_EX1604_MB.gsf.mb121"
@@ -173,3 +174,48 @@ class TestGsfSwathBathyPing(unittest.TestCase):
         assertpy.assert_that(num_beams).is_equal_to(num_beams_from_index)
         self.assertSequenceEqual(beam_angles, beam_angles_by_index)
         self.assertSequenceEqual(beam_flags, beam_flags_by_index)
+
+    def test_gsf_swathbathyping_low_level_read(self):
+        mode = FileMode.GSF_READONLY
+        c_int_ptr = POINTER(c_int)
+        p_gsf_fileref = c_int_ptr(c_int(0))
+
+        gsf_data_id = c_gsfDataID()
+        gsf_data_id.recordID = c_uint(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING.value)
+
+        c_gsfDataID_ptr = POINTER(c_gsfDataID)
+        p_dataID = c_gsfDataID_ptr(gsf_data_id)
+
+        c_gsfRecords_ptr = POINTER(c_gsfRecords)
+        p_record = c_gsfRecords_ptr(c_gsfRecords())
+
+        c_ubyte_ptr = POINTER(c_ubyte)
+        p_stream = c_ubyte_ptr()
+
+        open_return_value = gsfpy.bindings.gsfOpen(
+            os.fsencode(self.test_data_306['path']), mode, p_gsf_fileref
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            c_int(p_gsf_fileref[0]),
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            p_dataID,
+            p_record,
+            p_stream,
+            0,
+        )
+        close_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_fileref[0]))
+
+        assertpy.assert_that(open_return_value).is_equal_to(0)
+        assertpy.assert_that(close_return_value).is_equal_to(0)
+
+        swath_bathy_record = p_record.contents.mb_ping
+
+        num_beams = swath_bathy_record.number_beams
+
+        assertpy.assert_that(bytes_read).is_greater_than(0)
+        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306['num_beams'])
+        beam_angles = swath_bathy_record.beam_angle[:num_beams]
+
+        assertpy.assert_that(beam_angles)
+        beam_angles_in_range = [180 >= x >= -180 for x in beam_angles]
+        assertpy.assert_that(False).is_not_in(beam_angles_in_range)

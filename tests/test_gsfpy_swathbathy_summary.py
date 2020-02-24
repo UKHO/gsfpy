@@ -16,7 +16,7 @@ from gsfpy.gsfSwathBathySummary import c_gsfSwathBathySummary
 from gsfpy.timespec import c_timespec
 
 
-class TestGsfpySwathBathyRecords(unittest.TestCase):
+class TestGsfpySwathBathySummary(unittest.TestCase):
     def setUp(self):
 
         test_data_306_path = path.join(
@@ -84,7 +84,7 @@ class TestGsfpySwathBathyRecords(unittest.TestCase):
         )
         bytes_read = gsfpy.bindings.gsfRead(
             c_int(p_gsf_fileref[0]),
-            c_int(RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY.value),
+            RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY,
             p_dataID,
             p_record,
             p_stream,
@@ -116,52 +116,7 @@ class TestGsfpySwathBathyRecords(unittest.TestCase):
 
         assertpy.assert_that(close_return_value).is_equal_to(0)
 
-    def test_gsf_swathbathyping_read(self):
-        mode = FileMode.GSF_READONLY
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
-
-        gsf_data_id = c_gsfDataID()
-        gsf_data_id.recordID = c_uint(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING.value)
-
-        c_gsfDataID_ptr = POINTER(c_gsfDataID)
-        p_dataID = c_gsfDataID_ptr(gsf_data_id)
-
-        c_gsfRecords_ptr = POINTER(c_gsfRecords)
-        p_record = c_gsfRecords_ptr(c_gsfRecords())
-
-        c_ubyte_ptr = POINTER(c_ubyte)
-        p_stream = c_ubyte_ptr()
-
-        open_return_value = gsfpy.bindings.gsfOpen(
-            self.test_data_306_path, mode, p_gsf_fileref
-        )
-        bytes_read = gsfpy.bindings.gsfRead(
-            c_int(p_gsf_fileref[0]),
-            c_int(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING.value),
-            p_dataID,
-            p_record,
-            p_stream,
-            0,
-        )
-        close_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_fileref[0]))
-
-        assertpy.assert_that(open_return_value).is_equal_to(0)
-        assertpy.assert_that(close_return_value).is_equal_to(0)
-
-        swath_bathy_record = p_record.contents.mb_ping
-
-        num_beams = swath_bathy_record.number_beams
-
-        assertpy.assert_that(bytes_read).is_greater_than(0)
-        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306[1])
-        beam_angles = swath_bathy_record.beam_angle[:num_beams]
-
-        assertpy.assert_that(beam_angles)
-        beam_angles_in_range = [180 >= x >= -180 for x in beam_angles]
-        assertpy.assert_that(False).is_not_in(beam_angles_in_range)
-
-    def test_gsf_swathsummary_save_update(self):
+    def test_gsf_swath_summary_save_update(self):
         tmp_file_path = "/tmp/temp_gsf_306_test_data_update.gsf"
         shutil.copyfile(self.test_data_306_path, tmp_file_path)
         file_mode = FileMode.GSF_UPDATE
@@ -189,7 +144,7 @@ class TestGsfpySwathBathyRecords(unittest.TestCase):
         )
         bytes_read = gsfpy.bindings.gsfRead(
             c_int(p_gsf_fileref[0]),
-            c_int(RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY.value),
+            RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY,
             p_dataID,
             p_record,
             p_stream,
@@ -244,7 +199,7 @@ class TestGsfpySwathBathyRecords(unittest.TestCase):
 
         bytes_read = gsfpy.bindings.gsfRead(
             c_int(p_gsf_file_ref[0]),
-            c_int(RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY.value),
+            RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY,
             p_data_id,
             p_read_record,
             p_rstream,
@@ -272,7 +227,7 @@ class TestGsfpySwathBathyRecords(unittest.TestCase):
         self.assertEqual(save_end_time.tv_nsec, read_summary.end_time.tv_nsec)
         self.assertEqual(0, close_return_value)
 
-    def test_gsf_swathsummary_save_create(self):
+    def test_gsf_swath_summary_save_create(self):
         tmp_file_path = path.join(
             tempfile.gettempdir(), "temp_gsf_306_test_data_create.gsf"
         )
@@ -344,7 +299,7 @@ class TestGsfpySwathBathyRecords(unittest.TestCase):
         )
         bytes_read = gsfpy.bindings.gsfRead(
             c_int(p_gsf_file_ref[0]),
-            c_int(RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY.value),
+            RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY,
             p_data_id,
             p_read_record,
             p_stream,
