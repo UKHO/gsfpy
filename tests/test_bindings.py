@@ -181,3 +181,25 @@ class Test(TestCase):
         gsfpy.bindings.gsfClose(file_handle)
 
         assert_that(string_at(records.comment.comment)).is_equal_to(comment)
+
+    def test_gsfGetNumberRecords_success(self):
+        """
+        Open the test GSF file, count the number of GSF_RECORD_SWATH_BATHYMETRY_PING
+        records, then close.
+        """
+        # Arrange
+        file_handle = c_int(0)
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY_INDEX, byref(file_handle)
+        )
+        ret_val_count = gsfpy.bindings.gsfGetNumberRecords(
+            file_handle, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_count).is_equal_to(4)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)

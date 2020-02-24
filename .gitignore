@@ -107,3 +107,6 @@ lib/
 # IDE settings
 .vscode/
 .idea/
+
+# gsf
+*.nsf

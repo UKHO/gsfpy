@@ -40,6 +40,9 @@ _gsf_lib.gsfStringError.restype = c_char_p
 _gsf_lib.gsfWrite.argtypes = [c_int, POINTER(c_gsfDataID), POINTER(c_gsfRecords)]
 _gsf_lib.gsfWrite.restype = c_int
 
+_gsf_lib.gsfGetNumberRecords.argtypes = [c_int, c_int]
+_gsf_lib.gsfGetNumberRecords.restype = c_int
+
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     """
@@ -127,3 +130,13 @@ def gsfWrite(handle: c_int, p_data_id, p_records) -> int:
              successful read.
     """
     return _gsf_lib.gsfWrite(handle, p_data_id, p_records)
+
+
+def gsfGetNumberRecords(handle: c_int, desired_record: RecordType) -> int:
+    """
+    File must be open for direct access (GSF_READONLY_INDEX or GSF_UPDATE_INDEX)
+    :param handle: c_int
+    :param desired_record: gsfpy.enums.RecordType
+    :return: number of records of type desired_record, otherwise -1
+    """
+    return _gsf_lib.gsfGetNumberRecords(handle, desired_record)
