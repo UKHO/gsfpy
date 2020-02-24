@@ -8,7 +8,7 @@ from os import path
 import assertpy
 
 import gsfpy
-from gsfpy import c_gsfRecords, c_gsfDataID
+from gsfpy import c_gsfDataID, c_gsfRecords
 from gsfpy.enums import FileMode, RecordType, SeekOption
 
 
