@@ -17,15 +17,13 @@ from gsfpy.timespec import c_timespec
 
 
 class TestGsfpySwathBathySummary(unittest.TestCase):
-    def setUp(self):
 
+    def setUp(self):
         test_data_306_path = path.join(
             os.fsencode(path.dirname(__file__)),
             b"0029_20160323_185603_EX1604_MB.gsf.mb121",
         )
-
-        self.test_data_306_path = test_data_306_path
-        self.test_data_306 = (test_data_306_path, 432)
+        self.test_data_306 = {"path": test_data_306_path}
 
         end_time = int(datetime.timestamp(datetime.utcnow()))
         start_time = end_time - 60
@@ -79,7 +77,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
 
         # Read from file
         open_return_value = gsfpy.bindings.gsfOpen(
-            self.test_data_306_path, FileMode.GSF_READONLY, p_gsf_fileref
+            self.test_data_306["path"], FileMode.GSF_READONLY, p_gsf_fileref
         )
         bytes_read = gsfpy.bindings.gsfRead(
             c_int(p_gsf_fileref[0]),
@@ -117,7 +115,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
 
     def test_gsf_swath_summary_save_update(self):
         tmp_file_path = "/tmp/temp_gsf_306_test_data_update.gsf"
-        shutil.copyfile(self.test_data_306_path, tmp_file_path)
+        shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         file_mode = FileMode.GSF_UPDATE
 
         c_int_ptr = POINTER(c_int)
@@ -152,12 +150,12 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         summary = p_record.contents.summary
         summary.start_time = self.summary_to_save["start_time"]
         summary.end_time = self.summary_to_save["end_time"]
-        summary.max_depth = c_double(self.summary_to_save["max_depth"])
-        summary.min_depth = c_double(self.summary_to_save["min_depth"])
-        summary.min_latitude = c_double(self.summary_to_save["min_lat"])
-        summary.max_latitude = c_double(self.summary_to_save["max_lat"])
-        summary.min_longitude = c_double(self.summary_to_save["min_long"])
-        summary.max_longitude = c_double(self.summary_to_save["max_long"])
+        summary.max_depth = self.summary_to_save["max_depth"]
+        summary.min_depth = self.summary_to_save["min_depth"]
+        summary.min_latitude = self.summary_to_save["min_lat"]
+        summary.max_latitude = self.summary_to_save["max_lat"]
+        summary.min_longitude = self.summary_to_save["min_long"]
+        summary.max_longitude = self.summary_to_save["max_long"]
         # Go back to the first record so it doesn't write
         # the updated first summary over the top of the second one
         seek_return_value = gsfpy.bindings.gsfSeek(
@@ -253,12 +251,12 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         summary = c_gsfSwathBathySummary(
             start_time=ts_start,
             end_time=ts_end,
-            min_latitude=c_double(self.summary_to_save["min_lat"]),
-            max_latitude=c_double(self.summary_to_save["max_lat"]),
-            min_longitude=c_double(self.summary_to_save["min_long"]),
-            max_longitude=c_double(self.summary_to_save["max_long"]),
-            min_depth=c_double(self.summary_to_save["min_depth"]),
-            max_depth=c_double(self.summary_to_save["max_depth"]),
+            min_latitude=self.summary_to_save["min_lat"],
+            max_latitude=self.summary_to_save["max_lat"],
+            min_longitude=self.summary_to_save["min_long"],
+            max_longitude=self.summary_to_save["max_long"],
+            min_depth=self.summary_to_save["min_depth"],
+            max_depth=self.summary_to_save["max_depth"],
         )
 
         p_record.contents.summary = summary
