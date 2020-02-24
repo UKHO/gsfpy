@@ -114,7 +114,8 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         assertpy.assert_that(close_return_value).is_equal_to(0)
 
     def test_gsf_swath_summary_save_update(self):
-        tmp_file_path = "/tmp/temp_gsf_306_test_data_update.gsf"
+        tmp_file_path = path.join(tempfile.gettempdir(),
+                                  "temp_gsf_306_test_data_update.gsf")
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         file_mode = FileMode.GSF_UPDATE
 
