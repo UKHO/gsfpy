@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from ctypes import c_int, c_int32, c_long, c_uint, byref
+from ctypes import byref, c_int, c_int32, c_long, c_uint
 from datetime import datetime
 from os import path
 

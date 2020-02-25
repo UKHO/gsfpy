@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from ctypes import c_int, c_ubyte, c_uint, byref
+from ctypes import byref, c_int, c_ubyte, c_uint
 from os import path
 
 from assertpy import assert_that
@@ -208,7 +208,7 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
             gsf_file_ref,
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
             byref(gsf_data_id),
-            byref(records)
+            byref(records),
         )
         close_return_value = gsfpy.bindings.gsfClose(gsf_file_ref)
 
