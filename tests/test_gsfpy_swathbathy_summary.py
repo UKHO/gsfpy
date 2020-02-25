@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from ctypes import byref, c_int, c_int32, c_long, c_uint
+from ctypes import byref, c_int, c_int32, c_long
 from datetime import datetime
 from os import path
 
@@ -64,9 +64,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         gsf_fileref = c_int(0)
 
         swath_summary_id = c_gsfDataID()
-        swath_summary_id.recordID = c_uint(
-            RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY.value
-        )
+        swath_summary_id.recordID = RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY
 
         records = c_gsfRecords()
 
@@ -123,9 +121,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         gsf_fileref = c_int(0)
 
         swath_summary_data_id = c_gsfDataID()
-        swath_summary_data_id.recordID = c_uint(
-            RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY.value
-        )
+        swath_summary_data_id.recordID = RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY
 
         records = c_gsfRecords()
 
@@ -169,9 +165,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
 
         read_gsf_file_ref = c_int(0)
         gsf_read_data_id = c_gsfDataID()
-        gsf_read_data_id.recordID = c_uint(
-            RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY.value
-        )
+        gsf_read_data_id.recordID = RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY
 
         read_record = c_gsfRecords()
 
@@ -231,9 +225,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         file_ref = c_int(0)
 
         swath_summary_id = c_gsfDataID()
-        swath_summary_id.recordID = c_uint(
-            RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY.value
-        )
+        swath_summary_id.recordID = RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY
 
         records = c_gsfRecords()
 
