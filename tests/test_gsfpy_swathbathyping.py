@@ -50,8 +50,9 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
         assert_that(False).is_not_in(beam_angles_in_range)
 
     def test_gsf_swathbathyping_write_update_sequential(self):
-        tmp_file_path = path.join(tempfile.gettempdir(),
-                                  "temp_gsf_306_test_data_update.gsf")
+        tmp_file_path = path.join(
+            tempfile.gettempdir(), "temp_gsf_306_test_data_update.gsf"
+        )
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         gsf_file = gsfpy.open_gsf(tmp_file_path, FileMode.GSF_UPDATE)
         record_num = 0
@@ -83,13 +84,18 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
         for i in range(read_ping_record.number_beams):
             if str(i) in update_beams.keys():
-                assert_that(update_beams[str(i)]).is_equal_to(read_ping_record.beam_flags[i])
+                assert_that(update_beams[str(i)]).is_equal_to(
+                    read_ping_record.beam_flags[i]
+                )
             else:
-                assert_that(original_values[i]).is_equal_to(read_ping_record.beam_flags[i])
+                assert_that(original_values[i]).is_equal_to(
+                    read_ping_record.beam_flags[i]
+                )
 
     def test_gsf_swathbathyping_update_by_index(self):
-        tmp_file_path = path.join(tempfile.gettempdir(),
-                                  "temp_gsf_306_test_data_update_idx.gsf")
+        tmp_file_path = path.join(
+            tempfile.gettempdir(), "temp_gsf_306_test_data_update_idx.gsf"
+        )
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         gsf_file = gsfpy.open_gsf(tmp_file_path, FileMode.GSF_UPDATE_INDEX)
         record_num = 3

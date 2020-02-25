@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from ctypes import POINTER, c_double, c_int, c_int32, c_long, c_ubyte, c_uint
+from ctypes import POINTER, c_int, c_int32, c_long, c_ubyte, c_uint
 from datetime import datetime
 from os import path
 
@@ -17,7 +17,6 @@ from gsfpy.timespec import c_timespec
 
 
 class TestGsfpySwathBathySummary(unittest.TestCase):
-
     def setUp(self):
         test_data_306_path = path.join(
             os.fsencode(path.dirname(__file__)),
@@ -114,8 +113,9 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         assert_that(close_return_value).is_equal_to(0)
 
     def test_gsf_swath_summary_save_update(self):
-        tmp_file_path = path.join(tempfile.gettempdir(),
-                                  "temp_gsf_306_test_data_update.gsf")
+        tmp_file_path = path.join(
+            tempfile.gettempdir(), "temp_gsf_306_test_data_update.gsf"
+        )
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         file_mode = FileMode.GSF_UPDATE
 
@@ -213,15 +213,29 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
 
         assert_that(0).is_equal_to(open_read_return_value)
         assert_that(48).is_equal_to(bytes_read)
-        assert_that(read_summary.min_depth).is_equal_to(self.summary_to_save["min_depth"])
-        assert_that(read_summary.max_depth).is_equal_to(self.summary_to_save["max_depth"])
-        assert_that(read_summary.min_latitude).is_equal_to(self.summary_to_save["min_lat"])
-        assert_that(read_summary.max_latitude).is_equal_to(self.summary_to_save["max_lat"])
-        assert_that(read_summary.min_longitude).is_equal_to(self.summary_to_save["min_long"])
-        assert_that(read_summary.max_longitude).is_equal_to(self.summary_to_save["max_long"])
+        assert_that(read_summary.min_depth).is_equal_to(
+            self.summary_to_save["min_depth"]
+        )
+        assert_that(read_summary.max_depth).is_equal_to(
+            self.summary_to_save["max_depth"]
+        )
+        assert_that(read_summary.min_latitude).is_equal_to(
+            self.summary_to_save["min_lat"]
+        )
+        assert_that(read_summary.max_latitude).is_equal_to(
+            self.summary_to_save["max_lat"]
+        )
+        assert_that(read_summary.min_longitude).is_equal_to(
+            self.summary_to_save["min_long"]
+        )
+        assert_that(read_summary.max_longitude).is_equal_to(
+            self.summary_to_save["max_long"]
+        )
         assert_that(save_start_time.tv_sec).is_equal_to(read_summary.start_time.tv_sec)
         assert_that(save_end_time.tv_sec).is_equal_to(read_summary.end_time.tv_sec)
-        assert_that(save_start_time.tv_nsec).is_equal_to(read_summary.start_time.tv_nsec)
+        assert_that(save_start_time.tv_nsec).is_equal_to(
+            read_summary.start_time.tv_nsec
+        )
         assert_that(save_end_time.tv_nsec).is_equal_to(read_summary.end_time.tv_nsec)
         assert_that(0).is_equal_to(close_return_value)
 
