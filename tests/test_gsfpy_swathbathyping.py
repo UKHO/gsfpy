@@ -5,7 +5,7 @@ import unittest
 from ctypes import POINTER, c_int, c_ubyte, c_uint
 from os import path
 
-import assertpy
+from assertpy import assert_that
 
 import gsfpy
 from gsfpy import c_gsfDataID, c_gsfRecords
@@ -43,11 +43,11 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
         num_beams = swath_bathymetry_ping_record.number_beams
 
-        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306["num_beams"])
+        assert_that(num_beams).is_equal_to(self.test_data_306["num_beams"])
         beam_angles = swath_bathymetry_ping_record.beam_angle[:num_beams]
 
         beam_angles_in_range = [180 >= x >= -180 for x in beam_angles]
-        assertpy.assert_that(False).is_not_in(beam_angles_in_range)
+        assert_that(False).is_not_in(beam_angles_in_range)
 
     def test_gsf_swathbathyping_write_update_sequential(self):
         tmp_file_path = path.join(tempfile.gettempdir(),
@@ -61,7 +61,7 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
         num_beams = gsf_records.mb_ping.number_beams
 
-        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306["num_beams"])
+        assert_that(num_beams).is_equal_to(self.test_data_306["num_beams"])
 
         original_values = gsf_records.mb_ping.beam_flags[:num_beams]
 
@@ -83,9 +83,9 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
         for i in range(read_ping_record.number_beams):
             if str(i) in update_beams.keys():
-                self.assertEqual(update_beams[str(i)], read_ping_record.beam_flags[i])
+                assert_that(update_beams[str(i)]).is_equal_to(read_ping_record.beam_flags[i])
             else:
-                self.assertEqual(original_values[i], read_ping_record.beam_flags[i])
+                assert_that(original_values[i]).is_equal_to(read_ping_record.beam_flags[i])
 
     def test_gsf_swathbathyping_update_by_index(self):
         tmp_file_path = path.join(tempfile.gettempdir(),
@@ -99,7 +99,7 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
         num_beams = gsf_records.mb_ping.number_beams
 
-        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306["num_beams"])
+        assert_that(num_beams).is_equal_to(self.test_data_306["num_beams"])
 
         original_values = gsf_records.mb_ping.beam_flags[:num_beams]
 
@@ -157,7 +157,7 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
         num_beams = swath_bathymetry_ping_record.number_beams
 
-        assertpy.assert_that(num_beams).is_equal_to(test_data_info["num_beams"])
+        assert_that(num_beams).is_equal_to(test_data_info["num_beams"])
         beam_angles = swath_bathymetry_ping_record.beam_angle[:num_beams]
         beam_flags = swath_bathymetry_ping_record.beam_flags[:num_beams]
 
@@ -173,7 +173,7 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
         beam_flags_by_index = record_by_index.beam_flags[:num_beams]
 
         num_beams_from_index = record_by_index.number_beams
-        assertpy.assert_that(num_beams).is_equal_to(num_beams_from_index)
+        assert_that(num_beams).is_equal_to(num_beams_from_index)
         self.assertSequenceEqual(beam_angles, beam_angles_by_index)
         self.assertSequenceEqual(beam_flags, beam_flags_by_index)
 
@@ -207,17 +207,17 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
         )
         close_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_fileref[0]))
 
-        assertpy.assert_that(open_return_value).is_equal_to(0)
-        assertpy.assert_that(close_return_value).is_equal_to(0)
+        assert_that(open_return_value).is_equal_to(0)
+        assert_that(close_return_value).is_equal_to(0)
 
         swath_bathy_record = p_record.contents.mb_ping
 
         num_beams = swath_bathy_record.number_beams
 
-        assertpy.assert_that(bytes_read).is_greater_than(0)
-        assertpy.assert_that(num_beams).is_equal_to(self.test_data_306["num_beams"])
+        assert_that(bytes_read).is_greater_than(0)
+        assert_that(num_beams).is_equal_to(self.test_data_306["num_beams"])
         beam_angles = swath_bathy_record.beam_angle[:num_beams]
 
-        assertpy.assert_that(beam_angles)
+        assert_that(beam_angles)
         beam_angles_in_range = [180 >= x >= -180 for x in beam_angles]
-        assertpy.assert_that(False).is_not_in(beam_angles_in_range)
+        assert_that(False).is_not_in(beam_angles_in_range)

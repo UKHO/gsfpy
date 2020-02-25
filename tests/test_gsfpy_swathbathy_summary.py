@@ -6,7 +6,7 @@ from ctypes import POINTER, c_double, c_int, c_int32, c_long, c_ubyte, c_uint
 from datetime import datetime
 from os import path
 
-import assertpy
+from assertpy import assert_that
 
 import gsfpy
 from gsfpy.enums import FileMode, RecordType, SeekOption
@@ -89,8 +89,8 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         )
         close_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_fileref[0]))
 
-        assertpy.assert_that(open_return_value).is_equal_to(0)
-        assertpy.assert_that(bytes_read).is_equal_to(48)
+        assert_that(open_return_value).is_equal_to(0)
+        assert_that(bytes_read).is_equal_to(48)
 
         swath_bathy_summary = p_record.contents.summary
 
@@ -101,17 +101,17 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         end_timespec = swath_bathy_summary.end_time
         end_time = datetime.utcfromtimestamp(end_timespec.tv_sec)
 
-        self.assertEqual(expected_start, start_time)
-        self.assertEqual(expected_end, end_time)
+        assert_that(expected_start).is_equal_to(start_time)
+        assert_that(expected_end).is_equal_to(end_time)
 
-        self.assertEqual(167.4759106, swath_bathy_summary.min_longitude)
-        self.assertEqual(8.7118203, swath_bathy_summary.min_latitude)
-        self.assertEqual(3862.43, swath_bathy_summary.min_depth)
-        self.assertEqual(4145.0, swath_bathy_summary.max_depth)
-        self.assertEqual(167.477003, swath_bathy_summary.max_longitude)
-        self.assertEqual(8.713543, swath_bathy_summary.max_latitude)
+        assert_that(167.4759106).is_equal_to(swath_bathy_summary.min_longitude)
+        assert_that(8.7118203).is_equal_to(swath_bathy_summary.min_latitude)
+        assert_that(3862.43).is_equal_to(swath_bathy_summary.min_depth)
+        assert_that(4145.0).is_equal_to(swath_bathy_summary.max_depth)
+        assert_that(167.477003).is_equal_to(swath_bathy_summary.max_longitude)
+        assert_that(8.713543).is_equal_to(swath_bathy_summary.max_latitude)
 
-        assertpy.assert_that(close_return_value).is_equal_to(0)
+        assert_that(close_return_value).is_equal_to(0)
 
     def test_gsf_swath_summary_save_update(self):
         tmp_file_path = path.join(tempfile.gettempdir(),
@@ -167,11 +167,11 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         )
         close_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_fileref[0]))
 
-        assertpy.assert_that(open_return_value).is_equal_to(0)
-        assertpy.assert_that(bytes_read).is_equal_to(48)
-        assertpy.assert_that(seek_return_value).is_equal_to(0)
-        assertpy.assert_that(bytes_written).is_equal_to(48)
-        assertpy.assert_that(close_return_value).is_equal_to(0)
+        assert_that(open_return_value).is_equal_to(0)
+        assert_that(bytes_read).is_equal_to(48)
+        assert_that(seek_return_value).is_equal_to(0)
+        assert_that(bytes_written).is_equal_to(48)
+        assert_that(close_return_value).is_equal_to(0)
 
         # Read it back out and check it was saved correctly
 
@@ -211,19 +211,19 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         save_start_time = self.summary_to_save["start_time"]
         save_end_time = self.summary_to_save["end_time"]
 
-        self.assertEqual(0, open_read_return_value)
-        self.assertEqual(48, bytes_read)
-        self.assertEqual(read_summary.min_depth, self.summary_to_save["min_depth"])
-        self.assertEqual(read_summary.max_depth, self.summary_to_save["max_depth"])
-        self.assertEqual(read_summary.min_latitude, self.summary_to_save["min_lat"])
-        self.assertEqual(read_summary.max_latitude, self.summary_to_save["max_lat"])
-        self.assertEqual(read_summary.min_longitude, self.summary_to_save["min_long"])
-        self.assertEqual(read_summary.max_longitude, self.summary_to_save["max_long"])
-        self.assertEqual(save_start_time.tv_sec, read_summary.start_time.tv_sec)
-        self.assertEqual(save_end_time.tv_sec, read_summary.end_time.tv_sec)
-        self.assertEqual(save_start_time.tv_nsec, read_summary.start_time.tv_nsec)
-        self.assertEqual(save_end_time.tv_nsec, read_summary.end_time.tv_nsec)
-        self.assertEqual(0, close_return_value)
+        assert_that(0).is_equal_to(open_read_return_value)
+        assert_that(48).is_equal_to(bytes_read)
+        assert_that(read_summary.min_depth).is_equal_to(self.summary_to_save["min_depth"])
+        assert_that(read_summary.max_depth).is_equal_to(self.summary_to_save["max_depth"])
+        assert_that(read_summary.min_latitude).is_equal_to(self.summary_to_save["min_lat"])
+        assert_that(read_summary.max_latitude).is_equal_to(self.summary_to_save["max_lat"])
+        assert_that(read_summary.min_longitude).is_equal_to(self.summary_to_save["min_long"])
+        assert_that(read_summary.max_longitude).is_equal_to(self.summary_to_save["max_long"])
+        assert_that(save_start_time.tv_sec).is_equal_to(read_summary.start_time.tv_sec)
+        assert_that(save_end_time.tv_sec).is_equal_to(read_summary.end_time.tv_sec)
+        assert_that(save_start_time.tv_nsec).is_equal_to(read_summary.start_time.tv_nsec)
+        assert_that(save_end_time.tv_nsec).is_equal_to(read_summary.end_time.tv_nsec)
+        assert_that(0).is_equal_to(close_return_value)
 
     def test_gsf_swath_summary_save_create(self):
         tmp_file_path = path.join(
@@ -271,9 +271,9 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         )
         close_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_fileref[0]))
 
-        self.assertEqual(0, open_create_return_value)
-        self.assertEqual(48, bytes_written)
-        self.assertEqual(0, close_return_value)
+        assert_that(0).is_equal_to(open_create_return_value)
+        assert_that(48).is_equal_to(bytes_written)
+        assert_that(0).is_equal_to(close_return_value)
 
         # Read it back out and check that it matches expected values
         c_int_ptr_read = POINTER(c_int)
@@ -305,31 +305,31 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         )
         close_read_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_file_ref[0]))
 
-        assertpy.assert_that(open_read_return_value).is_equal_to(0)
-        assertpy.assert_that(close_read_return_value).is_equal_to(0)
-        assertpy.assert_that(bytes_read).is_equal_to(48)
+        assert_that(open_read_return_value).is_equal_to(0)
+        assert_that(close_read_return_value).is_equal_to(0)
+        assert_that(bytes_read).is_equal_to(48)
         read_summary = p_read_record.contents.summary
 
         read_start_time = read_summary.start_time.tv_sec
         read_end_time = read_summary.end_time.tv_sec
 
-        assertpy.assert_that(read_start_time).is_equal_to(ts_start.tv_sec)
-        assertpy.assert_that(read_end_time).is_equal_to(ts_end.tv_sec)
-        assertpy.assert_that(read_summary.min_depth).is_equal_to(
+        assert_that(read_start_time).is_equal_to(ts_start.tv_sec)
+        assert_that(read_end_time).is_equal_to(ts_end.tv_sec)
+        assert_that(read_summary.min_depth).is_equal_to(
             self.summary_to_save["min_depth"]
         )
-        assertpy.assert_that(read_summary.max_depth).is_equal_to(
+        assert_that(read_summary.max_depth).is_equal_to(
             self.summary_to_save["max_depth"]
         )
-        assertpy.assert_that(read_summary.min_latitude).is_equal_to(
+        assert_that(read_summary.min_latitude).is_equal_to(
             self.summary_to_save["min_lat"]
         )
-        assertpy.assert_that(read_summary.max_latitude).is_equal_to(
+        assert_that(read_summary.max_latitude).is_equal_to(
             self.summary_to_save["max_lat"]
         )
-        assertpy.assert_that(read_summary.min_longitude).is_equal_to(
+        assert_that(read_summary.min_longitude).is_equal_to(
             self.summary_to_save["min_long"]
         )
-        assertpy.assert_that(read_summary.max_longitude).is_equal_to(
+        assert_that(read_summary.max_longitude).is_equal_to(
             self.summary_to_save["max_long"]
         )
