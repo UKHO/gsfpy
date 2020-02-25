@@ -24,6 +24,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
                 b"0029_20160323_185603_EX1604_MB.gsf.mb121",
             )
         }
+        self.summary_record_length = 48  # Length of a summary record in bytes
 
         end_time = int(datetime.timestamp(datetime.utcnow()))
         start_time = end_time - 60
@@ -89,7 +90,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         close_return_value = gsfpy.bindings.gsfClose(gsf_fileref)
 
         assert_that(open_return_value).is_equal_to(0)
-        assert_that(bytes_read).is_equal_to(48)
+        assert_that(bytes_read).is_equal_to(self.summary_record_length)
 
         swath_bathy_summary = records.summary
 
@@ -159,9 +160,9 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         close_return_value = gsfpy.bindings.gsfClose(gsf_fileref)
 
         assert_that(open_return_value).is_equal_to(0)
-        assert_that(bytes_read).is_equal_to(48)
+        assert_that(bytes_read).is_equal_to(self.summary_record_length)
         assert_that(seek_return_value).is_equal_to(0)
-        assert_that(bytes_written).is_equal_to(48)
+        assert_that(bytes_written).is_equal_to(self.summary_record_length)
         assert_that(close_return_value).is_equal_to(0)
 
         # Read it back out and check it was saved correctly
@@ -193,7 +194,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         save_end_time = self.summary_to_save["end_time"]
 
         assert_that(0).is_equal_to(open_read_return_value)
-        assert_that(48).is_equal_to(bytes_read)
+        assert_that(self.summary_record_length).is_equal_to(bytes_read)
         assert_that(read_summary.min_depth).is_equal_to(
             self.summary_to_save["min_depth"]
         )
@@ -262,7 +263,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         close_return_value = gsfpy.bindings.gsfClose(file_ref)
 
         assert_that(0).is_equal_to(open_create_return_value)
-        assert_that(48).is_equal_to(bytes_written)
+        assert_that(self.summary_record_length).is_equal_to(bytes_written)
         assert_that(0).is_equal_to(close_return_value)
 
         # Read it back out and check that it matches expected values
@@ -285,7 +286,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
 
         assert_that(open_read_return_value).is_equal_to(0)
         assert_that(close_read_return_value).is_equal_to(0)
-        assert_that(bytes_read).is_equal_to(48)
+        assert_that(bytes_read).is_equal_to(self.summary_record_length)
         read_summary = read_records.summary
 
         read_start_time = read_summary.start_time.tv_sec

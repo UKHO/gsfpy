@@ -136,15 +136,19 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
         for i in range(read_ping_record.number_beams):
             if str(i) in update_beams.keys():
-                self.assertEqual(update_beams[str(i)], read_ping_record.beam_flags[i])
+                assert_that(update_beams[str(i)]).is_equal_to(
+                    read_ping_record.beam_flags[i]
+                )
             else:
-                self.assertEqual(original_values[i], read_ping_record.beam_flags[i])
+                assert_that(original_values[i]).is_equal_to(
+                    read_ping_record.beam_flags[i]
+                )
 
         first_data_id, first_gsf_records = reopened_gsf_file.read(
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, 1  # 1-indexed
         )
         first_rec_flags = first_gsf_records.mb_ping.beam_flags[:num_beams]
-        self.assertNotEqual(first_rec_flags, updated_flags)
+        assert_that(first_rec_flags).is_not_equal_to(updated_flags)
 
     # Reading by index on files created with different GSF versions
     def test_gsf_read_swathbathyping_by_index_306(self):
