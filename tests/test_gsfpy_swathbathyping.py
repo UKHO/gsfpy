@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from ctypes import POINTER, c_int, c_ubyte, c_uint
+from ctypes import c_int, c_ubyte, c_uint, byref
 from os import path
 
 from assertpy import assert_that
@@ -23,14 +23,23 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
         )
         self.test_data_307 = {"path": test_data_307_path, "num_beams": 432}
 
-    def tearDown(self):
-        tmp_files = os.listdir(tempfile.gettempdir())
-        temp_gsf_files = [f for f in tmp_files if f.startswith("temp_gsf")]
-        for gsf_file in temp_gsf_files:
+    @classmethod
+    def setUpClass(cls):
+        cls.temp_gsf_dir = tempfile.mkdtemp(prefix="tmp_gsftest_")
+
+    @classmethod
+    def tearDownClass(cls):
+        temp_gsf_dir = cls.temp_gsf_dir
+        temp_gsf_files = os.listdir(temp_gsf_dir)
+        for temp_file in temp_gsf_files:
             try:
-                os.remove(path.join(tempfile.gettempdir(), gsf_file))
-            except IOError as io_err:
-                print(f"Unable to delete temp file {gsf_file} : {str(io_err)}")
+                os.remove(path.join(temp_gsf_dir, temp_file))
+            except (OSError, IOError) as exception:
+                print(f"Unable to delete temp file {temp_file} : {str(exception)}")
+        try:
+            os.rmdir(temp_gsf_dir)
+        except (OSError, IOError) as exception:
+            print(f"Unable to delete temp dir {temp_gsf_dir} : {str(exception)}")
 
     def test_gsf_swathbathyping_read(self):
         gsf_file = gsfpy.open_gsf(self.test_data_306["path"], FileMode.GSF_READONLY)
@@ -51,7 +60,7 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
     def test_gsf_swathbathyping_write_update_sequential(self):
         tmp_file_path = path.join(
-            tempfile.gettempdir(), "temp_gsf_306_test_data_update.gsf"
+            self.temp_gsf_dir, "temp_gsf_306_test_data_update.gsf"
         )
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         gsf_file = gsfpy.open_gsf(tmp_file_path, FileMode.GSF_UPDATE)
@@ -94,7 +103,7 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
     def test_gsf_swathbathyping_update_by_index(self):
         tmp_file_path = path.join(
-            tempfile.gettempdir(), "temp_gsf_306_test_data_update_idx.gsf"
+            self.temp_gsf_dir, "temp_gsf_306_test_data_update_idx.gsf"
         )
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         gsf_file = gsfpy.open_gsf(tmp_file_path, FileMode.GSF_UPDATE_INDEX)
@@ -185,38 +194,28 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
 
     def test_gsf_swathbathyping_low_level_read(self):
         mode = FileMode.GSF_READONLY
-        c_int_ptr = POINTER(c_int)
-        p_gsf_fileref = c_int_ptr(c_int(0))
+        gsf_file_ref = c_int(0)
 
         gsf_data_id = c_gsfDataID()
         gsf_data_id.recordID = c_uint(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING.value)
 
-        c_gsfDataID_ptr = POINTER(c_gsfDataID)
-        p_dataID = c_gsfDataID_ptr(gsf_data_id)
-
-        c_gsfRecords_ptr = POINTER(c_gsfRecords)
-        p_record = c_gsfRecords_ptr(c_gsfRecords())
-
-        c_ubyte_ptr = POINTER(c_ubyte)
-        p_stream = c_ubyte_ptr()
+        records = c_gsfRecords()
 
         open_return_value = gsfpy.bindings.gsfOpen(
-            os.fsencode(self.test_data_306["path"]), mode, p_gsf_fileref
+            os.fsencode(self.test_data_306["path"]), mode, byref(gsf_file_ref)
         )
         bytes_read = gsfpy.bindings.gsfRead(
-            c_int(p_gsf_fileref[0]),
+            gsf_file_ref,
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
-            p_dataID,
-            p_record,
-            p_stream,
-            0,
+            byref(gsf_data_id),
+            byref(records)
         )
-        close_return_value = gsfpy.bindings.gsfClose(c_int(p_gsf_fileref[0]))
+        close_return_value = gsfpy.bindings.gsfClose(gsf_file_ref)
 
         assert_that(open_return_value).is_equal_to(0)
         assert_that(close_return_value).is_equal_to(0)
 
-        swath_bathy_record = p_record.contents.mb_ping
+        swath_bathy_record = records.mb_ping
 
         num_beams = swath_bathy_record.number_beams
 
