@@ -48,17 +48,7 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        temp_gsf_dir = cls.temp_gsf_dir
-        temp_gsf_files = os.listdir(temp_gsf_dir)
-        for temp_file in temp_gsf_files:
-            try:
-                os.remove(path.join(temp_gsf_dir, temp_file))
-            except (OSError, IOError) as exception:
-                print(f"Unable to delete temp file {temp_file} : {str(exception)}")
-        try:
-            os.rmdir(temp_gsf_dir)
-        except (OSError, IOError) as exception:
-            print(f"Unable to delete temp dir {temp_gsf_dir} : {str(exception)}")
+        shutil.rmtree(cls.temp_gsf_dir, ignore_errors=True)
 
     def test_gsf_swath_summary(self):
         gsf_fileref = c_int(0)
