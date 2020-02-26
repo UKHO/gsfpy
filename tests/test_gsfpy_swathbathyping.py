@@ -177,13 +177,13 @@ class TestGsfpySwathBathyPing:
         )
 
         record_by_index = gsf_index_records.mb_ping
-        beam_angles_by_index = record_by_index.beam_angle[:num_beams]
-        beam_flags_by_index = record_by_index.beam_flags[:num_beams]
-
         num_beams_from_index = record_by_index.number_beams
+        beam_angles_by_index = record_by_index.beam_angle[:num_beams_from_index]
+        beam_flags_by_index = record_by_index.beam_flags[:num_beams_from_index]
+
         assert_that(num_beams).is_equal_to(num_beams_from_index)
-        self.assertSequenceEqual(beam_angles, beam_angles_by_index)
-        self.assertSequenceEqual(beam_flags, beam_flags_by_index)
+        assert_that(beam_angles).is_equal_to(beam_angles_by_index)
+        assert_that(beam_flags).is_equal_to(beam_flags_by_index)
 
     def test_gsf_swathbathyping_low_level_read(self):
         mode = FileMode.GSF_READONLY
