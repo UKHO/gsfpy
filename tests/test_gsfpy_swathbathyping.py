@@ -1,7 +1,6 @@
 import os
 import shutil
 import tempfile
-import unittest
 from ctypes import byref, c_int, c_ubyte
 from os import path
 
@@ -12,8 +11,8 @@ from gsfpy import c_gsfDataID, c_gsfRecords
 from gsfpy.enums import FileMode, RecordType, SeekOption
 
 
-class TestGsfpySwathBathyPing(unittest.TestCase):
-    def setUp(self):
+class TestGsfpySwathBathyPing:
+    def setup_method(self):
         test_data_306_path = path.join(
             path.dirname(__file__), "0029_20160323_185603_EX1604_MB.gsf.mb121"
         )
@@ -24,11 +23,11 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
         self.test_data_307 = {"path": test_data_307_path, "num_beams": 432}
 
     @classmethod
-    def setUpClass(cls):
+    def setup_class(cls):
         cls.temp_gsf_dir = tempfile.mkdtemp(prefix="tmp_gsftest_")
 
     @classmethod
-    def tearDownClass(cls):
+    def teardown_class(cls):
         shutil.rmtree(cls.temp_gsf_dir, ignore_errors=True)
 
     def test_gsf_swathbathyping_read(self):

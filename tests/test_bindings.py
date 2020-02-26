@@ -3,7 +3,6 @@ import tempfile
 from ctypes import byref, c_int, create_string_buffer, string_at
 from glob import glob
 from os import path
-from unittest import TestCase
 
 from assertpy import assert_that
 
@@ -14,7 +13,7 @@ from gsfpy.gsfRecords import c_gsfRecords
 from tests import ERROR_RET_VAL, GSF_FOPEN_ERROR, SUCCESS_RET_VAL
 
 
-class TestBindings(TestCase):
+class TestBindings:
     def setup_method(self, method):
         self.test_data_path = path.join(
             os.fsencode(path.dirname(__file__)), b"gsfpy_test_data.gsf"

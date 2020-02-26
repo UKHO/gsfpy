@@ -1,7 +1,6 @@
 import os
 import shutil
 import tempfile
-import unittest
 from ctypes import byref, c_int, c_int32, c_long
 from datetime import datetime
 from os import path
@@ -16,8 +15,8 @@ from gsfpy.gsfSwathBathySummary import c_gsfSwathBathySummary
 from gsfpy.timespec import c_timespec
 
 
-class TestGsfpySwathBathySummary(unittest.TestCase):
-    def setUp(self):
+class TestGsfpySwathBathySummary:
+    def setup_method(self):
         self.test_data_306 = {
             "path": path.join(
                 os.fsencode(path.dirname(__file__)),
@@ -43,11 +42,11 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         }
 
     @classmethod
-    def setUpClass(cls):
+    def setup_class(cls):
         cls.temp_gsf_dir = tempfile.mkdtemp(prefix="tmp_gsftest_")
 
     @classmethod
-    def tearDownClass(cls):
+    def teardown_class(cls):
         shutil.rmtree(cls.temp_gsf_dir, ignore_errors=True)
 
     def test_gsf_swath_summary(self):
