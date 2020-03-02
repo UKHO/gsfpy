@@ -13,7 +13,7 @@ from gsfpy.gsfRecords import c_gsfRecords
 from tests import GSF_FOPEN_ERROR
 
 
-class Test(TestCase):
+class TestGsfpy(TestCase):
     def setup_method(self, method):
         self.test_data_path = path.join(path.dirname(__file__), "gsfpy_test_data.gsf")
 

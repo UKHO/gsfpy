@@ -14,7 +14,7 @@ from gsfpy.gsfRecords import c_gsfRecords
 from tests import ERROR_RET_VAL, GSF_FOPEN_ERROR, SUCCESS_RET_VAL
 
 
-class Test(TestCase):
+class TestBindings(TestCase):
     def setup_method(self, method):
         self.test_data_path = path.join(
             os.fsencode(path.dirname(__file__)), b"gsfpy_test_data.gsf"
