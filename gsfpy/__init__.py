@@ -49,6 +49,12 @@ class GsfFile:
         self._handle = handle
         self._file_mode = file_mode
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
     @property
     def file_mode(self) -> FileMode:
         """
