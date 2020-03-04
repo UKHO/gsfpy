@@ -41,11 +41,11 @@ setup(
     keywords="gsfpy",
     name="gsfpy",
     packages=find_packages(include=["gsfpy", "gsfpy.*"]),
-    package_data={"libgsf3_06.so": ["libgsf3_06/libgsf3_06.so"]},
+    package_data={"libgsf03-08.so": ["libgsf/libgsf03-08.so"]},
     setup_requires=setup_requirements,
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/UKHO/gsfpy",
-    version="1.1.0",
+    version="1.2.0",
     zip_safe=False,
 )

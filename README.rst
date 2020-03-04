@@ -167,7 +167,7 @@ Credits
 
 C implementation of the GSF library provided by Leidos_ under the LGPL license v2.1.
 
-libgsf3_06.so was built from the Leidos_ C code using Make scripts based on those from `schwehr/generic-sensor-format`_
+libgsf03-08.so was built from the Leidos_ C code using Make scripts based on those from `schwehr/generic-sensor-format`_
 
 This package was created with Cookiecutter_ and the `UKHO/cookiecutter-pypackage`_ project template.
 

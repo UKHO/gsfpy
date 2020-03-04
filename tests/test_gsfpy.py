@@ -29,25 +29,24 @@ class TestGsfpy(TestCase):
         Open the test GSF file, then close.
         """
         # Act
-        gsf_file = open_gsf(self.test_data_path)
-        gsf_file.close()
+        with open_gsf(self.test_data_path) as _:
+            pass
 
     def test_open_gsf_buffered_success(self):
         """
         Open the test GSF file in buffered mode, then close.
         """
         # Act
-        gsf_file = open_gsf(self.test_data_path, buffer_size=100)
-        gsf_file.close()
+        with open_gsf(self.test_data_path, buffer_size=100) as _:
+            pass
 
     def test_seek_success(self):
         """
         Open the test GSF file, seek to end of file, then close.
         """
         # Act
-        gsf_file = open_gsf(self.test_data_path)
-        gsf_file.seek(SeekOption.GSF_END_OF_FILE)
-        gsf_file.close()
+        with open_gsf(self.test_data_path) as gsf_file:
+            gsf_file.seek(SeekOption.GSF_END_OF_FILE)
 
     def test_GsfException(self):
         """
@@ -64,9 +63,8 @@ class TestGsfpy(TestCase):
         Read a comment record from a GSF file.
         """
         # Act
-        gsf_file = open_gsf(self.test_data_path)
-        _, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
-        gsf_file.close()
+        with open_gsf(self.test_data_path) as gsf_file:
+            _, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
 
         # Assert
         assert_that(string_at(record.comment.comment)).is_equal_to(
@@ -86,15 +84,13 @@ class TestGsfpy(TestCase):
 
         comment = b"My first comment"
         # Act
-        gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE)
-        gsf_file.write(_new_comment_record(comment), RecordType.GSF_RECORD_COMMENT)
-        gsf_file.close()
+        with open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE) as gsf_file:
+            gsf_file.write(_new_comment(comment), RecordType.GSF_RECORD_COMMENT)
 
         # Assert
         # Read comment from newly created file to check it is as expected
-        gsf_file = open_gsf(tmp_gsf_file_path)
-        data_id, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
-        gsf_file.close()
+        with open_gsf(tmp_gsf_file_path) as gsf_file:
+            _, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
 
         assert_that(string_at(record.comment.comment)).is_equal_to(comment)
 
@@ -111,42 +107,37 @@ class TestGsfpy(TestCase):
         comment_4 = b"Comment #4"
 
         # Write sequentially
-        gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE)
-        gsf_file.write(_new_comment_record(comment_1), RecordType.GSF_RECORD_COMMENT)
-        gsf_file.write(_new_comment_record(comment_2), RecordType.GSF_RECORD_COMMENT)
-        gsf_file.write(_new_comment_record(comment_3), RecordType.GSF_RECORD_COMMENT)
-        gsf_file.close()
+        with open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE) as gsf_file:
+            gsf_file.write(_new_comment(comment_1), RecordType.GSF_RECORD_COMMENT)
+            gsf_file.write(_new_comment(comment_2), RecordType.GSF_RECORD_COMMENT)
+            gsf_file.write(_new_comment(comment_3), RecordType.GSF_RECORD_COMMENT)
 
         # Update using direct access
-        gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_UPDATE_INDEX)
-        gsf_file.write(_new_comment_record(comment_4), RecordType.GSF_RECORD_COMMENT, 2)
-        gsf_file.close()
+        with open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_UPDATE_INDEX) as gsf_file:
+            gsf_file.write(_new_comment(comment_4), RecordType.GSF_RECORD_COMMENT, 2)
 
         # Read sequentially
-        gsf_file = open_gsf(tmp_gsf_file_path)
+        with open_gsf(tmp_gsf_file_path) as gsf_file:
+            _, record_1 = gsf_file.read()
+            assert_that(string_at(record_1.comment.comment)).is_equal_to(comment_1)
 
-        _, record_1 = gsf_file.read()
-        assert_that(string_at(record_1.comment.comment)).is_equal_to(comment_1)
+            _, record_2 = gsf_file.read()
+            assert_that(string_at(record_2.comment.comment)).is_equal_to(comment_4)
 
-        _, record_2 = gsf_file.read()
-        assert_that(string_at(record_2.comment.comment)).is_equal_to(comment_4)
+            _, record_3 = gsf_file.read()
+            assert_that(string_at(record_3.comment.comment)).is_equal_to(comment_3)
 
-        _, record_3 = gsf_file.read()
-        assert_that(string_at(record_3.comment.comment)).is_equal_to(comment_3)
-
-        assert_that(gsf_file.read).raises(GsfException).when_called_with().is_equal_to(
-            "[-23] GSF End of File Encountered"
-        )
+            assert_that(gsf_file.read).raises(
+                GsfException
+            ).when_called_with().is_equal_to("[-23] GSF End of File Encountered")
 
         # Read using direct access
-        gsf_file = open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_READONLY_INDEX)
+        with open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_READONLY_INDEX) as gsf_file:
+            _, direct_access_record = gsf_file.read(RecordType.GSF_RECORD_COMMENT, 2)
 
-        _, direct_access_record = gsf_file.read(RecordType.GSF_RECORD_COMMENT, 2)
         assert_that(string_at(direct_access_record.comment.comment)).is_equal_to(
             comment_4
         )
-
-        gsf_file.close()
 
     def test_get_number_records_success(self):
         """
@@ -154,11 +145,10 @@ class TestGsfpy(TestCase):
         GSF_RECORD_SWATH_BATHYMETRY_PING records, then close.
         """
         # Act
-        gsf_file = open_gsf(self.test_data_path, FileMode.GSF_READONLY_INDEX)
-        number_of_pings = gsf_file.get_number_records(
-            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
-        )
-        gsf_file.close()
+        with open_gsf(self.test_data_path, FileMode.GSF_READONLY_INDEX) as gsf_file:
+            number_of_pings = gsf_file.get_number_records(
+                RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
+            )
 
         assert_that(number_of_pings).is_equal_to(4)
 
@@ -168,16 +158,15 @@ class TestGsfpy(TestCase):
         GSF_RECORD_SWATH_BATHYMETRY_PING records and verify the exception.
         """
         # Act
-        gsf_file = open_gsf(self.test_data_path)
+        with open_gsf(self.test_data_path) as gsf_file:
+            assert_that(gsf_file.get_number_records).raises(
+                GsfException
+            ).when_called_with(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING).is_equal_to(
+                "[-3] GSF Error illegal access mode"
+            )
 
-        assert_that(gsf_file.get_number_records).raises(GsfException).when_called_with(
-            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
-        ).is_equal_to("[-3] GSF Error illegal access mode")
 
-        gsf_file.close()
-
-
-def _new_comment_record(comment: bytes) -> c_gsfRecords:
+def _new_comment(comment: bytes) -> c_gsfRecords:
     record = c_gsfRecords()
     record.comment.comment_time.tvsec = c_int(1000)
     record.comment.comment_length = c_int(len(comment))
