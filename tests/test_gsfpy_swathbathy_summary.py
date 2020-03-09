@@ -1,6 +1,5 @@
 import os
 import shutil
-import tempfile
 from ctypes import byref, c_int, c_int32, c_long
 from datetime import datetime
 from os import path

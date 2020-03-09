@@ -1,6 +1,5 @@
 import os
 import shutil
-import tempfile
 from ctypes import byref, c_int, c_ubyte
 from os import path
 
