@@ -41,14 +41,6 @@ class TestGsfpySwathBathySummary:
             "end_time": end_ts,
         }
 
-    @classmethod
-    def setup_class(cls):
-        cls.temp_gsf_dir = tempfile.mkdtemp(prefix="tmp_gsftest_")
-
-    @classmethod
-    def teardown_class(cls):
-        shutil.rmtree(cls.temp_gsf_dir, ignore_errors=True)
-
     def test_gsf_swath_summary(self):
         gsf_fileref = c_int(0)
 
@@ -100,9 +92,9 @@ class TestGsfpySwathBathySummary:
 
         assert_that(close_return_value).is_equal_to(0)
 
-    def test_gsf_swath_summary_save_update(self):
+    def test_gsf_swath_summary_save_update(self, tmp_path):
         tmp_file_path = path.join(
-            self.temp_gsf_dir, "temp_gsf_306_test_data_update.gsf"
+            tmp_path, "temp_gsf_306_test_data_update.gsf"
         )
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         file_mode = FileMode.GSF_UPDATE
@@ -204,9 +196,9 @@ class TestGsfpySwathBathySummary:
         assert_that(save_end_time.tv_nsec).is_equal_to(read_summary.end_time.tv_nsec)
         assert_that(0).is_equal_to(close_return_value)
 
-    def test_gsf_swath_summary_save_create(self):
+    def test_gsf_swath_summary_save_create(self, tmp_path):
         tmp_file_path = path.join(
-            self.temp_gsf_dir, "temp_gsf_306_test_data_create.gsf"
+            tmp_path, "temp_gsf_306_test_data_create.gsf"
         )
 
         file_mode = FileMode.GSF_CREATE
