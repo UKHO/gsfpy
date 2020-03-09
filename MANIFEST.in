@@ -10,4 +10,4 @@ recursive-exclude * *.py[co]
 
 recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
 
-include gsfpy/libgsf3_06/libgsf3_06.so
+include gsfpy/libgsf/*.so

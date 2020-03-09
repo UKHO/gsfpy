@@ -1,6 +1,6 @@
 __author__ = """UK Hydrographic Office"""
 __email__ = "datascienceandengineering@ukho.gov.uk"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 from ctypes import byref, c_int
 from typing import Optional, Tuple
@@ -48,6 +48,12 @@ class GsfFile:
     def __init__(self, handle: c_int, file_mode: FileMode):
         self._handle = handle
         self._file_mode = file_mode
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
     @property
     def file_mode(self) -> FileMode:

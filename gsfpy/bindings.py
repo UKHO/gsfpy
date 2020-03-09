@@ -5,7 +5,7 @@ from .enums import FileMode, RecordType, SeekOption
 from .gsfDataID import c_gsfDataID
 from .gsfRecords import c_gsfRecords
 
-_gsf_lib_rel_path = "libgsf3_06/libgsf3_06.so"
+_gsf_lib_rel_path = "libgsf/libgsf03-08.so"
 _gsf_lib_abs_path = path.join(path.abspath(path.dirname(__file__)), _gsf_lib_rel_path)
 _gsf_lib = CDLL(_gsf_lib_abs_path)
 
