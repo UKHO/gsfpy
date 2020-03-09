@@ -92,9 +92,7 @@ class TestGsfpySwathBathySummary:
         assert_that(close_return_value).is_equal_to(0)
 
     def test_gsf_swath_summary_save_update(self, tmp_path):
-        tmp_file_path = path.join(
-            tmp_path, "temp_gsf_306_test_data_update.gsf"
-        )
+        tmp_file_path = path.join(tmp_path, "temp_gsf_306_test_data_update.gsf")
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         file_mode = FileMode.GSF_UPDATE
 
@@ -196,9 +194,7 @@ class TestGsfpySwathBathySummary:
         assert_that(0).is_equal_to(close_return_value)
 
     def test_gsf_swath_summary_save_create(self, tmp_path):
-        tmp_file_path = path.join(
-            tmp_path, "temp_gsf_306_test_data_create.gsf"
-        )
+        tmp_file_path = path.join(tmp_path, "temp_gsf_306_test_data_create.gsf")
 
         file_mode = FileMode.GSF_CREATE
 
