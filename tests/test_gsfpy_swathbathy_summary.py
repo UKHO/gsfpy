@@ -1,7 +1,5 @@
 import os
 import shutil
-import tempfile
-import unittest
 from ctypes import byref, c_int, c_int32, c_long
 from datetime import datetime
 from os import path
@@ -16,8 +14,8 @@ from gsfpy.gsfSwathBathySummary import c_gsfSwathBathySummary
 from gsfpy.timespec import c_timespec
 
 
-class TestGsfpySwathBathySummary(unittest.TestCase):
-    def setUp(self):
+class TestGsfpySwathBathySummary:
+    def setup_method(self):
         self.test_data_306 = {
             "path": path.join(
                 os.fsencode(path.dirname(__file__)),
@@ -41,14 +39,6 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
             "start_time": start_ts,
             "end_time": end_ts,
         }
-
-    @classmethod
-    def setUpClass(cls):
-        cls.temp_gsf_dir = tempfile.mkdtemp(prefix="tmp_gsftest_")
-
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(cls.temp_gsf_dir, ignore_errors=True)
 
     def test_gsf_swath_summary(self):
         gsf_fileref = c_int(0)
@@ -101,10 +91,8 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
 
         assert_that(close_return_value).is_equal_to(0)
 
-    def test_gsf_swath_summary_save_update(self):
-        tmp_file_path = path.join(
-            self.temp_gsf_dir, "temp_gsf_306_test_data_update.gsf"
-        )
+    def test_gsf_swath_summary_save_update(self, tmp_path):
+        tmp_file_path = path.join(tmp_path, "temp_gsf_306_test_data_update.gsf")
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
         file_mode = FileMode.GSF_UPDATE
 
@@ -205,10 +193,8 @@ class TestGsfpySwathBathySummary(unittest.TestCase):
         assert_that(save_end_time.tv_nsec).is_equal_to(read_summary.end_time.tv_nsec)
         assert_that(0).is_equal_to(close_return_value)
 
-    def test_gsf_swath_summary_save_create(self):
-        tmp_file_path = path.join(
-            self.temp_gsf_dir, "temp_gsf_306_test_data_create.gsf"
-        )
+    def test_gsf_swath_summary_save_create(self, tmp_path):
+        tmp_file_path = path.join(tmp_path, "temp_gsf_306_test_data_create.gsf")
 
         file_mode = FileMode.GSF_CREATE
 

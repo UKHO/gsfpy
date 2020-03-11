@@ -1,7 +1,5 @@
 import os
 import shutil
-import tempfile
-import unittest
 from ctypes import byref, c_int, c_ubyte
 from os import path
 
@@ -12,8 +10,8 @@ from gsfpy import c_gsfDataID, c_gsfRecords
 from gsfpy.enums import FileMode, RecordType, SeekOption
 
 
-class TestGsfpySwathBathyPing(unittest.TestCase):
-    def setUp(self):
+class TestGsfpySwathBathyPing:
+    def setup_method(self):
         test_data_306_path = path.join(
             path.dirname(__file__), "0029_20160323_185603_EX1604_MB.gsf.mb121"
         )
@@ -22,14 +20,6 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
             path.dirname(__file__), "0059_20181102_212138_EX1811_MB_EM302.gsf.mb121"
         )
         self.test_data_307 = {"path": test_data_307_path, "num_beams": 432}
-
-    @classmethod
-    def setUpClass(cls):
-        cls.temp_gsf_dir = tempfile.mkdtemp(prefix="tmp_gsftest_")
-
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(cls.temp_gsf_dir, ignore_errors=True)
 
     def test_gsf_swathbathyping_read(self):
         with gsfpy.open_gsf(
@@ -49,10 +39,8 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
         beam_angles_in_range = [180 >= x >= -180 for x in beam_angles]
         assert_that(False).is_not_in(beam_angles_in_range)
 
-    def test_gsf_swathbathyping_write_update_sequential(self):
-        tmp_file_path = path.join(
-            self.temp_gsf_dir, "temp_gsf_306_test_data_update.gsf"
-        )
+    def test_gsf_swathbathyping_write_update_sequential(self, tmp_path):
+        tmp_file_path = path.join(tmp_path, "temp_gsf_306_test_data_update.gsf")
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
 
         record_num = 0
@@ -93,10 +81,8 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
                     read_ping_record.beam_flags[i]
                 )
 
-    def test_gsf_swathbathyping_update_by_index(self):
-        tmp_file_path = path.join(
-            self.temp_gsf_dir, "temp_gsf_306_test_data_update_idx.gsf"
-        )
+    def test_gsf_swathbathyping_update_by_index(self, tmp_path):
+        tmp_file_path = path.join(tmp_path, "temp_gsf_306_test_data_update_idx.gsf")
         shutil.copyfile(self.test_data_306["path"], tmp_file_path)
 
         record_num = 3
@@ -181,13 +167,13 @@ class TestGsfpySwathBathyPing(unittest.TestCase):
             )
 
         record_by_index = gsf_index_records.mb_ping
-        beam_angles_by_index = record_by_index.beam_angle[:num_beams]
-        beam_flags_by_index = record_by_index.beam_flags[:num_beams]
-
         num_beams_from_index = record_by_index.number_beams
+        beam_angles_by_index = record_by_index.beam_angle[:num_beams_from_index]
+        beam_flags_by_index = record_by_index.beam_flags[:num_beams_from_index]
+
         assert_that(num_beams).is_equal_to(num_beams_from_index)
-        self.assertSequenceEqual(beam_angles, beam_angles_by_index)
-        self.assertSequenceEqual(beam_flags, beam_flags_by_index)
+        assert_that(beam_angles).is_equal_to(beam_angles_by_index)
+        assert_that(beam_flags).is_equal_to(beam_flags_by_index)
 
     def test_gsf_swathbathyping_low_level_read(self):
         mode = FileMode.GSF_READONLY
