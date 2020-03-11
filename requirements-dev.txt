@@ -9,7 +9,7 @@ flake8-isort==2.8.0
 flake8==3.7.9
 pip==19.2.3
 pytest-cov==2.8.1
-pytest-runner==5.1
+pytest-runner==5.2
 pytest==5.3.5
 tox-gh-actions==0.3.0
 tox==3.14.5
