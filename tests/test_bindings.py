@@ -1,6 +1,6 @@
 import os
 import tempfile
-from ctypes import byref, c_int, create_string_buffer, string_at
+from ctypes import byref, c_int, c_long, create_string_buffer, string_at
 from glob import glob
 from os import path
 
@@ -201,4 +201,30 @@ class TestBindings:
         # Assert
         assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
         assert_that(ret_val_count).is_equal_to(4)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfIndexTime_success(self):
+        """
+        Open the test GSF file, get the index time and record number of the last
+        multibeam ping record.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        sec = c_int(-1)
+        nsec = c_long(-1)
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY_INDEX, byref(file_handle)
+        )
+        ret_val_index_time = gsfpy.bindings.gsfIndexTime(
+            file_handle, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, -1, byref(sec), byref(nsec)
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_index_time).is_equal_to(4)
+        assert_that(sec.value).is_equal_to(1427066799)
+        assert_that(nsec.value).is_equal_to(766000032)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)

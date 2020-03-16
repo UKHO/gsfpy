@@ -140,3 +140,22 @@ def gsfGetNumberRecords(handle: c_int, desired_record: RecordType) -> int:
     :return: number of records of type desired_record, otherwise -1
     """
     return _gsf_lib.gsfGetNumberRecords(handle, desired_record)
+
+
+def gsfIndexTime(handle: c_int,
+                 record_type: c_int,
+                 record_number: c_int,
+                 p_sec,
+                 p_nsec):
+    """
+    :param handle: c_int
+    :param record_type: gsfpy.enums.RecordType
+    :param record_number: c_int
+    :param p_sec: POINTER(c_int)
+    :param p_nsec: POINTER(c_long)
+    :return: The record number if successful, otherwise -1. Note that contents of
+             the POINTER parameters p_sec and p_nsec will be updated upon
+             successful read with seconds since the beginning of the epoch (p_sec)
+             and nanoseconds since the beginning of the second (p_nsec).
+    """
+    return _gsf_lib.gsfIndexTime(handle, record_type, record_number, p_sec, p_nsec)
