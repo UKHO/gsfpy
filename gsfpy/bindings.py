@@ -159,3 +159,12 @@ def gsfIndexTime(handle: c_int,
              and nanoseconds since the beginning of the second (p_nsec).
     """
     return _gsf_lib.gsfIndexTime(handle, record_type, record_number, p_sec, p_nsec)
+
+
+def gsfPercent(handle: c_int):
+    """
+    :param handle: c_int
+    :return: The current file position as a percentage of the file size if successful,
+             otherwise -1.
+    """
+    return _gsf_lib.gsfPercent(handle)

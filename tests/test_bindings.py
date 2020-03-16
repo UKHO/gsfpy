@@ -228,3 +228,30 @@ class TestBindings:
         assert_that(sec.value).is_equal_to(1427066799)
         assert_that(nsec.value).is_equal_to(766000032)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfPercent_success(self):
+        """
+        Open the test GSF file, read 4 records, then retrieve the location of the file pointer
+        as a percentage of the total file size.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        data_id = c_gsfDataID()
+        records = c_gsfRecords()
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY_INDEX, byref(file_handle)
+        )
+        for i in range(4):
+            gsfpy.bindings.gsfRead(
+                file_handle, RecordType.GSF_NEXT_RECORD, byref(data_id), byref(records),
+            )
+        ret_val_percent = gsfpy.bindings.gsfPercent(file_handle)
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        ret_val_seek = gsfpy.bindings.gsfSeek(file_handle, SeekOption.GSF_END_OF_FILE)
+        assert_that(ret_val_percent).is_equal_to(6)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
