@@ -168,3 +168,16 @@ def gsfPercent(handle: c_int):
              otherwise -1.
     """
     return _gsf_lib.gsfPercent(handle)
+
+
+def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship):
+    """
+    :param p_data: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param p_fore_aft: POINTER(double)
+    :param p_athwartship: POINTER(double)
+    :return: 0 if successful, otherwise -1. Note that, in the event of a successful call,
+             the p_fore_aft and p_athwartship parameters will be populated with the
+             fore-aft and the port-starboard beam widths in degrees for the given
+             gsfRecords data structure containing a populated gsfSwathBathyPing structure.
+    """
+    return _gsf_lib.gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship)
