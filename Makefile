@@ -55,6 +55,10 @@ fix: ## fix black and isort style violations
 	black gsfpy tests setup.py
 	isort -rc gsfpy tests setup.py
 
+licence-check: ## check the licences of dependencies
+	pip install -r requirements.txt
+	liccheck -s strategy.ini -r requirements.txt
+
 test: ## run tests quickly with the default Python
 	pytest
 
