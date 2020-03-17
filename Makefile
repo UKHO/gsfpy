@@ -47,7 +47,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
-lint: ## check style with flake8 and black
+lint: licence-check ## check style with flake8 and black
 	flake8 gsfpy tests setup.py
 	black --check --diff gsfpy tests setup.py
 
