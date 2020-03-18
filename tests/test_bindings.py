@@ -203,7 +203,6 @@ class TestBindings:
         assert_that(ret_val_count).is_equal_to(4)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
-
     def test_gsfIndexTime_success(self):
         """
         Open the test GSF file, get the index time and record number of the last
@@ -219,7 +218,11 @@ class TestBindings:
             self.test_data_path, FileMode.GSF_READONLY_INDEX, byref(file_handle)
         )
         ret_val_index_time = gsfpy.bindings.gsfIndexTime(
-            file_handle, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, -1, byref(sec), byref(nsec)
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            -1,
+            byref(sec),
+            byref(nsec),
         )
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
@@ -230,11 +233,10 @@ class TestBindings:
         assert_that(nsec.value).is_equal_to(766000032)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
-
     def test_gsfPercent_success(self):
         """
-        Open the test GSF file, read 4 records, then retrieve the location of the file pointer
-        as a percentage of the total file size.
+        Open the test GSF file, read 4 records, then retrieve the location of the file
+        pointer as a percentage of the total file size.
         """
         # Arrange
         file_handle = c_int(0)
@@ -257,7 +259,6 @@ class TestBindings:
         assert_that(ret_val_percent).is_equal_to(6)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
-
     def test_gsfGetSwathBathyBeamWidths_success(self):
         """
         Open the test GSF file, read a multibeam ping record, then get fore-aft and
@@ -275,9 +276,14 @@ class TestBindings:
             self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
         )
         bytes_read = gsfpy.bindings.gsfRead(
-            file_handle, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, byref(data_id), byref(records)
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            byref(data_id),
+            byref(records),
         )
-        ret_val_beam_widths = gsfpy.bindings.gsfGetSwathBathyBeamWidths(byref(records), byref(fore_aft), byref(athwartship))
+        ret_val_beam_widths = gsfpy.bindings.gsfGetSwathBathyBeamWidths(
+            byref(records), byref(fore_aft), byref(athwartship),
+        )
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
         # Assert
@@ -287,4 +293,3 @@ class TestBindings:
         assert_that(fore_aft.value).is_equal_to(1.5)
         assert_that(athwartship.value).is_equal_to(1.5)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
-

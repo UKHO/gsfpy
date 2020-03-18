@@ -142,11 +142,9 @@ def gsfGetNumberRecords(handle: c_int, desired_record: RecordType) -> int:
     return _gsf_lib.gsfGetNumberRecords(handle, desired_record)
 
 
-def gsfIndexTime(handle: c_int,
-                 record_type: c_int,
-                 record_number: c_int,
-                 p_sec,
-                 p_nsec):
+def gsfIndexTime(
+    handle: c_int, record_type: c_int, record_number: c_int, p_sec, p_nsec
+):
     """
     :param handle: c_int
     :param record_type: gsfpy.enums.RecordType
@@ -175,9 +173,10 @@ def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship):
     :param p_data: POINTER(gsfpy.gsfRecords.c_gsfRecords)
     :param p_fore_aft: POINTER(double)
     :param p_athwartship: POINTER(double)
-    :return: 0 if successful, otherwise -1. Note that, in the event of a successful call,
-             the p_fore_aft and p_athwartship parameters will be populated with the
-             fore-aft and the port-starboard beam widths in degrees for the given
-             gsfRecords data structure containing a populated gsfSwathBathyPing structure.
+    :return: 0 if successful, otherwise -1. Note that, in the event of a successful
+             call, the p_fore_aft and p_athwartship parameters will be populated with
+             the fore-aft and the port-starboard beam widths in degrees for the given
+             gsfRecords data structure containing a populated gsfSwathBathyPing
+             structure.
     """
     return _gsf_lib.gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship)
