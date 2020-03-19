@@ -1,4 +1,4 @@
-from ctypes import CDLL, POINTER, c_char_p, c_int, c_ubyte, string_at
+from ctypes import CDLL, POINTER, c_char_p, c_double, c_int, c_ubyte, string_at
 from os import path
 
 from .enums import FileMode, RecordType, SeekOption
@@ -44,8 +44,29 @@ _gsf_lib.gsfWrite.restype = c_int
 _gsf_lib.gsfGetNumberRecords.argtypes = [c_int, c_int]
 _gsf_lib.gsfGetNumberRecords.restype = c_int
 
+_gsf_lib.gsfGetSwathBathyBeamWidths.argtypes = [
+    POINTER(c_gsfRecords),
+    POINTER(c_double),
+    POINTER(c_double),
+]
+_gsf_lib.gsfGetSwathBathyBeamWidths.restype = c_int
+
+_gsf_lib.gsfGetSwathBathyArrayMinMax.argtypes = [
+    POINTER(c_gsfSwathBathyPing),
+    c_int,
+    POINTER(c_double),
+    POINTER(c_double),
+]
+_gsf_lib.gsfGetSwathBathyArrayMinMax.restype = c_int
+
+_gsf_lib.gsfIsStarboardPing.argtypes = [POINTER(c_gsfRecords)]
+_gsf_lib.gsfIsStarboardPing.restype = c_int
+
 _gsf_lib.gsfGetSonarTextName.argtypes = [POINTER(c_gsfSwathBathyPing)]
 _gsf_lib.gsfGetSonarTextName.restype = c_char_p
+
+_gsf_lib.gsfFileSupportsRecalculateXYZ.argtypes = [c_int, POINTER(c_int)]
+_gsf_lib.gsfFileSupportsRecalculateXYZ.restype = c_int
 
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
@@ -221,3 +242,15 @@ def gsfGetSonarTextName(p_ping) -> str:
     """
     p_sonar_name = _gsf_lib.gsfGetSonarTextName(p_ping)
     return string_at(p_sonar_name)
+
+
+def gsfFileSupportsRecalculateXYZ(handle: c_int, p_status) -> int:
+    """
+    :param handle: c_int
+    :param p_status: POINTER(c_int)
+    :return:  0 if successful, otherwise -1. Note that, in the event of a successful
+              call, p_status is assigned a value of 1 if the GSF file identified by
+              the given handle provides sufficient information to support full
+              recalculation of the platform relative XYZ values, otherwise 0.
+    """
+    return _gsf_lib.gsfFileSupportsRecalculateXYZ(handle, p_status)

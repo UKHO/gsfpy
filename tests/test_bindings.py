@@ -391,3 +391,27 @@ class TestBindings:
         assert_that(bytes_read).is_equal_to(6552)
         assert_that(ret_val_sonar_name).is_equal_to(b"Kongsberg EM3002D")
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfFileSupportsRecalculateXYZ(self):
+        """
+        Open the test GSF file then discover whether it contains enough information
+        for platform-relative XYZ values to be recalculated.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        status = c_int(0)
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        ret_val_xyz = gsfpy.bindings.gsfFileSupportsRecalculateXYZ(
+            file_handle, byref(status)
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(status.value).is_equal_to(0)
+        assert_that(ret_val_xyz).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
