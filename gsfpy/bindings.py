@@ -77,6 +77,9 @@ _gsf_lib.gsfFileSupportsRecalculateNominalDepth.restype = c_int
 _gsf_lib.gsfFileContainsMBAmplitude.argtypes = [c_int, POINTER(c_int)]
 _gsf_lib.gsfFileContainsMBAmplitude.restype = c_int
 
+_gsf_lib.gsfFileContainsMBImagery.argtypes = [c_int, POINTER(c_int)]
+_gsf_lib.gsfFileContainsMBImagery.restype = c_int
+
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     """
@@ -299,3 +302,15 @@ def gsfFileContainsMBAmplitude(handle: c_int, p_status) -> int:
               otherwise 0.
     """
     return _gsf_lib.gsfFileContainsMBAmplitude(handle, p_status)
+
+
+def gsfFileContainsMBImagery(handle: c_int, p_status) -> int:
+    """
+    :param handle: c_int
+    :param p_status: POINTER(c_int)
+    :return:  0 if successful, otherwise -1. Note that, in the event of a successful
+              call, p_status is assigned a value of 1 if the GSF file identified by
+              the given handle contains the per-receive-beam imagery time series data,
+              otherwise 0.
+    """
+    return _gsf_lib.gsfFileContainsMBImagery(handle, p_status)
