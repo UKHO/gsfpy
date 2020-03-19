@@ -439,3 +439,27 @@ class TestBindings:
         assert_that(status.value).is_equal_to(1)
         assert_that(ret_val_tpu).is_equal_to(SUCCESS_RET_VAL)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfFileSupportsRecalculateNominalDepth(self):
+        """
+        Open the test GSF file then discover whether it contains enough information
+        for the nominal depth array to be calculated.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        status = c_int(0)
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        ret_val_nom = gsfpy.bindings.gsfFileSupportsRecalculateNominalDepth(
+            file_handle, byref(status)
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(status.value).is_equal_to(1)
+        assert_that(ret_val_nom).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
