@@ -180,3 +180,18 @@ def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship):
              structure.
     """
     return _gsf_lib.gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship)
+
+
+def gsfGetSwathBathyArrayMinMax(p_ping, subrecordID: c_int, p_min_value, p_max_value):
+    """
+    :param p_ping: POINTER(gsfpy.gsfRecords.c_gsfSwathBathyPing)
+    :param p_min_value: POINTER(double)
+    :param p_max_value: POINTER(double)
+    :return: 0 if successful, otherwise -1. Note that, in the event of a successful
+             call, the p_min_value and p_max_value parameters will be populated with
+             the minimum and maximum supportable values for each of the swath
+             bathymetry arrays in the given ping.
+    """
+    return _gsf_lib.gsfGetSwathBathyArrayMinMax(
+        p_ping, subrecordID, p_min_value, p_max_value
+    )

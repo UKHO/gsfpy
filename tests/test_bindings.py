@@ -293,3 +293,41 @@ class TestBindings:
         assert_that(fore_aft.value).is_equal_to(1.5)
         assert_that(athwartship.value).is_equal_to(1.5)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfGetSwathBathyArrayMinMax_success(self):
+        """
+        Open the test GSF file, read a multibeam ping record, then get min and
+        max supportable values for the swath bathymetry arrays in the given ping.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        data_id = c_gsfDataID()
+        records = c_gsfRecords()
+        min_value = c_double()
+        max_value = c_double()
+        ping = None
+        subrecordID = 1
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            byref(data_id),
+            byref(records),
+        )
+        ping = records.mb_ping
+        ret_val_min_max = gsfpy.bindings.gsfGetSwathBathyArrayMinMax(
+            byref(ping), subrecordID, byref(min_value), byref(max_value),
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(6552)
+        assert_that(ret_val_min_max).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(min_value.value).is_equal_to(-1636.4)
+        assert_that(max_value.value).is_equal_to(1640.35)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
