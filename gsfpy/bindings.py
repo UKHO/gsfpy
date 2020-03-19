@@ -1,9 +1,10 @@
-from ctypes import CDLL, POINTER, c_char_p, c_int, c_ubyte
+from ctypes import CDLL, POINTER, c_char_p, c_int, c_ubyte, string_at
 from os import path
 
 from .enums import FileMode, RecordType, SeekOption
 from .gsfDataID import c_gsfDataID
 from .gsfRecords import c_gsfRecords
+from .gsfSwathBathyPing import c_gsfSwathBathyPing
 
 _gsf_lib_rel_path = "libgsf/libgsf03-08.so"
 _gsf_lib_abs_path = path.join(path.abspath(path.dirname(__file__)), _gsf_lib_rel_path)
@@ -42,6 +43,9 @@ _gsf_lib.gsfWrite.restype = c_int
 
 _gsf_lib.gsfGetNumberRecords.argtypes = [c_int, c_int]
 _gsf_lib.gsfGetNumberRecords.restype = c_int
+
+_gsf_lib.gsfGetSonarTextName.argtypes = [POINTER(c_gsfSwathBathyPing)]
+_gsf_lib.gsfGetSonarTextName.restype = c_char_p
 
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
@@ -207,3 +211,13 @@ def gsfIsStarboardPing(p_data) -> int:
              the sonar does not have dual transducers, zero is returned.
     """
     return _gsf_lib.gsfIsStarboardPing(p_data)
+
+
+def gsfGetSonarTextName(p_ping) -> str:
+    """
+    :param p_ping: POINTER(gsfpy.gsfRecords.c_gsfSwathBathyPing)
+    :return: The name of the sensor based on the sensor id contained in the ping
+             structure if this is defined, otherwise 'Unknown'.
+    """
+    p_sonar_name = _gsf_lib.gsfGetSonarTextName(p_ping)
+    return string_at(p_sonar_name)

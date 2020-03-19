@@ -360,3 +360,34 @@ class TestBindings:
         assert_that(bytes_read).is_equal_to(6552)
         assert_that(ret_val_stbd_ping).is_equal_to(0)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfGetSonarTextName(self):
+        """
+        Open the test GSF file, read a multibeam ping record, then retrieve
+        the name of the sonar equipment used to capture it.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        data_id = c_gsfDataID()
+        records = c_gsfRecords()
+        ping = None
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            byref(data_id),
+            byref(records),
+        )
+        ping = records.mb_ping
+        ret_val_sonar_name = gsfpy.bindings.gsfGetSonarTextName(byref(ping))
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(6552)
+        assert_that(ret_val_sonar_name).is_equal_to(b"Kongsberg EM3002D")
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
