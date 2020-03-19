@@ -68,6 +68,9 @@ _gsf_lib.gsfGetSonarTextName.restype = c_char_p
 _gsf_lib.gsfFileSupportsRecalculateXYZ.argtypes = [c_int, POINTER(c_int)]
 _gsf_lib.gsfFileSupportsRecalculateXYZ.restype = c_int
 
+_gsf_lib.gsfFileSupportsRecalculateTPU.argtypes = [c_int, POINTER(c_int)]
+_gsf_lib.gsfFileSupportsRecalculateTPU.restype = c_int
+
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     """
@@ -254,3 +257,15 @@ def gsfFileSupportsRecalculateXYZ(handle: c_int, p_status) -> int:
               recalculation of the platform relative XYZ values, otherwise 0.
     """
     return _gsf_lib.gsfFileSupportsRecalculateXYZ(handle, p_status)
+
+
+def gsfFileSupportsRecalculateTPU(handle: c_int, p_status) -> int:
+    """
+    :param handle: c_int
+    :param p_status: POINTER(c_int)
+    :return:  0 if successful, otherwise -1. Note that, in the event of a successful
+              call, p_status is assigned a value of 1 if the GSF file identified by
+              the given handle contains sufficient information to support calculation
+              of total propagated uncertainty (TPU) values, otherwise 0.
+    """
+    return _gsf_lib.gsfFileSupportsRecalculateTPU(handle, p_status)

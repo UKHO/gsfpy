@@ -415,3 +415,27 @@ class TestBindings:
         assert_that(status.value).is_equal_to(0)
         assert_that(ret_val_xyz).is_equal_to(SUCCESS_RET_VAL)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfFileSupportsRecalculateTPU(self):
+        """
+        Open the test GSF file then discover whether it contains enough information
+        for Total Propagated Uncertainty (TPU) values to be calculated.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        status = c_int(0)
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        ret_val_tpu = gsfpy.bindings.gsfFileSupportsRecalculateTPU(
+            file_handle, byref(status)
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(status.value).is_equal_to(1)
+        assert_that(ret_val_tpu).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
