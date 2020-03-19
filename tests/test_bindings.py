@@ -361,7 +361,7 @@ class TestBindings:
         assert_that(ret_val_stbd_ping).is_equal_to(0)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
-    def test_gsfGetSonarTextName(self):
+    def test_gsfGetSonarTextName_success(self):
         """
         Open the test GSF file, read a multibeam ping record, then retrieve
         the name of the sonar equipment used to capture it.
@@ -392,7 +392,7 @@ class TestBindings:
         assert_that(ret_val_sonar_name).is_equal_to(b"Kongsberg EM3002D")
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
-    def test_gsfFileSupportsRecalculateXYZ(self):
+    def test_gsfFileSupportsRecalculateXYZ_success(self):
         """
         Open the test GSF file then discover whether it contains enough information
         for platform-relative XYZ values to be recalculated.
@@ -416,7 +416,7 @@ class TestBindings:
         assert_that(ret_val_xyz).is_equal_to(SUCCESS_RET_VAL)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
-    def test_gsfFileSupportsRecalculateTPU(self):
+    def test_gsfFileSupportsRecalculateTPU_success(self):
         """
         Open the test GSF file then discover whether it contains enough information
         for Total Propagated Uncertainty (TPU) values to be calculated.
@@ -440,7 +440,7 @@ class TestBindings:
         assert_that(ret_val_tpu).is_equal_to(SUCCESS_RET_VAL)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
-    def test_gsfFileSupportsRecalculateNominalDepth(self):
+    def test_gsfFileSupportsRecalculateNominalDepth_success(self):
         """
         Open the test GSF file then discover whether it contains enough information
         for the nominal depth array to be calculated.
@@ -462,4 +462,27 @@ class TestBindings:
         assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
         assert_that(status.value).is_equal_to(1)
         assert_that(ret_val_nom).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfFileContainsMBAmplitude_success(self):
+        """
+        Open the test GSF file then discover whether it contains amplitude data.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        status = c_int(0)
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        ret_val_mb_amp = gsfpy.bindings.gsfFileContainsMBAmplitude(
+            file_handle, byref(status)
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(status.value).is_equal_to(1)
+        assert_that(ret_val_mb_amp).is_equal_to(SUCCESS_RET_VAL)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)

@@ -74,6 +74,9 @@ _gsf_lib.gsfFileSupportsRecalculateTPU.restype = c_int
 _gsf_lib.gsfFileSupportsRecalculateNominalDepth.argtypes = [c_int, POINTER(c_int)]
 _gsf_lib.gsfFileSupportsRecalculateNominalDepth.restype = c_int
 
+_gsf_lib.gsfFileContainsMBAmplitude.argtypes = [c_int, POINTER(c_int)]
+_gsf_lib.gsfFileContainsMBAmplitude.restype = c_int
+
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     """
@@ -284,3 +287,15 @@ def gsfFileSupportsRecalculateNominalDepth(handle: c_int, p_status) -> int:
               of the nominal depth array, otherwise 0.
     """
     return _gsf_lib.gsfFileSupportsRecalculateNominalDepth(handle, p_status)
+
+
+def gsfFileContainsMBAmplitude(handle: c_int, p_status) -> int:
+    """
+    :param handle: c_int
+    :param p_status: POINTER(c_int)
+    :return:  0 if successful, otherwise -1. Note that, in the event of a successful
+              call, p_status is assigned a value of 1 if the GSF file identified by
+              the given handle contains the average per receive beam amplitude data,
+              otherwise 0.
+    """
+    return _gsf_lib.gsfFileContainsMBAmplitude(handle, p_status)
