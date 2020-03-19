@@ -144,7 +144,7 @@ def gsfGetNumberRecords(handle: c_int, desired_record: RecordType) -> int:
 
 def gsfIndexTime(
     handle: c_int, record_type: c_int, record_number: c_int, p_sec, p_nsec
-):
+) -> int:
     """
     :param handle: c_int
     :param record_type: gsfpy.enums.RecordType
@@ -159,7 +159,7 @@ def gsfIndexTime(
     return _gsf_lib.gsfIndexTime(handle, record_type, record_number, p_sec, p_nsec)
 
 
-def gsfPercent(handle: c_int):
+def gsfPercent(handle: c_int) -> int:
     """
     :param handle: c_int
     :return: The current file position as a percentage of the file size if successful,
@@ -168,7 +168,7 @@ def gsfPercent(handle: c_int):
     return _gsf_lib.gsfPercent(handle)
 
 
-def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship):
+def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship) -> int:
     """
     :param p_data: POINTER(gsfpy.gsfRecords.c_gsfRecords)
     :param p_fore_aft: POINTER(double)
@@ -182,7 +182,9 @@ def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship):
     return _gsf_lib.gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship)
 
 
-def gsfGetSwathBathyArrayMinMax(p_ping, subrecordID: c_int, p_min_value, p_max_value):
+def gsfGetSwathBathyArrayMinMax(
+    p_ping, subrecordID: c_int, p_min_value, p_max_value
+) -> int:
     """
     :param p_ping: POINTER(gsfpy.gsfRecords.c_gsfSwathBathyPing)
     :param p_min_value: POINTER(double)
@@ -195,3 +197,13 @@ def gsfGetSwathBathyArrayMinMax(p_ping, subrecordID: c_int, p_min_value, p_max_v
     return _gsf_lib.gsfGetSwathBathyArrayMinMax(
         p_ping, subrecordID, p_min_value, p_max_value
     )
+
+
+def gsfIsStarboardPing(p_data) -> int:
+    """
+    :param p_data: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :return: Non-zero if the ping contained in the passed data represents a starboard
+             looking ping from a dual headed sonar installation. Otherwise, zero. If
+             the sonar does not have dual transducers, zero is returned.
+    """
+    return _gsf_lib.gsfIsStarboardPing(p_data)
