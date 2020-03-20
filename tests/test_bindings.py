@@ -9,6 +9,7 @@ from assertpy import assert_that
 import gsfpy.bindings
 from gsfpy.enums import FileMode, RecordType, SeekOption
 from gsfpy.gsfDataID import c_gsfDataID
+from gsfpy.gsfMBParams import c_gsfMBParams
 from gsfpy.gsfRecords import c_gsfRecords
 from tests import ERROR_RET_VAL, GSF_FOPEN_ERROR, SUCCESS_RET_VAL
 
@@ -542,3 +543,18 @@ class TestBindings:
         assert_that(bytes_read).is_equal_to(6552)
         assert_that(ret_val_survey_line).is_greater_than(0)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfInitializeMBParams_success(self):
+        """
+        Create a gsfMBParams structure and initialize all fields.
+        """
+        # Arrange
+        mbparams = c_gsfMBParams()
+
+        # Act
+        gsfpy.bindings.gsfInitializeMBParams(byref(mbparams))
+
+        # Assert two of the fields here to check they are set to the unknown
+        # value.
+        assert_that(mbparams.horizontal_datum).is_equal_to(-99)
+        assert_that(mbparams.vessel_type).is_equal_to(-99)

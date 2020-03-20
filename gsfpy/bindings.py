@@ -337,3 +337,13 @@ def gsfIsNewSurveyLine(
               gsfSwathBathyPing structure.
     """
     return _gsf_lib.gsfIsNewSurveyLine(handle, p_rec, azimuth_change, p_last_heading)
+
+
+def gsfInitializeMBParams(p_mbparams) -> int:
+    """
+    :param p_mbparams: POINTER(c_gsfMBParams)
+    :return: None (return value should be ignored). Note that, upon return, all fields
+             of the given gsfMBParams structure will be initialized to unknown (-99
+             for int fields)
+    """
+    return _gsf_lib.gsfInitializeMBParams(p_mbparams)
