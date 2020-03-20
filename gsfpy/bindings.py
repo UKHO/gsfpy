@@ -80,6 +80,14 @@ _gsf_lib.gsfFileContainsMBAmplitude.restype = c_int
 _gsf_lib.gsfFileContainsMBImagery.argtypes = [c_int, POINTER(c_int)]
 _gsf_lib.gsfFileContainsMBImagery.restype = c_int
 
+_gsf_lib.gsfIsNewSurveyLine.argtypes = [
+    c_int,
+    POINTER(c_gsfRecords),
+    c_double,
+    POINTER(c_double),
+]
+_gsf_lib.gsfIsNewSurveyLine.restype = c_int
+
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     """
@@ -314,3 +322,18 @@ def gsfFileContainsMBImagery(handle: c_int, p_status) -> int:
               otherwise 0.
     """
     return _gsf_lib.gsfFileContainsMBImagery(handle, p_status)
+
+
+def gsfIsNewSurveyLine(
+    handle: c_int, p_rec, azimuth_change: c_double, p_last_heading
+) -> int:
+    """
+    :param handle: c_int
+    :param p_status: POINTER(c_int)
+    :return:  0 if the last ping in the given ping is not considered to be from a
+              new survey line, and nonzero when the ping is considered to be from
+              a new survey line, according to the given trigger value in the
+              azimuth_change parameter. Note that p_rec must be populated with a
+              gsfSwathBathyPing structure.
+    """
+    return _gsf_lib.gsfIsNewSurveyLine(handle, p_rec, azimuth_change, p_last_heading)

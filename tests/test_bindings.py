@@ -509,3 +509,36 @@ class TestBindings:
         assert_that(status.value).is_equal_to(0)
         assert_that(ret_val_img).is_equal_to(SUCCESS_RET_VAL)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfFileIsNewSurveyLine_success(self):
+        """
+        Open the test GSF file, read a ping, then discover whether it comes
+        from a new survey line.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        data_id = c_gsfDataID()
+        records = c_gsfRecords()
+        azimuth_change = c_double(90)
+        last_heading = c_double(270)
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            byref(data_id),
+            byref(records),
+        )
+        ret_val_survey_line = gsfpy.bindings.gsfIsNewSurveyLine(
+            file_handle, byref(records), azimuth_change, byref(last_heading)
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(6552)
+        assert_that(ret_val_survey_line).is_greater_than(0)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
