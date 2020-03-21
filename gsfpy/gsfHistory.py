@@ -1,4 +1,4 @@
-from ctypes import Structure, c_char, c_char_p
+from ctypes import POINTER, Structure, c_char
 
 from . import timespec
 
@@ -13,6 +13,6 @@ class c_gsfHistory(Structure):
         ("history_time", timespec.c_timespec),
         ("host_name", HISTORY_HOST_NAME),
         ("operator_name", HISTORY_OPERATOR_NAME),
-        ("command_line", c_char_p),
-        ("comment", c_char_p),
+        ("command_line", POINTER(c_char)),
+        ("comment", POINTER(c_char)),
     ]

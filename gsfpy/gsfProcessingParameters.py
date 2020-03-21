@@ -1,10 +1,10 @@
-from ctypes import Structure, c_char_p, c_int, c_short
+from ctypes import POINTER, Structure, c_char, c_int, c_short
 
 from . import timespec
 
 GSF_MAX_PROCESSING_PARAMETERS = 128
 PROCESSING_PARAMETERS_PARAM_SIZES = c_short * GSF_MAX_PROCESSING_PARAMETERS
-PROCESSING_PARAMETERS_PARAMS = c_char_p * GSF_MAX_PROCESSING_PARAMETERS
+PROCESSING_PARAMETERS_PARAMS = POINTER(c_char) * GSF_MAX_PROCESSING_PARAMETERS
 
 
 class c_gsfProcessingParameters(Structure):

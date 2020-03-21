@@ -1,4 +1,4 @@
-from ctypes import Structure, c_char, c_char_p, c_double, c_int
+from ctypes import POINTER, Structure, c_char, c_double, c_int
 
 from . import timespec
 
@@ -13,5 +13,5 @@ class c_gsfHVNavigationError(Structure):
         ("vertical_error", c_double),
         ("SEP_uncertainty", c_double),
         ("spare", HV_NAVIGATION_ERROR_SPARE_BYTES),
-        ("position_type", c_char_p),
+        ("position_type", POINTER(c_char)),
     ]
