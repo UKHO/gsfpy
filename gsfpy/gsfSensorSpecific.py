@@ -231,20 +231,6 @@ class c_gsfEM3Specific(Structure):
 EM3_RAW_SPARE_BYTES = c_ubyte * 16
 
 
-class c_gsfEM3RawTxSector(Structure):
-    _fields_ = [
-        ("tilt_angle", c_double),
-        ("focus_range", c_double),
-        ("signal_length", c_double),
-        ("transmit_delay", c_double),
-        ("center_frequency", c_double),
-        ("waveform_id", c_int),
-        ("sector_number", c_int),
-        ("signal_bandwidth", c_double),
-        ("spare", EM3_RAW_SPARE_BYTES),
-    ]
-
-
 class c_gsfEMRunTime(Structure):
     _fields_ = [
         ("model_number", c_int),
@@ -289,6 +275,20 @@ class c_gsfEMPUStatus(Structure):
         ("achieved_port_coverage", c_int),
         ("achieved_stbd_coverage", c_int),
         ("yaw_stabilization", c_double),
+        ("spare", EM3_RAW_SPARE_BYTES),
+    ]
+
+
+class c_gsfEM3RawTxSector(Structure):
+    _fields_ = [
+        ("tilt_angle", c_double),
+        ("focus_range", c_double),
+        ("signal_length", c_double),
+        ("transmit_delay", c_double),
+        ("center_frequency", c_double),
+        ("waveform_id", c_int),
+        ("sector_number", c_int),
+        ("signal_bandwidth", c_double),
         ("spare", EM3_RAW_SPARE_BYTES),
     ]
 
@@ -358,6 +358,10 @@ class c_gsfReson7100Specific(Structure):
     _fields_ = [("FIXME", c_int)]
 
 
+class c_gsfResonTSeriesSpecific(Structure):
+    _fields_ = [("FIXME", c_int)]
+
+
 class c_gsfEM4Specific(Structure):
     _fields_ = [("FIXME", c_int)]
 
@@ -420,12 +424,20 @@ class c_gsfSensorSpecific(Union):
         ("gsfSeaBat8101Specific", c_gsfSeaBat8101Specific),
         ("gsfSeaBeam2112Specific", c_gsfSeaBeam2112Specific),
         ("gsfElacMkIISpecific", c_gsfElacMkIISpecific),
+        # used for EM120, EM300, EM1002, EM3000, EM3002, and EM121A_SIS
         ("gsfEM3Specific", c_gsfEM3Specific),
+        # used for EM120, EM300, EM1002, EM3000, EM3002, and EM121A_SIS
+        # with raw range and beam angle
         ("gsfEM3RawSpecific", c_gsfEM3RawSpecific),
         ("gsfReson8100Specific", c_gsfReson8100Specific),
         ("gsfReson7100Specific", c_gsfReson7100Specific),
+        # used for T50 and T20
+        ("gsfResonTSeriesSpecific", c_gsfResonTSeriesSpecific),
+        # used for EM710, EM302, EM122, and EM2040
         ("gsfEM4Specific", c_gsfEM4Specific),
+        # DHG 2006/09/27 Use for GeoSwath+ interferometer
         ("gsfGeoSwathPlusSpecific", c_gsfGeoSwathPlusSpecific),
+        # Use for Klein 5410 Bathy Sidescan
         ("gsfKlein5410BssSpecific", c_gsfKlein5410BssSpecific),
         ("gsfDeltaTSpecific", c_gsfDeltaTSpecific),
         ("gsfEM12Specific", c_gsfEM12Specific),
