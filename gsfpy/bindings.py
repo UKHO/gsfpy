@@ -88,6 +88,9 @@ _gsf_lib.gsfIsNewSurveyLine.argtypes = [
 ]
 _gsf_lib.gsfIsNewSurveyLine.restype = c_int
 
+_gsf_lib.gsfFree.argtypes = [POINTER(c_gsfRecords)]
+_gsf_lib.gsfFree.restype = None
+
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     """
@@ -347,3 +350,12 @@ def gsfInitializeMBParams(p_mbparams) -> int:
              for int fields)
     """
     return _gsf_lib.gsfInitializeMBParams(p_mbparams)
+
+# TODO - see gsfpy issue #50
+# def gsfFree(p_rec):
+#     """
+#     :param p_mbparams: POINTER(c_gsfRecords)
+#     :return: None. Note that, upon return, the memory previously allocated to the
+#              given gsfRecords structure will be deallocated.
+#     """
+#     return _gsf_lib.gsfFree(p_rec)
