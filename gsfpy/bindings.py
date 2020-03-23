@@ -1,10 +1,11 @@
-from ctypes import CDLL, POINTER, c_char_p, c_double, c_int, c_ubyte, string_at
+from ctypes import CDLL, POINTER, c_char, c_char_p, c_double, c_int, c_ubyte, string_at
 from os import path
 
 from .enums import FileMode, RecordType, SeekOption
 from .gsfDataID import c_gsfDataID
 from .gsfMBParams import c_gsfMBParams
 from .gsfRecords import c_gsfRecords
+from .gsfScaleFactors import c_gsfScaleFactors
 from .gsfSwathBathyPing import c_gsfSwathBathyPing
 
 _gsf_lib_rel_path = "libgsf/libgsf03-08.so"
@@ -106,6 +107,15 @@ _gsf_lib.gsfGetMBParams.argtypes = [
     POINTER(c_int),
 ]
 _gsf_lib.gsfGetMBParams.restype = c_int
+
+_gsf_lib.gsfLoadScaleFactor.argtypes = [
+    POINTER(c_gsfScaleFactors),
+    c_int,
+    c_char,
+    c_double,
+    c_int,
+]
+_gsf_lib.gsfLoadScaleFactor.restype = c_int
 
 _gsf_lib.gsfFree.argtypes = [POINTER(c_gsfRecords)]
 _gsf_lib.gsfFree.restype = None
@@ -365,7 +375,7 @@ def gsfIsNewSurveyLine(
 
 def gsfInitializeMBParams(p_mbparams) -> int:
     """
-    :param p_mbparams: POINTER(c_gsfMBParams)
+    :param p_mbparams: POINTER(gsfpy.gsfMBParams.c_gsfMBParams)
     :return: None (return value should be ignored). Note that, upon return, all fields
              of the given gsfMBParams structure will be initialized to unknown (-99
              for int fields)
@@ -375,7 +385,7 @@ def gsfInitializeMBParams(p_mbparams) -> int:
 
 def gsfPutMBParams(p_mbparams, p_rec, handle: c_int, numArrays: c_int) -> int:
     """
-    :param p_mbparams: POINTER(c_gsfMBParams)
+    :param p_mbparams: POINTER(gsfpy.gsfMBParams.c_gsfMBParams)
     :param p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
     :param handle: c_int
     :param numArrays: c_int
@@ -390,7 +400,7 @@ def gsfPutMBParams(p_mbparams, p_rec, handle: c_int, numArrays: c_int) -> int:
 def gsfGetMBParams(p_rec, p_mbparams, p_numArrays) -> int:
     """
     :param p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
-    :param p_mbparams: POINTER(c_gsfMBParams)
+    :param p_mbparams: POINTER(gsfpy.gsfMBParams.c_gsfMBParams)
     :param p_numArrays: POINTER(c_int)
     :return: 0 if successful, otherwise -1. Note that, in the event of a successful
              call, form parameters from the gsfProcessingParameters field of the
@@ -398,6 +408,23 @@ def gsfGetMBParams(p_rec, p_mbparams, p_numArrays) -> int:
              structure.
     """
     return _gsf_lib.gsfGetMBParams(p_rec, p_mbparams, p_numArrays)
+
+
+def gsfLoadScaleFactor(
+    p_sf, subRecordID: c_int, c_flag: c_char, precision: c_double, offset: c_int
+) -> int:
+    """
+    :param p_sf: POINTER(gsfpy.gsfRecords.c_gsfScaleFactors)
+    :param subRecordID: c_int
+    :param c_flag: c_char
+    :param precision: c_double
+    :param offset: c_int
+    :return: 0 if successful, otherwise -1. Note that, in the event of a successful
+             call, a swath bathymetry ping record scale factor structure is loaded
+             into the given gsfScaleFactors structure. See GSF library documentation
+             for further details.
+    """
+    return _gsf_lib.gsfLoadScaleFactor(p_sf, subRecordID, c_flag, precision, offset)
 
 
 # TODO - see gsfpy issue #50

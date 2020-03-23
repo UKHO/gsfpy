@@ -1,16 +1,26 @@
 import os
 import tempfile
-from ctypes import byref, c_double, c_int, c_long, create_string_buffer, string_at
+from ctypes import (
+    byref,
+    c_char,
+    c_double,
+    c_int,
+    c_long,
+    create_string_buffer,
+    string_at,
+)
 from glob import glob
 from os import path
 
 from assertpy import assert_that
 
 import gsfpy.bindings
+from gsfpy.constants import GSF_MAX_PING_ARRAY_SUBRECORDS
 from gsfpy.enums import FileMode, RecordType, SeekOption
 from gsfpy.gsfDataID import c_gsfDataID
 from gsfpy.gsfMBParams import c_gsfMBParams
 from gsfpy.gsfRecords import c_gsfRecords
+from gsfpy.gsfScaleFactors import c_gsfScaleFactors
 from tests import ERROR_RET_VAL, GSF_FOPEN_ERROR, SUCCESS_RET_VAL
 
 
@@ -686,6 +696,36 @@ class TestBindings:
         assert_that(mbparams_out.number_of_transmitters).is_equal_to(1)
         assert_that(mbparams_out.number_of_receivers).is_equal_to(1)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfLoadScaleFactor_success(self):
+        """
+        Create a gsfScaleFactors structure and initialize all fields.
+        """
+        # Arrange
+        scaleFactors = c_gsfScaleFactors()
+        subrecordID = c_int(GSF_MAX_PING_ARRAY_SUBRECORDS)
+        # Save as two byte value after applying scale and offset
+        c_flag = c_char(0x20)
+        # 1cm precision for depth
+        precision = c_double(0.01)
+        offset = c_int(4)
+
+        # Act
+        ret_val_sf = gsfpy.bindings.gsfLoadScaleFactor(
+            byref(scaleFactors), subrecordID, c_flag, precision, offset
+        )
+
+        # Assert two of the fields here to check they are set to the unknown
+        # value.
+        index = subrecordID.value - 1
+        assert_that(ret_val_sf).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(int(scaleFactors.scaleTable[index].compressionFlag)).is_equal_to(32)
+        assert_that(int(scaleFactors.scaleTable[index].multiplier)).is_equal_to(
+            (1 / precision.value)
+        )
+        assert_that(int(scaleFactors.scaleTable[index].offset)).is_equal_to(
+            offset.value
+        )
 
     # TODO - See gsfpy issue #50
     # def test_gsfFree_success(self):
