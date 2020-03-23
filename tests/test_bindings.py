@@ -898,6 +898,22 @@ class TestBindings:
         # Assert
         assert_that(ret_val_status_set.value).is_equal_to(0x8024)
 
+    def test_gsfClearPingStatus(self):
+        """
+        Clear the status of a ping flag.
+        """
+        # Arrange
+        mb_ping = c_gsfSwathBathyPing()
+        mb_ping.ping_flags = 0x0024
+
+        # Act
+        ret_val_status_clear = gsfpy.bindings.gsfClearPingStatus(
+            c_ushort(mb_ping.ping_flags), c_ushort(PingFlag.GSF_PING_USER_FLAG_02)
+        )
+
+        # Assert
+        assert_that(ret_val_status_clear.value).is_equal_to(0x0020)
+
     # TODO - See gsfpy issue #50
     # def test_gsfFree_success(self):
     #     """

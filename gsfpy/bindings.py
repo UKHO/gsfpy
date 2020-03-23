@@ -544,10 +544,21 @@ def gsfSetPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> c_ushort:
     :param ping_flags: c_ushort
     :param usflag: c_ushort
 
-    :return: True if the bit within ping_flags, which corresponds to the
-             bit set in usflags, is set. Otherwise False.
+    :return: c_ushort. The value of the new ping flags with the bit set in
+             usflags set.
     """
     return c_ushort(ping_flags.value | usflag.value)
+
+
+def gsfClearPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> c_ushort:
+    """
+    :param ping_flags: c_ushort
+    :param usflag: c_ushort
+
+    return: c_ushort. The value of the new ping flags with the bit set in
+            usflags cleared.
+    """
+    return c_ushort(ping_flags.value & ~usflag.value)
 
 
 # TODO - see gsfpy issue #50
