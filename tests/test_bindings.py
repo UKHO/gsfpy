@@ -6,6 +6,7 @@ from ctypes import (
     c_double,
     c_int,
     c_long,
+    c_ubyte,
     create_string_buffer,
     string_at,
 )
@@ -726,6 +727,45 @@ class TestBindings:
         assert_that(int(scaleFactors.scaleTable[index].offset)).is_equal_to(
             offset.value
         )
+
+    def test_gsfGetScaleFactor_success(self):
+        """
+        Read a GSF record and get the beam array field size, compression flag,
+        multiplier and DC offset applied to it.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        records = c_gsfRecords()
+        data_id = c_gsfDataID()
+        subrecordID = c_int(6)
+        c_flag = c_ubyte()
+        multiplier = c_double()
+        offset = c_double()
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            byref(data_id),
+            byref(records),
+        )
+        ret_val_sf = gsfpy.bindings.gsfGetScaleFactor(
+            file_handle, subrecordID, byref(c_flag), byref(multiplier), byref(offset)
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert two of the fields here to check they are set to the unknown
+        # value.
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(6552)
+        assert_that(ret_val_sf).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(c_flag.value).is_equal_to(int(0x10))
+        assert_that(multiplier.value).is_equal_to(2)
+        assert_that(offset.value).is_equal_to(0)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
     # TODO - See gsfpy issue #50
     # def test_gsfFree_success(self):

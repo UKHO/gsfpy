@@ -117,6 +117,15 @@ _gsf_lib.gsfLoadScaleFactor.argtypes = [
 ]
 _gsf_lib.gsfLoadScaleFactor.restype = c_int
 
+_gsf_lib.gsfGetScaleFactor.argtypes = [
+    c_int,
+    c_int,
+    POINTER(c_ubyte),
+    POINTER(c_double),
+    POINTER(c_double),
+]
+_gsf_lib.gsfGetScaleFactor.restype = c_int
+
 _gsf_lib.gsfFree.argtypes = [POINTER(c_gsfRecords)]
 _gsf_lib.gsfFree.restype = None
 
@@ -425,6 +434,29 @@ def gsfLoadScaleFactor(
              for further details.
     """
     return _gsf_lib.gsfLoadScaleFactor(p_sf, subRecordID, c_flag, precision, offset)
+
+
+def gsfGetScaleFactor(
+    handle: c_int, subRecordID: c_int, p_c_flag, p_multiplier, p_offset
+) -> int:
+    """
+    :param handle: c_int
+    :param subRecordID: c_int
+    :param p_c_flag: POINTER(c_uchar)
+    :param p_multiplier: POINTER(c_double)
+    :param p_offset: POINTER(c_double)
+    :return: 0 if successful, otherwise -1. Note that, in the event of a successful
+             call, beam array field size, compression flag, multiplier and DC offset
+             values by which each swath bathymetry ping array subrecord is scaled will
+             be loaded into p_c_flag, p_multiplier, and p_offset parameters
+             respectively. gsfGetScaleFactor() is called once for each array subrecord
+             of interest. At least one swath bathymetry ping record must have been read
+             from, or written to, the file specified by handle prior to calling
+             gsfGetScaleFactor().
+    """
+    return _gsf_lib.gsfGetScaleFactor(
+        handle, subRecordID, p_c_flag, p_multiplier, p_offset
+    )
 
 
 # TODO - see gsfpy issue #50
