@@ -234,7 +234,7 @@ def gsfGetSwathBathyArrayMinMax(
     p_ping, subrecordID: c_int, p_min_value, p_max_value
 ) -> int:
     """
-    :param p_ping: POINTER(gsfpy.gsfRecords.c_gsfSwathBathyPing)
+    :param p_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
     :param p_min_value: POINTER(double)
     :param p_max_value: POINTER(double)
     :return: 0 if successful, otherwise -1. Note that, in the event of a successful
@@ -259,7 +259,7 @@ def gsfIsStarboardPing(p_data) -> int:
 
 def gsfGetSonarTextName(p_ping) -> str:
     """
-    :param p_ping: POINTER(gsfpy.gsfRecords.c_gsfSwathBathyPing)
+    :param p_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
     :return: The name of the sensor based on the sensor id contained in the ping
              structure if this is defined, otherwise 'Unknown'.
     """
@@ -332,7 +332,9 @@ def gsfIsNewSurveyLine(
 ) -> int:
     """
     :param handle: c_int
-    :param p_status: POINTER(c_int)
+    :param p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param azimuth_change: c_double
+    :param p_last_heading: POINTER(c_double)
     :return:  0 if the last ping in the given ping is not considered to be from a
               new survey line, and nonzero when the ping is considered to be from
               a new survey line, according to the given trigger value in the
@@ -350,6 +352,20 @@ def gsfInitializeMBParams(p_mbparams) -> int:
              for int fields)
     """
     return _gsf_lib.gsfInitializeMBParams(p_mbparams)
+
+
+def gsfPutMBParams(p_mbparams, p_rec, handle: c_int, numArrays: c_int) -> int:
+    """
+    :param p_mbparams: POINTER(c_gsfMBParams)
+    :param p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param handle: c_int
+    :param numArrays: c_int
+    :return: 0 if successful, otherwise -1. Note that, in the event of a successful
+             call, form parameters from the given gsfMBParams structure are written
+             into the gsfProcessingParameters field of the given gsfRecords data
+             structure.
+    """
+    return _gsf_lib.gsfPutMBParams(p_mbparams, p_rec, handle, numArrays)
 
 
 # TODO - see gsfpy issue #50

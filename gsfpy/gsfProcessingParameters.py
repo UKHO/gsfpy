@@ -11,6 +11,8 @@ class c_gsfProcessingParameters(Structure):
     _fields_ = [
         ("param_time", timespec.c_timespec),
         ("number_parameters", c_int),
+        # array of sizes of param text
         ("param_size", PROCESSING_PARAMETERS_PARAM_SIZES),
+        # array of parameter strings in the form: "param_name=param_value"
         ("param", PROCESSING_PARAMETERS_PARAMS),
     ]

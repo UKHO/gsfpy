@@ -559,6 +559,92 @@ class TestBindings:
         assert_that(mbparams.horizontal_datum).is_equal_to(-99)
         assert_that(mbparams.vessel_type).is_equal_to(-99)
 
+    def test_gsfPutMBParams_success(self):
+        """
+        Create a gsfMBParams structure and copy fields to a gsfRecords
+        structure.
+        """
+        # Arrange
+        mbparams = c_gsfMBParams()
+        gsfpy.bindings.gsfInitializeMBParams(byref(mbparams))
+
+        # Only WGS-84 (57) and NAD-83 (38) horizontal datum values are
+        # supported by GSF - see gsf.h
+        mbparams.horizontal_datum = c_int(57)
+        # Set number_of_transmitters and number_of_receivers to zero
+        # so that num_arrays param is used for these values when
+        # setting the params in the gsfRecords structure.
+        mbparams.number_of_transmitters = c_int(0)
+        mbparams.number_of_receivers = c_int(0)
+        mbparams.to_apply.position_x_offset = c_double(1.1)
+        mbparams.to_apply.position_y_offset = c_double(2.2)
+        mbparams.to_apply.position_z_offset = c_double(3.3)
+        mbparams.applied.position_x_offset = c_double(4.4)
+        mbparams.applied.position_y_offset = c_double(5.5)
+        mbparams.applied.position_z_offset = c_double(6.6)
+
+        records = c_gsfRecords()
+        data_id = c_gsfDataID()
+
+        file_handle = c_int(0)
+        num_arrays = 1
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            byref(data_id),
+            byref(records),
+        )
+        ret_val_putmbparams = gsfpy.bindings.gsfPutMBParams(
+            byref(mbparams), byref(records), file_handle, num_arrays
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert two of the fields here to check they are set to the unknown
+        # value.
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(6552)
+        assert_that(ret_val_putmbparams).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(records.process_parameters.number_parameters).is_equal_to(63)
+        # param zero is always epoch start time
+        assert_that(string_at(records.process_parameters.param[0])).is_equal_to(
+            b"REFERENCE TIME=1970/001 00:00:00"
+        )
+        # params 7 (NUMBER_OF_RECEIVERS) & 8 (NUMBER_OF_TRANSMITTERS) should have
+        # a value equal to num_arrays
+        assert_that(string_at(records.process_parameters.param[7])).is_equal_to(
+            b"NUMBER_OF_RECEIVERS=1"
+        )
+        assert_that(string_at(records.process_parameters.param[8])).is_equal_to(
+            b"NUMBER_OF_TRANSMITTERS=1"
+        )
+        # param 9 (DEPTH_CALCULATION) should have a value of 'UNKNOWN' as it
+        # has not been updated since being initialized
+        assert_that(string_at(records.process_parameters.param[9])).is_equal_to(
+            b"DEPTH_CALCULATION=UNKNOWN"
+        )
+        # param 19 (POSITION_OFFSET_TO_APPLY) should have values x,y,z equal to
+        # corresponding values in mbparams.to_apply
+        assert_that(string_at(records.process_parameters.param[19])).is_equal_to(
+            b"POSITION_OFFSET_TO_APPLY=+01.10,+02.20,+03.30"
+        )
+        # param 42 (APPLIED_POSITION_OFFSET) should have values x,y,z equal to
+        # corresponding values in mbparams.to_apply
+        assert_that(string_at(records.process_parameters.param[42])).is_equal_to(
+            b"APPLIED_POSITION_OFFSET=+04.40,+05.50,+06.60"
+        )
+        # param 61 (GEOID) should have a value equal to WGS-84, corresponding to
+        # mbparams.horizontal_datum value of 57
+        assert_that(string_at(records.process_parameters.param[61])).is_equal_to(
+            b"GEOID=WGS-84"
+        )
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
     # TODO - See gsfpy issue #50
     # def test_gsfFree_success(self):
     #     """
