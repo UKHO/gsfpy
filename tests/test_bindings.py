@@ -7,6 +7,7 @@ from ctypes import (
     c_int,
     c_long,
     c_ubyte,
+    c_ushort,
     create_string_buffer,
     string_at,
 )
@@ -18,11 +19,18 @@ from assertpy import assert_that
 import gsfpy.bindings
 import gsfpy.enums
 from gsfpy.constants import GSF_MAX_PING_ARRAY_SUBRECORDS
-from gsfpy.enums import FileMode, RecordType, ScaledSwathBathySubRecord, SeekOption
+from gsfpy.enums import (
+    FileMode,
+    PingFlag,
+    RecordType,
+    ScaledSwathBathySubRecord,
+    SeekOption,
+)
 from gsfpy.gsfDataID import c_gsfDataID
 from gsfpy.gsfMBParams import c_gsfMBParams
 from gsfpy.gsfRecords import c_gsfRecords
 from gsfpy.gsfScaleFactors import c_gsfScaleFactors
+from gsfpy.gsfSwathBathyPing import c_gsfSwathBathyPing
 from tests import ERROR_RET_VAL, GSF_FOPEN_ERROR, SUCCESS_RET_VAL
 
 
@@ -859,6 +867,27 @@ class TestBindings:
         )
         assert_that(int(mb_ping.scaleFactors.scaleTable[index].offset)).is_equal_to(0)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfTestPingStatus(self):
+        """
+        Instantiate a GSF record and test the status of a ping flag.
+        """
+        # Arrange
+        mb_ping = c_gsfSwathBathyPing()
+        mb_ping.ping_flags = 0x0024
+
+        # Act
+        ret_val_status_set = gsfpy.bindings.gsfTestPingStatus(
+            c_ushort(mb_ping.ping_flags), c_ushort(PingFlag.GSF_PING_USER_FLAG_05)
+        )
+        ret_val_status_unset = gsfpy.bindings.gsfTestPingStatus(
+            c_ushort(mb_ping.ping_flags), c_ushort(PingFlag.GSF_PING_USER_FLAG_15)
+        )
+
+        # Assert two of the fields here to check they are set to the unknown
+        # value.
+        assert_that(ret_val_status_set).is_equal_to(True)
+        assert_that(ret_val_status_unset).is_equal_to(False)
 
     # TODO - See gsfpy issue #50
     # def test_gsfFree_success(self):

@@ -1,4 +1,14 @@
-from ctypes import CDLL, POINTER, c_char, c_char_p, c_double, c_int, c_ubyte, string_at
+from ctypes import (
+    CDLL,
+    POINTER,
+    c_char,
+    c_char_p,
+    c_double,
+    c_int,
+    c_ubyte,
+    c_ushort,
+    string_at,
+)
 from os import path
 
 from .enums import FileMode, RecordType, SeekOption
@@ -516,6 +526,17 @@ def gsfLoadDepthScaleFactorAutoOffset(
         p_c_flag,
         precision,
     )
+
+
+def gsfTestPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> bool:
+    """
+    :param ping_flags: c_ushort
+    :param usflag: c_ushort
+
+    :return: True if the bit within ping_flags, which corresponds to the
+             bit set in usflags, is set. Otherwise False.
+    """
+    return bool(ping_flags.value & usflag.value)
 
 
 # TODO - see gsfpy issue #50

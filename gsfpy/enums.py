@@ -3,6 +3,10 @@ from enum import IntEnum
 
 
 class FileMode(IntEnum):
+    """
+    Modes in which a GSF file may be opened
+    """
+
     GSF_CREATE = 1
     GSF_READONLY = 2
     GSF_UPDATE = 3
@@ -11,7 +15,34 @@ class FileMode(IntEnum):
     GSF_APPEND = 6
 
 
+class PingFlag(IntEnum):
+    """
+    Bit flags for the "ping_flags" field of a gsfSwathBathyPing record
+    """
+
+    GSF_IGNORE_PING = 0x0001
+    GSF_PING_USER_FLAG_01 = 0x0002
+    GSF_PING_USER_FLAG_02 = 0x0004
+    GSF_PING_USER_FLAG_03 = 0x0008
+    GSF_PING_USER_FLAG_04 = 0x0010
+    GSF_PING_USER_FLAG_05 = 0x0020
+    GSF_PING_USER_FLAG_06 = 0x0040
+    GSF_PING_USER_FLAG_07 = 0x0080
+    GSF_PING_USER_FLAG_08 = 0x0100
+    GSF_PING_USER_FLAG_09 = 0x0200
+    GSF_PING_USER_FLAG_10 = 0x0400
+    GSF_PING_USER_FLAG_11 = 0x0800
+    GSF_PING_USER_FLAG_12 = 0x1000
+    GSF_PING_USER_FLAG_13 = 0x2000
+    GSF_PING_USER_FLAG_14 = 0x4000
+    GSF_PING_USER_FLAG_15 = 0x8000
+
+
 class RecordType(IntEnum):
+    """
+    The set of GSF record types
+    """
+
     GSF_NEXT_RECORD = 0
     GSF_RECORD_HEADER = 1
     GSF_RECORD_SWATH_BATHYMETRY_PING = 2
@@ -26,10 +57,13 @@ class RecordType(IntEnum):
     GSF_RECORD_ATTITUDE = 12
 
 
-# Identifiers for gsfSwathBathyPing subrecords to which scale factors
-# are applied. Values are indices into the gsfScaleFactors beam array
-# index.
 class ScaledSwathBathySubRecord(IntEnum):
+    """
+    Identifiers for gsfSwathBathyPing subrecords to which scale factors
+    are applied. Values are indices into the gsfScaleFactors beam array
+    index.
+    """
+
     GSF_SWATH_BATHY_SUBRECORD_DEPTH_ARRAY = 1
     GSF_SWATH_BATHY_SUBRECORD_ACROSS_TRACK_ARRAY = 2
     GSF_SWATH_BATHY_SUBRECORD_ALONG_TRACK_ARRAY = 3
