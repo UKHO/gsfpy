@@ -767,6 +767,49 @@ class TestBindings:
         assert_that(offset.value).is_equal_to(0)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
+    def test_gsfSetDefaultScaleFactor_success(self):
+        """
+        Set estimated scale factors for a gsfSwathBathyPing structure.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        records = c_gsfRecords()
+        data_id = c_gsfDataID()
+
+        mb_ping = None
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            byref(data_id),
+            byref(records),
+        )
+        # Set multibeam ping scale factors to be empty
+        mb_ping = records.mb_ping
+        mb_ping.scaleFactors = c_gsfScaleFactors()
+
+        ret_val_sf = gsfpy.bindings.gsfSetDefaultScaleFactor(byref(mb_ping))
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert two of the fields here to check they are set to the unknown
+        # value.
+        index = 2
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(6552)
+        assert_that(ret_val_sf).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(
+            int(mb_ping.scaleFactors.scaleTable[index].compressionFlag)
+        ).is_equal_to(0x00)
+        assert_that(int(mb_ping.scaleFactors.scaleTable[index].multiplier)).is_equal_to(
+            50
+        )
+        assert_that(int(mb_ping.scaleFactors.scaleTable[index].offset)).is_equal_to(0)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
     # TODO - See gsfpy issue #50
     # def test_gsfFree_success(self):
     #     """

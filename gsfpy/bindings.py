@@ -126,6 +126,9 @@ _gsf_lib.gsfGetScaleFactor.argtypes = [
 ]
 _gsf_lib.gsfGetScaleFactor.restype = c_int
 
+_gsf_lib.gsfSetDefaultScaleFactor.argtypes = [POINTER(c_gsfSwathBathyPing)]
+_gsf_lib.gsfSetDefaultScaleFactor.restype = c_int
+
 _gsf_lib.gsfFree.argtypes = [POINTER(c_gsfRecords)]
 _gsf_lib.gsfFree.restype = None
 
@@ -457,6 +460,16 @@ def gsfGetScaleFactor(
     return _gsf_lib.gsfGetScaleFactor(
         handle, subRecordID, p_c_flag, p_multiplier, p_offset
     )
+
+
+def gsfSetDefaultScaleFactor(p_mb_ping) -> int:
+    """
+    :param p_rec: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
+
+    :return: 0 if successful. Note that, in the event of a successful call, estimated
+             scale factors for each of the beam arrays in the ping will be set.
+    """
+    return _gsf_lib.gsfSetDefaultScaleFactor(p_mb_ping)
 
 
 # TODO - see gsfpy issue #50
