@@ -129,6 +129,18 @@ _gsf_lib.gsfGetScaleFactor.restype = c_int
 _gsf_lib.gsfSetDefaultScaleFactor.argtypes = [POINTER(c_gsfSwathBathyPing)]
 _gsf_lib.gsfSetDefaultScaleFactor.restype = c_int
 
+_gsf_lib.gsfLoadDepthScaleFactorAutoOffset.argtypes = [
+    POINTER(c_gsfSwathBathyPing),
+    c_int,
+    c_int,
+    c_double,
+    c_double,
+    POINTER(c_double),
+    c_char,
+    c_double,
+]
+_gsf_lib.gsfLoadDepthScaleFactorAutoOffset.restype = c_int
+
 _gsf_lib.gsfFree.argtypes = [POINTER(c_gsfRecords)]
 _gsf_lib.gsfFree.restype = None
 
@@ -464,12 +476,46 @@ def gsfGetScaleFactor(
 
 def gsfSetDefaultScaleFactor(p_mb_ping) -> int:
     """
-    :param p_rec: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
+    :param p_mb_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
 
     :return: 0 if successful. Note that, in the event of a successful call, estimated
              scale factors for each of the beam arrays in the ping will be set.
     """
     return _gsf_lib.gsfSetDefaultScaleFactor(p_mb_ping)
+
+
+def gsfLoadDepthScaleFactorAutoOffset(
+    p_mb_ping,
+    subRecordID: c_int,
+    reset: c_int,
+    min_depth: c_double,
+    max_depth: c_double,
+    last_corrector: POINTER(c_double),
+    p_c_flag,
+    precision: c_double,
+) -> int:
+    """
+    :param p_mb_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
+    :param subRecordID: c_int
+    :param reset: c_int
+    :param min_depth: c_double
+    :param max_depth: c_double
+    :param p_c_flag: POINTER(c_uchar)
+    :param precision: c_double
+
+    :return: 0 if successful. Note that, in the event of a successful call, estimated
+             scale factors for each of the beam arrays in the ping will be set.
+    """
+    return _gsf_lib.gsfLoadDepthScaleFactorAutoOffset(
+        p_mb_ping,
+        subRecordID,
+        reset,
+        min_depth,
+        max_depth,
+        last_corrector,
+        p_c_flag,
+        precision,
+    )
 
 
 # TODO - see gsfpy issue #50

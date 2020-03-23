@@ -16,8 +16,9 @@ from os import path
 from assertpy import assert_that
 
 import gsfpy.bindings
+import gsfpy.enums
 from gsfpy.constants import GSF_MAX_PING_ARRAY_SUBRECORDS
-from gsfpy.enums import FileMode, RecordType, SeekOption
+from gsfpy.enums import FileMode, RecordType, ScaledSwathBathySubRecord, SeekOption
 from gsfpy.gsfDataID import c_gsfDataID
 from gsfpy.gsfMBParams import c_gsfMBParams
 from gsfpy.gsfRecords import c_gsfRecords
@@ -704,7 +705,9 @@ class TestBindings:
         """
         # Arrange
         scaleFactors = c_gsfScaleFactors()
-        subrecordID = c_int(GSF_MAX_PING_ARRAY_SUBRECORDS)
+        subrecordID = (
+            ScaledSwathBathySubRecord.GSF_SWATH_BATHY_SUBRECORD_SONAR_VERT_UNCERT_ARRAY
+        )
         # Save as two byte value after applying scale and offset
         c_flag = c_char(0x20)
         # 1cm precision for depth
@@ -720,6 +723,9 @@ class TestBindings:
         # value.
         index = subrecordID.value - 1
         assert_that(ret_val_sf).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(len(scaleFactors.scaleTable)).is_equal_to(
+            GSF_MAX_PING_ARRAY_SUBRECORDS
+        )
         assert_that(int(scaleFactors.scaleTable[index].compressionFlag)).is_equal_to(32)
         assert_that(int(scaleFactors.scaleTable[index].multiplier)).is_equal_to(
             (1 / precision.value)
@@ -737,7 +743,9 @@ class TestBindings:
         file_handle = c_int(0)
         records = c_gsfRecords()
         data_id = c_gsfDataID()
-        subrecordID = c_int(6)
+        subrecordID = (
+            ScaledSwathBathySubRecord.GSF_SWATH_BATHY_SUBRECORD_MEAN_CAL_AMPLITUDE_ARRAY
+        )
         c_flag = c_ubyte()
         multiplier = c_double()
         offset = c_double()
@@ -791,6 +799,48 @@ class TestBindings:
         # Set multibeam ping scale factors to be empty
         mb_ping = records.mb_ping
         mb_ping.scaleFactors = c_gsfScaleFactors()
+
+        ret_val_sf = gsfpy.bindings.gsfSetDefaultScaleFactor(byref(mb_ping))
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert two of the fields here to check they are set to the unknown
+        # value.
+        index = 2
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(6552)
+        assert_that(ret_val_sf).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(
+            int(mb_ping.scaleFactors.scaleTable[index].compressionFlag)
+        ).is_equal_to(0x00)
+        assert_that(int(mb_ping.scaleFactors.scaleTable[index].multiplier)).is_equal_to(
+            50
+        )
+        assert_that(int(mb_ping.scaleFactors.scaleTable[index].offset)).is_equal_to(0)
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfLoadDepthScaleFactorAutoOffset_success(self):
+        """
+        Load scale factors for the depth subrecords of a gsfSwathBathyPing structure.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        records = c_gsfRecords()
+        data_id = c_gsfDataID()
+
+        mb_ping = None
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            byref(data_id),
+            byref(records),
+        )
+        # Set multibeam ping scale factors to be empty
+        mb_ping = records.mb_ping
 
         ret_val_sf = gsfpy.bindings.gsfSetDefaultScaleFactor(byref(mb_ping))
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
