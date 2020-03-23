@@ -3,6 +3,7 @@ from os import path
 
 from .enums import FileMode, RecordType, SeekOption
 from .gsfDataID import c_gsfDataID
+from .gsfMBParams import c_gsfMBParams
 from .gsfRecords import c_gsfRecords
 from .gsfSwathBathyPing import c_gsfSwathBathyPing
 
@@ -87,6 +88,24 @@ _gsf_lib.gsfIsNewSurveyLine.argtypes = [
     POINTER(c_double),
 ]
 _gsf_lib.gsfIsNewSurveyLine.restype = c_int
+
+_gsf_lib.gsfInitializeMBParams.argtypes = [POINTER(c_gsfMBParams)]
+_gsf_lib.gsfInitializeMBParams.restype = None
+
+_gsf_lib.gsfPutMBParams.argtypes = [
+    POINTER(c_gsfMBParams),
+    POINTER(c_gsfRecords),
+    c_int,
+    c_int,
+]
+_gsf_lib.gsfPutMBParams.restype = c_int
+
+_gsf_lib.gsfGetMBParams.argtypes = [
+    POINTER(c_gsfRecords),
+    POINTER(c_gsfMBParams),
+    POINTER(c_int),
+]
+_gsf_lib.gsfGetMBParams.restype = c_int
 
 _gsf_lib.gsfFree.argtypes = [POINTER(c_gsfRecords)]
 _gsf_lib.gsfFree.restype = None
@@ -366,6 +385,19 @@ def gsfPutMBParams(p_mbparams, p_rec, handle: c_int, numArrays: c_int) -> int:
              structure.
     """
     return _gsf_lib.gsfPutMBParams(p_mbparams, p_rec, handle, numArrays)
+
+
+def gsfGetMBParams(p_rec, p_mbparams, p_numArrays) -> int:
+    """
+    :param p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param p_mbparams: POINTER(c_gsfMBParams)
+    :param p_numArrays: POINTER(c_int)
+    :return: 0 if successful, otherwise -1. Note that, in the event of a successful
+             call, form parameters from the gsfProcessingParameters field of the
+             given gsfRecords data structure are written into the given gsfMBParams
+             structure.
+    """
+    return _gsf_lib.gsfGetMBParams(p_rec, p_mbparams, p_numArrays)
 
 
 # TODO - see gsfpy issue #50

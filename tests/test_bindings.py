@@ -584,7 +584,7 @@ class TestBindings:
         mbparams.applied.position_z_offset = c_double(6.6)
 
         records = c_gsfRecords()
-        data_id = c_gsfDataID()
+        # data_id = c_gsfDataID()
 
         file_handle = c_int(0)
         num_arrays = 1
@@ -592,12 +592,6 @@ class TestBindings:
         # Act
         ret_val_open = gsfpy.bindings.gsfOpen(
             self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
-        )
-        bytes_read = gsfpy.bindings.gsfRead(
-            file_handle,
-            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
-            byref(data_id),
-            byref(records),
         )
         ret_val_putmbparams = gsfpy.bindings.gsfPutMBParams(
             byref(mbparams), byref(records), file_handle, num_arrays
@@ -607,7 +601,6 @@ class TestBindings:
         # Assert two of the fields here to check they are set to the unknown
         # value.
         assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
-        assert_that(bytes_read).is_equal_to(6552)
         assert_that(ret_val_putmbparams).is_equal_to(SUCCESS_RET_VAL)
         assert_that(records.process_parameters.number_parameters).is_equal_to(63)
         # param zero is always epoch start time
@@ -643,6 +636,55 @@ class TestBindings:
             b"GEOID=WGS-84"
         )
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfGetMBParams_success(self):
+        """
+        Set MB params, read a GSF record and copy fields to a gsfMBParams
+        structure.
+        """
+        # Arrange
+        mbparams_in = c_gsfMBParams()
+        gsfpy.bindings.gsfInitializeMBParams(byref(mbparams_in))
+        mbparams_in.horizontal_datum = c_int(57)
+
+        mbparams_out = c_gsfMBParams()
+        gsfpy.bindings.gsfInitializeMBParams(byref(mbparams_out))
+
+        records = c_gsfRecords()
+        data_id = c_gsfDataID()
+
+        file_handle = c_int(0)
+        num_arrays = c_int(1)
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        ret_val_putmbparams = gsfpy.bindings.gsfPutMBParams(
+            byref(mbparams_in), byref(records), file_handle, num_arrays
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            file_handle,
+            RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
+            byref(data_id),
+            byref(records),
+        )
+        ret_val_getmbparams = gsfpy.bindings.gsfGetMBParams(
+            byref(records), byref(mbparams_out), byref(num_arrays)
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert two of the fields here to check they are set to the unknown
+        # value.
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(ret_val_putmbparams).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(6552)
+        assert_that(ret_val_getmbparams).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(mbparams_out.horizontal_datum).is_equal_to(
+            mbparams_in.horizontal_datum
+        )
+        assert_that(mbparams_out.number_of_transmitters).is_equal_to(1)
+        assert_that(mbparams_out.number_of_receivers).is_equal_to(1)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
     # TODO - See gsfpy issue #50
