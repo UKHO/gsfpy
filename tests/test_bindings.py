@@ -618,8 +618,7 @@ class TestBindings:
         )
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
-        # Assert two of the fields here to check they are set to the unknown
-        # value.
+        # Assert
         assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
         assert_that(ret_val_putmbparams).is_equal_to(SUCCESS_RET_VAL)
         assert_that(records.process_parameters.number_parameters).is_equal_to(63)
@@ -694,8 +693,7 @@ class TestBindings:
         )
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
-        # Assert two of the fields here to check they are set to the unknown
-        # value.
+        # Assert
         assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
         assert_that(ret_val_putmbparams).is_equal_to(SUCCESS_RET_VAL)
         assert_that(bytes_read).is_equal_to(6552)
@@ -727,8 +725,7 @@ class TestBindings:
             byref(scaleFactors), subrecordID, c_flag, precision, offset
         )
 
-        # Assert two of the fields here to check they are set to the unknown
-        # value.
+        # Assert
         index = subrecordID.value - 1
         assert_that(ret_val_sf).is_equal_to(SUCCESS_RET_VAL)
         assert_that(len(scaleFactors.scaleTable)).is_equal_to(
@@ -773,8 +770,7 @@ class TestBindings:
         )
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
-        # Assert two of the fields here to check they are set to the unknown
-        # value.
+        # Assert
         assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
         assert_that(bytes_read).is_equal_to(6552)
         assert_that(ret_val_sf).is_equal_to(SUCCESS_RET_VAL)
@@ -811,8 +807,7 @@ class TestBindings:
         ret_val_sf = gsfpy.bindings.gsfSetDefaultScaleFactor(byref(mb_ping))
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
-        # Assert two of the fields here to check they are set to the unknown
-        # value.
+        # Assert
         index = 2
         assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
         assert_that(bytes_read).is_equal_to(6552)
@@ -853,8 +848,7 @@ class TestBindings:
         ret_val_sf = gsfpy.bindings.gsfSetDefaultScaleFactor(byref(mb_ping))
         ret_val_close = gsfpy.bindings.gsfClose(file_handle)
 
-        # Assert two of the fields here to check they are set to the unknown
-        # value.
+        # Assert
         index = 2
         assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
         assert_that(bytes_read).is_equal_to(6552)
@@ -870,7 +864,7 @@ class TestBindings:
 
     def test_gsfTestPingStatus(self):
         """
-        Instantiate a GSF record and test the status of a ping flag.
+        Test the status of a ping flag.
         """
         # Arrange
         mb_ping = c_gsfSwathBathyPing()
@@ -884,10 +878,25 @@ class TestBindings:
             c_ushort(mb_ping.ping_flags), c_ushort(PingFlag.GSF_PING_USER_FLAG_15)
         )
 
-        # Assert two of the fields here to check they are set to the unknown
-        # value.
+        # Assert
         assert_that(ret_val_status_set).is_equal_to(True)
         assert_that(ret_val_status_unset).is_equal_to(False)
+
+    def test_gsfSetPingStatus(self):
+        """
+        Set the status of a ping flag.
+        """
+        # Arrange
+        mb_ping = c_gsfSwathBathyPing()
+        mb_ping.ping_flags = 0x0024
+
+        # Act
+        ret_val_status_set = gsfpy.bindings.gsfSetPingStatus(
+            c_ushort(mb_ping.ping_flags), c_ushort(PingFlag.GSF_PING_USER_FLAG_15)
+        )
+
+        # Assert
+        assert_that(ret_val_status_set.value).is_equal_to(0x8024)
 
     # TODO - See gsfpy issue #50
     # def test_gsfFree_success(self):

@@ -539,6 +539,17 @@ def gsfTestPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> bool:
     return bool(ping_flags.value & usflag.value)
 
 
+def gsfSetPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> c_ushort:
+    """
+    :param ping_flags: c_ushort
+    :param usflag: c_ushort
+
+    :return: True if the bit within ping_flags, which corresponds to the
+             bit set in usflags, is set. Otherwise False.
+    """
+    return c_ushort(ping_flags.value | usflag.value)
+
+
 # TODO - see gsfpy issue #50
 # def gsfFree(p_rec):
 #     """
