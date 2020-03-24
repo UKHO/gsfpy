@@ -866,7 +866,8 @@ class TestBindings:
 
     def test_gsfGetPositionDestination(self):
         """
-        Get a destination position given a starting position and an offset.
+        Get a destination position (in degrees) given a starting position (in degrees)
+        and a set of offsets (in m).
         """
         # Arrange
         pos_start = c_GSF_POSITION()
@@ -891,6 +892,35 @@ class TestBindings:
         assert_that(ret_val_pos.contents.lon).is_close_to(10.20, 0.01)
         assert_that(ret_val_pos.contents.lat).is_close_to(19.94, 0.01)
         assert_that(ret_val_pos.contents.z).is_close_to(33.0, 0.000001)
+
+    def test_gsfGetPositionOffsets(self):
+        """
+        Get offsets (in m) between given a starting position and a destination
+        position (measured in degrees).
+        """
+        # Arrange
+        pos_start = c_GSF_POSITION()
+        pos_start.lon = c_double(10.0)
+        pos_start.lat = c_double(20.0)
+        pos_start.z = c_double(30.0)
+
+        pos_end = c_GSF_POSITION()
+        pos_end.lon = c_double(9.0)
+        pos_end.lat = c_double(22.0)
+        pos_end.z = c_double(40.0)
+
+        heading = c_double(90.0)
+        dist_step = c_double(1)
+
+        # Act
+        ret_val_off = gsfpy.bindings.gsfGetPositionOffsets(
+            pos_start, pos_end, heading, dist_step
+        )
+
+        # Assert
+        assert_that(ret_val_off.contents.x).is_close_to(103965, 0.5)
+        assert_that(ret_val_off.contents.y).is_close_to(221434, 0.5)
+        assert_that(ret_val_off.contents.z).is_close_to(20.0, 0.000001)
 
     def test_gsfTestPingStatus(self):
         """

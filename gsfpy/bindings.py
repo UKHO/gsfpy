@@ -128,6 +128,14 @@ _gsf_lib.gsfGetPositionDestination.argtypes = [
 ]
 _gsf_lib.gsfGetPositionDestination.restype = POINTER(c_GSF_POSITION)
 
+_gsf_lib.gsfGetPositionOffsets.argtypes = [
+    c_GSF_POSITION,
+    c_GSF_POSITION,
+    c_double,
+    c_double,
+]
+_gsf_lib.gsfGetPositionOffsets.restype = POINTER(c_GSF_POSITION_OFFSETS)
+
 _gsf_lib.gsfLoadScaleFactor.argtypes = [
     POINTER(c_gsfScaleFactors),
     c_int,
@@ -545,9 +553,22 @@ def gsfGetPositionDestination(gp, offsets, heading: c_double, dist_step: c_doubl
     :param heading: c_double
     :param dist_step: c_double
 
-    :return: GSF_POSITION - the destination position.
+    :return: POINTER(gsfpy.GSF_POSITION.GSF_POSITION) - the destination position.
     """
     return _gsf_lib.gsfGetPositionDestination(gp, offsets, heading, dist_step)
+
+
+def gsfGetPositionOffsets(gp_from, gp_to, heading: c_double, dist_step: c_double):
+    """
+    :param gp_from: gsfpy.GSF_POSTIION.c_GSF_POSITION
+    :param gp_to: gsfpy.GSF_POSTIION.c_GSF_POSITION
+    :param heading: c_double
+    :param dist_step: c_double
+
+    :return: POINTER(gsfpy.c_GSF_POSITION_OFFSETS.c_GSF_POSITION_OFFSETS) -
+             the offsets between the two given positions.
+    """
+    return _gsf_lib.gsfGetPositionOffsets(gp_from, gp_to, heading, dist_step)
 
 
 def gsfTestPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> bool:
