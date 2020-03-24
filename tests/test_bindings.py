@@ -1,6 +1,7 @@
 import os
 import tempfile
 from ctypes import (
+    addressof,
     byref,
     c_char,
     c_double,
@@ -9,6 +10,7 @@ from ctypes import (
     c_ubyte,
     c_ushort,
     create_string_buffer,
+    pointer,
     string_at,
 )
 from glob import glob
@@ -580,6 +582,53 @@ class TestBindings:
         # value.
         assert_that(mbparams.horizontal_datum).is_equal_to(-99)
         assert_that(mbparams.vessel_type).is_equal_to(-99)
+
+    def test_gsfCopyRecords_success(self):
+        """
+        Open the test GSF file, read a record, then copy the contents to
+        a new gsfRecords structure.
+        """
+        # Arrange
+        file_handle = c_int(0)
+        data_id = c_gsfDataID()
+        source_records = c_gsfRecords()
+        target_records = c_gsfRecords()
+
+        # Act
+        ret_val_open = gsfpy.bindings.gsfOpen(
+            self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+        )
+        bytes_read = gsfpy.bindings.gsfRead(
+            file_handle,
+            RecordType.GSF_RECORD_COMMENT,
+            byref(data_id),
+            byref(source_records),
+        )
+        ret_val_cpy = gsfpy.bindings.gsfCopyRecords(
+            pointer(target_records), pointer(source_records)
+        )
+        ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
+        # Assert
+        assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(bytes_read).is_equal_to(168)
+        assert_that(ret_val_cpy).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(target_records.comment.comment_time.tv_sec).is_equal_to(
+            source_records.comment.comment_time.tv_sec
+        )
+        assert_that(target_records.comment.comment_time.tv_nsec).is_equal_to(
+            source_records.comment.comment_time.tv_nsec
+        )
+        assert_that(target_records.comment.comment_length).is_equal_to(
+            source_records.comment.comment_length
+        )
+        assert_that(addressof(target_records.comment.comment)).is_not_equal_to(
+            addressof(source_records.comment.comment)
+        )
+        assert_that(string_at(target_records.comment.comment)).is_equal_to(
+            string_at(source_records.comment.comment)
+        )
+        assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
 
     def test_gsfPutMBParams_success(self):
         """

@@ -7,6 +7,8 @@ from ctypes import (
     c_int,
     c_ubyte,
     c_ushort,
+    memmove,
+    sizeof,
     string_at,
 )
 from os import path
@@ -169,8 +171,8 @@ _gsf_lib.gsfLoadDepthScaleFactorAutoOffset.argtypes = [
 ]
 _gsf_lib.gsfLoadDepthScaleFactorAutoOffset.restype = c_int
 
-_gsf_lib.gsfFree.argtypes = [POINTER(c_gsfRecords)]
-_gsf_lib.gsfFree.restype = None
+# _gsf_lib.gsfFree.argtypes = [POINTER(c_gsfRecords)]
+# _gsf_lib.gsfFree.restype = None
 
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
@@ -435,6 +437,29 @@ def gsfInitializeMBParams(p_mbparams) -> int:
     return _gsf_lib.gsfInitializeMBParams(p_mbparams)
 
 
+def gsfCopyRecords(p_target, p_source):
+    """
+    :param p_target: POINTER(gsfpy.gsfRecords.c_gsfRecords). Note that this parameter
+                     must be passed as a pointer() rather than a byref().
+    :param p_source: POINTER(gsfpy.gsfRecords.c_gsfRecords). Note that this parameter
+                     must be passed as a pointer() rather than a byref().
+    :return: 0 if successful, otherwise -1. Note that, in the event of a successful
+             call, all content from the source gsfRecords structure is copied to
+             the target structure.
+    """
+    ret_val = -1
+    try:
+        # Note - implement using memmove() as calling _gsf_lib.gsfCopyRecords()
+        #        results in segfault due to memory ownership clashes between
+        #        calling application and library.
+        memmove(p_target, p_source, sizeof(p_source.contents))
+        ret_val = 0
+    except Exception:
+        ret_val = -1
+
+    return ret_val
+
+
 def gsfPutMBParams(p_mbparams, p_rec, handle: c_int, numArrays: c_int) -> int:
     """
     :param p_mbparams: POINTER(gsfpy.gsfMBParams.c_gsfMBParams)
@@ -605,10 +630,11 @@ def gsfClearPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> c_ushort:
 
 
 # TODO - see gsfpy issue #50
-# def gsfFree(p_rec):
-#     """
-#     :param p_mbparams: POINTER(c_gsfRecords)
-#     :return: None. Note that, upon return, the memory previously allocated to the
-#              given gsfRecords structure will be deallocated.
-#     """
-#     return _gsf_lib.gsfFree(p_rec)
+def gsfFree(p_rec):
+    """
+    :param p_mbparams: POINTER(c_gsfRecords)
+    :return: None. Note that, upon return, the memory previously allocated to the
+             given gsfRecords structure will be deallocated.
+    """
+    # return _gsf_lib.gsfFree(p_rec)
+    return 0
