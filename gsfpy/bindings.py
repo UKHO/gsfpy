@@ -12,6 +12,8 @@ from ctypes import (
 from os import path
 
 from .enums import FileMode, RecordType, SeekOption
+from .GSF_POSITION import c_GSF_POSITION
+from .GSF_POSITION_OFFSETS import c_GSF_POSITION_OFFSETS
 from .gsfDataID import c_gsfDataID
 from .gsfMBParams import c_gsfMBParams
 from .gsfRecords import c_gsfRecords
@@ -117,6 +119,14 @@ _gsf_lib.gsfGetMBParams.argtypes = [
     POINTER(c_int),
 ]
 _gsf_lib.gsfGetMBParams.restype = c_int
+
+_gsf_lib.gsfGetPositionDestination.argtypes = [
+    c_GSF_POSITION,
+    c_GSF_POSITION_OFFSETS,
+    c_double,
+    c_double,
+]
+_gsf_lib.gsfGetPositionDestination.restype = POINTER(c_GSF_POSITION)
 
 _gsf_lib.gsfLoadScaleFactor.argtypes = [
     POINTER(c_gsfScaleFactors),
@@ -526,6 +536,18 @@ def gsfLoadDepthScaleFactorAutoOffset(
         p_c_flag,
         precision,
     )
+
+
+def gsfGetPositionDestination(gp, offsets, heading: c_double, dist_step: c_double):
+    """
+    :param gp: gsfpy.GSF_POSTIION.c_GSF_POSITION
+    :param offsets: gsfpy.GSF_POSTIION_OFFSETS.c_GSF_POSITION_OFFSETS
+    :param heading: c_double
+    :param dist_step: c_double
+
+    :return: GSF_POSITION - the destination position.
+    """
+    return _gsf_lib.gsfGetPositionDestination(gp, offsets, heading, dist_step)
 
 
 def gsfTestPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> bool:

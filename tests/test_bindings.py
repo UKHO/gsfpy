@@ -26,6 +26,8 @@ from gsfpy.enums import (
     ScaledSwathBathySubRecord,
     SeekOption,
 )
+from gsfpy.GSF_POSITION import c_GSF_POSITION
+from gsfpy.GSF_POSITION_OFFSETS import c_GSF_POSITION_OFFSETS
 from gsfpy.gsfDataID import c_gsfDataID
 from gsfpy.gsfMBParams import c_gsfMBParams
 from gsfpy.gsfRecords import c_gsfRecords
@@ -861,6 +863,34 @@ class TestBindings:
         )
         assert_that(int(mb_ping.scaleFactors.scaleTable[index].offset)).is_equal_to(0)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfGetPositionDestination(self):
+        """
+        Get a destination position given a starting position and an offset.
+        """
+        # Arrange
+        pos_start = c_GSF_POSITION()
+        pos_start.lon = c_double(10.0)
+        pos_start.lat = c_double(20.0)
+        pos_start.z = c_double(30.0)
+
+        offsets = c_GSF_POSITION_OFFSETS()
+        offsets.x = c_double(10000.0)
+        offsets.y = c_double(20000.0)
+        offsets.z = c_double(3.0)
+
+        heading = c_double(45.0)
+        dist_step = c_double(1)
+
+        # Act
+        ret_val_pos = gsfpy.bindings.gsfGetPositionDestination(
+            pos_start, offsets, heading, dist_step
+        )
+
+        # Assert
+        assert_that(ret_val_pos.contents.lon).is_close_to(10.20, 0.01)
+        assert_that(ret_val_pos.contents.lat).is_close_to(19.94, 0.01)
+        assert_that(ret_val_pos.contents.z).is_close_to(33.0, 0.000001)
 
     def test_gsfTestPingStatus(self):
         """
