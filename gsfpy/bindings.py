@@ -451,7 +451,6 @@ def gsfCopyRecords(p_target, p_source):
              call, all content from the source gsfRecords structure is copied to
              the target structure.
     """
-    ret_val = -1
     try:
         # Note - implement using memmove() as calling _gsf_lib.gsfCopyRecords()
         #        results in segfault due to memory ownership clashes between
