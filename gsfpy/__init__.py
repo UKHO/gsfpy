@@ -1,6 +1,6 @@
 __author__ = """UK Hydrographic Office"""
 __email__ = "datascienceandengineering@ukho.gov.uk"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 from ctypes import byref, c_int
 from typing import Optional, Tuple
