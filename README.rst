@@ -110,6 +110,42 @@ Write to a GSF file
     bytesWritten = gsfpy.gsfWrite(p_gsf_fileref[0], p_dataID, p_rec)
     retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
 
+Copy GSF records
+^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    import gsfpy
+    from ctypes import *
+    from gsfpy.enums import FileMode, RecordType
+
+    file_handle = c_int(0)
+    data_id = c_gsfDataID()
+    source_records = c_gsfRecords()
+    target_records = c_gsfRecords()
+
+    ret_val_open = gsfpy.bindings.gsfOpen(
+        self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
+    )
+
+    # Note use of ctypes.byref() as a shorthand way of passing POINTER parameters to
+    # the underlying foreign function call. ctypes.pointer() may also be used.
+    bytes_read = gsfpy.bindings.gsfRead(
+        file_handle,
+        RecordType.GSF_RECORD_COMMENT,
+        byref(data_id),
+        byref(source_records),
+    )
+    # Note use of pointer() rather than byref() when passing parameters to
+    # gsfCopyRecords(). Implementation of this function is in Python as calling
+    # the native underlying function causes memory ownership clashes. byref()
+    # is only suitable for passing parameters to foreign function calls (see
+    # ctypes docs).
+    ret_val_cpy = gsfpy.bindings.gsfCopyRecords(
+        pointer(target_records), pointer(source_records)
+    )
+    ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+
 Troubleshoot
 ^^^^^^^^^^^^
 
@@ -121,6 +157,23 @@ Troubleshoot
     retValIntError = gsfpy.gsfIntError()
     retValStringError = gsfpy.gsfStringError()
     print(retValStringError)
+
+Notes on implementation
+-----------------------
+gsfPrintError()
+^^^^^^^^^^^^^^^
+The gsfPrintError() method of GSFlib is not implemented as there is no FILE* equivalent in Python. Use gsfStringError() instead - this will
+give the same error message, which can then be written to file as required.
+
+gsfCopyRecords() and gsfFree()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gsfFree() the sibling method to gsfCopyRecord() in GSFlib, used to deallocate memory assigned by the library but managed by the calling application,
+is not required by gsfpy as memory allocation and deallocation is handled by ctypes. gsfFree() is therefore omitted from the package.
+
+gsf_register_progress_callback()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Implementation of the GSFlib function gsf_register_progress_callback() is not applicable for gsfpy as the DISPLAY_SPINNER macro was not defined
+during compilation. It is therefore omitted from the package.
 
 Generic Sensor Format Documentation
 -----------------------------------
