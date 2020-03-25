@@ -158,6 +158,23 @@ Troubleshoot
     retValStringError = gsfpy.gsfStringError()
     print(retValStringError)
 
+Notes on implementation
+-----------------------
+gsfPrintError()
+^^^^^^^^^^^^^^^
+The gsfPrintError() method of GSFlib is not implemented as there is no FILE* equivalent in Python. Use gsfStringError() instead - this will
+give the same error message, which can then be written to file as required.
+
+gsfCopyRecords() and gsfFree()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gsfFree() the sibling method to gsfCopyRecord() in GSFlib, used to deallocate memory assigned by the library but managed by the calling application,
+is not required by gsfpy as memory allocation and deallocation is handled by ctypes. gsfFree() is therefore omitted from the package.
+
+gsf_register_progress_callback()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Implementation of the GSFlib function gsf_register_progress_callback() is not applicable for gsfpy as the DISPLAY_SPINNER macro was not defined
+during compilation. It is therefore omitted from the package.
+
 Generic Sensor Format Documentation
 -----------------------------------
 

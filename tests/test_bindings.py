@@ -1039,32 +1039,3 @@ class TestBindings:
 
         # Assert
         assert_that(ret_val_status_clear.value).is_equal_to(0x0020)
-
-    # TODO - See gsfpy issue #50
-    # def test_gsfFree_success(self):
-    #     """
-    #     Read a gsf record, then free the memory.
-    #     """
-    #     # Arrange
-    #     file_handle = c_int(0)
-    #     data_id = c_gsfDataID()
-    #     records = c_gsfRecords()
-
-    #     # Act
-    #     ret_val_open = gsfpy.bindings.gsfOpen(
-    #         self.test_data_path, FileMode.GSF_READONLY, byref(file_handle)
-    #     )
-    #     bytes_read = gsfpy.bindings.gsfRead(
-    #         file_handle,
-    #         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
-    #         byref(data_id),
-    #         byref(records),
-    #     )
-    #     gsfpy.bindings.gsfFree(byref(records))
-    #     ret_val_close = gsfpy.bindings.gsfClose(file_handle)
-
-    #     # Assert
-    #     assert_that(ret_val_open).is_equal_to(SUCCESS_RET_VAL)
-    #     assert_that(bytes_read).is_equal_to(6552)
-    #     assert_that(records).is_none()
-    #     assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)

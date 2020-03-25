@@ -178,9 +178,6 @@ _gsf_lib.gsfLoadDepthScaleFactorAutoOffset.argtypes = [
 ]
 _gsf_lib.gsfLoadDepthScaleFactorAutoOffset.restype = c_int
 
-# _gsf_lib.gsfFree.argtypes = [POINTER(c_gsfRecords)]
-# _gsf_lib.gsfFree.restype = None
-
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     """
@@ -645,14 +642,3 @@ def gsfClearPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> c_ushort:
             usflags cleared.
     """
     return c_ushort(ping_flags.value & ~usflag.value)
-
-
-# TODO - see gsfpy issue #50
-def gsfFree(p_rec):
-    """
-    :param p_mbparams: POINTER(c_gsfRecords)
-    :return: None. Note that, upon return, the memory previously allocated to the
-             given gsfRecords structure will be deallocated.
-    """
-    # return _gsf_lib.gsfFree(p_rec)
-    return 0
