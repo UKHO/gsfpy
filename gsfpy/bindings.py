@@ -5,6 +5,7 @@ from ctypes import (
     c_char_p,
     c_double,
     c_int,
+    c_longlong,
     c_ubyte,
     c_ushort,
     memmove,
@@ -121,6 +122,12 @@ _gsf_lib.gsfGetMBParams.argtypes = [
     POINTER(c_int),
 ]
 _gsf_lib.gsfGetMBParams.restype = c_int
+
+_gsf_lib.gsfStat.argtypes = [
+    POINTER(c_char),
+    POINTER(c_longlong),
+]
+_gsf_lib.gsfStat.restype = c_int
 
 _gsf_lib.gsfGetPositionDestination.argtypes = [
     c_GSF_POSITION,
@@ -485,6 +492,17 @@ def gsfGetMBParams(p_rec, p_mbparams, p_numArrays) -> int:
              structure.
     """
     return _gsf_lib.gsfGetMBParams(p_rec, p_mbparams, p_numArrays)
+
+
+def gsfStat(p_filename, p_sz) -> int:
+    """
+    :param p_filename: POINTER(c_char)
+    :param p_sz: POINTER(c_longlong)
+    :return: 0 if successful, otherwise -1. Note that, in the event of a successful
+             call, the contents of the p_sz parameter are updated with the size
+             (in bytes) of the file identified by p_filename.
+    """
+    return _gsf_lib.gsfStat(p_filename, p_sz)
 
 
 def gsfLoadScaleFactor(

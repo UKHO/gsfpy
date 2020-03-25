@@ -7,6 +7,7 @@ from ctypes import (
     c_double,
     c_int,
     c_long,
+    c_longlong,
     c_ubyte,
     c_ushort,
     create_string_buffer,
@@ -755,6 +756,22 @@ class TestBindings:
         assert_that(mbparams_out.number_of_transmitters).is_equal_to(1)
         assert_that(mbparams_out.number_of_receivers).is_equal_to(1)
         assert_that(ret_val_close).is_equal_to(SUCCESS_RET_VAL)
+
+    def test_gsfStat_success(self):
+        """
+        Get the size in bytes of a GSF file.
+        """
+        # Arrange
+        sz = c_longlong(0)
+
+        # Act
+        ret_val_stat = gsfpy.bindings.gsfStat(self.test_data_path, byref(sz))
+
+        print(gsfpy.bindings.gsfStringError())
+
+        # Assert
+        assert_that(ret_val_stat).is_equal_to(SUCCESS_RET_VAL)
+        assert_that(sz.value).is_equal_to(62312)
 
     def test_gsfLoadScaleFactor_success(self):
         """
