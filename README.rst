@@ -14,7 +14,16 @@ Python wrapper for the C implementation of the Generic Sensor Format library.
 Features
 --------
 
-* TODO
+* gsfpy.bindings provides wrappers for all GSFlib functions, including I/O, utility and info functions.
+  Minor exceptions are noted in the sections below.
+* For added convenience the gsfpy top level package provides the following higher level abstractions:
+    * open_gsf()
+    * GSFFile (class)
+    * GSFFile.read()
+    * GSFFile.get_number_records()
+    * GSFFile.seek()
+    * GSFFile.write()
+    * GSFFile.close()
 
 Install
 -------
@@ -27,88 +36,41 @@ Install
 Examples of usage
 -----------------
 
-Open/close a GSF file
-^^^^^^^^^^^^^^^^^^^^^
+Open/close/read from a GSF file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-    import gsfpy
-    from ctypes import *
-    from gsfpy.enums import FileMode
+    from gsfpy import open_gsf
+    from gsfpy.enums import RecordType
 
-    mode = FileMode.GSF_READONLY
-    c_int_ptr = POINTER(c_int)
-    p_gsf_fileref = c_int_ptr(c_int(0))
+    with open_gsf("path/to/file.gsf") as gsf_file:
+        # Note - file is closed automatically upon exiting 'with' block
+        _, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
 
-    # Note - pass file paths as byte strings
-    retValOpen = gsfpy.gsfOpen(b'path/to/file.gsf', mode, p_gsf_fileref)
-    retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
-
-
-Read from a GSF file
-^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: python
-
-    import gsfpy
-    from ctypes import *
-    from gsfpy.enums import FileMode, RecordType
-
-    mode = FileMode.GSF_READONLY
-    c_int_ptr = POINTER(c_int)
-    p_gsf_fileref = c_int_ptr(c_int(0))
-
-    commentID = c_gsfDataID()
-    commentID.recordID = c_uint(RecordType.GSF_RECORD_COMMENT.value)
-
-    c_gsfDataID_ptr = POINTER(c_gsfDataID)
-    p_dataID = c_gsfDataID_ptr(commentID)
-
-    c_gsfRecords_ptr = POINTER(c_gsfRecords)
-    p_rec = c_gsfRecords_ptr(c_gsfRecords())
-
-    c_ubyte_ptr = POINTER(c_ubyte)
-    p_stream = c_ubyte_ptr()
-
-    retValOpen = gsfpy.gsfOpen(b'path/to/file.gsf', mode, p_gsf_fileref)
-    bytesRead = gsfpy.gsfRead(p_gsf_fileref[0], c_int(RecordType.GSF_RECORD_COMMENT.value), p_dataID, p_rec, p_stream, 0)
-
-    # Retrieve the value of a field from the comment that was read.
-    # Note the use of ctypes.string_at() to get POINTER(c_char) contents.
-    print(string_at(p_rec.contents.comment.comment))
-
-    retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+        # Note use of ctypes.string_at() to access POINTER(c_char) contents of
+        # c_gsfComment.comment field.
+        print(string_at(record.comment.comment))
 
 Write to a GSF file
 ^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-    import gsfpy
-    from ctypes import *
+    from ctypes import create_string_buffer
+    from gsfpy import open_gsf
     from gsfpy.enums import FileMode, RecordType
-
-    createMode = FileMode.GSF_CREATE
-    c_int_ptr = POINTER(c_int)
-    p_gsf_fileref = c_int_ptr(c_int(0))
-
-    commentID = c_gsfDataID()
-    commentID.recordID = c_uint(RecordType.GSF_RECORD_COMMENT.value)
-
-    c_gsfDataID_ptr = POINTER(c_gsfDataID)
-    p_dataID = c_gsfDataID_ptr(commentID)
+    from gsfpy.gsfRecords import c_gsfRecords
 
     # Initialize the contents of the record that will be written.
     # Note use of ctypes.create_string_buffer() to set POINTER(c_char) contents.
-    c_gsfRecords_ptr = POINTER(c_gsfRecords)
-    p_rec = c_gsfRecords_ptr(c_gsfRecords())
-    p_rec.contents.comment.comment_time.tvsec = c_int(1000)
-    p_rec.contents.comment.comment_length = c_int(17)
-    p_rec.contents.comment.comment = create_string_buffer(b'My first comment')
+    record = c_gsfRecords()
+    record.comment.comment_time.tvsec = c_int(1000)
+    record.comment.comment_length = c_int(len(comment))
+    record.comment.comment = create_string_buffer(comment)
 
-    retValOpenCreate = gsfpy.gsfOpen(b'path/to/new-file.gsf', createMode, p_gsf_fileref)
-    bytesWritten = gsfpy.gsfWrite(p_gsf_fileref[0], p_dataID, p_rec)
-    retValClose = gsfpy.gsfClose(p_gsf_fileref[0])
+    with open_gsf(tmp_gsf_file_path, mode=FileMode.GSF_CREATE) as gsf_file:
+        gsf_file.write(_new_comment(comment), RecordType.GSF_RECORD_COMMENT)
 
 Copy GSF records
 ^^^^^^^^^^^^^^^^
@@ -116,8 +78,12 @@ Copy GSF records
 .. code-block:: python
 
     import gsfpy
-    from ctypes import *
     from gsfpy.enums import FileMode, RecordType
+    from ctypes import *
+    from gsfpy.gsfDataID import c_gsfDataID
+    from gsfpy.gsfRecords import c_gsfRecords
+
+    # This example uses gsfpy.bindings to illustrate use of the lower level functions
 
     file_handle = c_int(0)
     data_id = c_gsfDataID()
@@ -154,8 +120,8 @@ Troubleshoot
     # The gsfIntError() and gsfStringError() functions are useful for
     # diagnostics. They return an error code and corresponding error
     # message, respectively.
-    retValIntError = gsfpy.gsfIntError()
-    retValStringError = gsfpy.gsfStringError()
+    retValIntError = gsfpy.bindings.gsfIntError()
+    retValStringError = gsfpy.bindings.gsfStringError()
     print(retValStringError)
 
 Notes on implementation
@@ -178,9 +144,11 @@ during compilation. It is therefore omitted from the package.
 Generic Sensor Format Documentation
 -----------------------------------
 
-Generic Sensor Format specification: see https://github.com/schwehr/generic-sensor-format/blob/master/doc/GSF_lib_03-06.pdf
+Generic Sensor Format specification: see e.g. https://github.com/schwehr/generic-sensor-format/blob/master/doc/GSF_lib_03-06.pdf
 
-Generic Sensor Format C library v3.06 specification: see https://github.com/schwehr/generic-sensor-format/blob/master/doc/GSF_spec_03-06.pdf
+Generic Sensor Format C library v3.06 specification: see e.g. https://github.com/schwehr/generic-sensor-format/blob/master/doc/GSF_spec_03-06.pdf
+
+More recent versions of these documents can be downloaded from the Leidos_ website.
 
 Dev Setup
 ---------
@@ -218,13 +186,16 @@ Run tests
 Credits
 -------
 
-C implementation of the GSF library provided by Leidos_ under the LGPL license v2.1.
-
-libgsf03-08.so was built from the Leidos_ C code using Make scripts based on those from `schwehr/generic-sensor-format`_
+libgsf03-08.so was built from the Leidos_ C code using the Makefile in `UKHO/libgsf`_
 
 This package was created with Cookiecutter_ and the `UKHO/cookiecutter-pypackage`_ project template.
+
+Related Projects
+----------------
+Also see `schwehr/generic-sensor-format`_
 
 .. _Leidos: https://www.leidos.com/products/ocean-marine
 .. _`schwehr/generic-sensor-format`: https://github.com/schwehr/generic-sensor-format/
 .. _Cookiecutter: https://github.com/cookiecutter/cookiecutter
 .. _`UKHO/cookiecutter-pypackage`: https://github.com/UKHO/cookiecutter-pypackage
+.. _`UKHO/libgsf`: https://github.com/UKHO/libgsf
