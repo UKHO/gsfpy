@@ -4,9 +4,11 @@ from ctypes import (
     c_char,
     c_double,
     c_int,
+    c_long,
     c_short,
     c_ubyte,
     c_uint,
+    c_ulong,
     c_ushort,
 )
 
@@ -352,58 +354,390 @@ class c_gsfReson8100Specific(Structure):
     ]
 
 
-# FIXME - Define classes for other sensor-specific tyes (from c_gsfReson7100Specific
-#  onwards in the c_gsfSensorSpecific definition)
+RESON7100_RESERVED_1 = c_ubyte * 16
+RESON7100_RESERVED_2 = c_char * 15
+RESON7100_RESERVED_3 = c_char * 8
+
+
 class c_gsfReson7100Specific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("protocol_version", c_uint),
+        ("device_id", c_uint),
+        ("reserved_1", RESON7100_RESERVED_1),
+        ("major_serial_number", c_uint),
+        ("minor_serial_number", c_uint),
+        ("ping_number", c_uint),
+        ("multi_ping_seq", c_uint),
+        ("frequency", c_double),
+        ("sample_rate", c_double),
+        ("receiver_bandwdth", c_double),
+        ("tx_pulse_width", c_double),
+        ("tx_pulse_type_id", c_uint),
+        ("tx_pulse_envlp_id", c_uint),
+        ("tx_pulse_envlp_param", c_double),
+        ("tx_pulse_reserved", c_uint),
+        ("max_ping_rate", c_double),
+        ("ping_period", c_double),
+        ("range", c_double),
+        ("power", c_double),
+        ("gain", c_double),
+        ("control_flags", c_uint),
+        ("projector_id", c_uint),
+        ("projector_steer_angl_vert", c_double),
+        ("projector_steer_angl_horz", c_double),
+        ("projector_beam_wdth_vert", c_double),
+        ("projector_beam_wdth_horz", c_double),
+        ("projector_beam_focal_pt", c_double),
+        ("projector_beam_weighting_window_type", c_uint),
+        ("projector_beam_weighting_window_param", c_uint),
+        ("transmit_flags", c_uint),
+        ("hydrophone_id", c_uint),
+        ("receiving_beam_weighting_window_type", c_uint),
+        ("receiving_beam_weighting_window_param", c_uint),
+        ("receive_flags", c_uint),
+        ("receive_beam_width", c_double),
+        ("range_filt_min", c_double),
+        ("range_filt_max", c_double),
+        ("depth_filt_min", c_double),
+        ("depth_filt_max", c_double),
+        ("absorption", c_double),
+        ("sound_velocity", c_double),
+        ("spreading", c_double),
+        ("raw_data_from_7027", c_ubyte),
+        ("reserved_2", RESON7100_RESERVED_2),
+        ("sv_source", c_ubyte),
+        ("layer_comp_flag", c_ubyte),
+        ("reserved_3", RESON7100_RESERVED_3),
+    ]
+
+
+RESONTSERIES_RESERVED_1 = c_ubyte * 10
+RESONTSERIES_RESERVED_2 = c_ubyte * 3
+RESONTSERIES_RESERVED_3 = c_ubyte * 32
+RESONTSERIES_RESERVED_7027 = c_ubyte * 420
+RESONTSERIES_DEVICE_DESCRIPTION = c_char * 60
 
 
 class c_gsfResonTSeriesSpecific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("protocol_version", c_uint),
+        ("device_id", c_uint),
+        ("number_devices", c_uint),
+        ("system_enumerator", c_ushort),
+        ("reserved_1", RESONTSERIES_RESERVED_1),
+        ("major_serial_number", c_uint),
+        ("minor_serial_number", c_uint),
+        ("ping_number", c_uint),
+        ("multi_ping_seq", c_uint),
+        ("frequency", c_double),
+        ("sample_rate", c_double),
+        ("receiver_bandwdth", c_double),
+        ("tx_pulse_width", c_double),
+        ("tx_pulse_type_id", c_uint),
+        ("tx_pulse_envlp_id", c_uint),
+        ("tx_pulse_envlp_param", c_double),
+        ("tx_pulse_mode", c_ushort),
+        ("tx_pulse_reserved", c_ushort),
+        ("max_ping_rate", c_double),
+        ("ping_period", c_double),
+        ("range", c_double),
+        ("power", c_double),
+        ("gain", c_double),
+        ("control_flags", c_uint),
+        ("projector_id", c_uint),
+        ("projector_steer_angl_vert", c_double),
+        ("projector_steer_angl_horz", c_double),
+        ("projector_beam_wdth_vert", c_double),
+        ("projector_beam_wdth_horz", c_double),
+        ("projector_beam_focal_pt", c_double),
+        ("projector_beam_weighting_window_type", c_uint),
+        ("projector_beam_weighting_window_param", c_double),
+        ("transmit_flags", c_uint),
+        ("hydrophone_id", c_uint),
+        ("receiving_beam_weighting_window_type", c_uint),
+        ("receiving_beam_weighting_window_param", c_double),
+        ("receive_flags", c_uint),
+        ("receive_beam_width", c_double),
+        ("range_filt_min", c_double),
+        ("range_filt_max", c_double),
+        ("depth_filt_min", c_double),
+        ("depth_filt_max", c_double),
+        ("absorption", c_double),
+        ("sound_velocity", c_double),
+        ("sv_source", c_ubyte),
+        ("spreading", c_double),
+        ("beam_spacing_mode", c_ushort),
+        ("sonar_source_mode", c_ushort),
+        ("coverage_mode", c_ubyte),
+        ("coverage_angle", c_double),
+        ("horizontal_receiver_steering_angle", c_double),
+        ("reserved_2", RESONTSERIES_RESERVED_2),
+        ("uncertainty_type", c_uint),
+        ("transmitter_steering_angle", c_double),
+        ("applied_roll", c_double),
+        ("detection_algorithm", c_ushort),
+        ("detection_flags", c_uint),
+        ("device_description", RESONTSERIES_DEVICE_DESCRIPTION),
+        ("reserved_7027", RESONTSERIES_RESERVED_7027),
+        ("reserved_3", RESONTSERIES_RESERVED_3),
+    ]
+
+
+EM4_SPARE_BYTES = c_ubyte * 16
+
+
+class c_gsfEM4TxSector(Structure):
+    _fields_ = [
+        ("tilt_angle", c_double),
+        ("focus_range", c_double),
+        ("signal_length", c_double),
+        ("transmit_delay", c_double),
+        ("center_frequency", c_double),
+        ("mean_absorption", c_double),
+        ("waveform_id", c_int),
+        ("sector_number", c_int),
+        ("signal_bandwidth", c_double),
+        ("spare", EM4_SPARE_BYTES),
+    ]
+
+
+EM4_SECTORS = c_gsfEM4TxSector * 16
 
 
 class c_gsfEM4Specific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("model_number", c_int),
+        ("ping_counter", c_int),
+        ("serial_number", c_int),
+        ("surface_velocity", c_double),
+        ("transducer_depth", c_double),
+        ("valid_detections", c_int),
+        ("sampling_frequency", c_double),
+        ("doppler_corr_scale", c_uint),
+        ("vehicle_depth", c_double),
+        ("spare_1", EM4_SPARE_BYTES),
+        ("transmit_sectors", c_int),
+        ("sector", EM4_SECTORS),
+        ("spare_2", EM4_SPARE_BYTES),
+        ("run_time", c_gsfEMRunTime),
+        ("pu_status", c_gsfEMPUStatus),
+    ]
+
+
+GEOSWATH_SPARE_BYTES = c_char * 32
 
 
 class c_gsfGeoSwathPlusSpecific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("data_source", c_int),
+        ("side", c_int),
+        ("model_number", c_int),
+        ("frequency", c_double),
+        ("echosounder_type", c_int),
+        ("ping_number", c_long),
+        ("num_nav_samples", c_int),
+        ("num_attitude_samples", c_int),
+        ("num_heading_samples", c_int),
+        ("num_miniSVS_samples", c_int),
+        ("num_echosounder_samples", c_int),
+        ("num_raa_samples", c_int),
+        ("mean_sv", c_double),
+        ("surface_velocity", c_double),
+        ("valid_beams", c_int),
+        ("sample_rate", c_double),
+        ("pulse_length", c_double),
+        ("ping_length", c_int),
+        ("transmit_power", c_int),
+        ("sidescan_gain_channel", c_int),
+        ("stabilization", c_int),
+        ("gps_quality", c_int),
+        ("range_uncertainty", c_double),
+        ("angle_uncertainty", c_double),
+        ("spare", GEOSWATH_SPARE_BYTES),
+    ]
+
+
+KLEIN5410_SPARE_BYTES = c_char * 32
 
 
 class c_gsfKlein5410BssSpecific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("data_source", c_int),
+        ("side", c_int),
+        ("model_number", c_int),
+        ("acoustic_frequency", c_double),
+        ("sampling_frequency", c_double),
+        ("ping_number", c_uint),
+        ("num_samples", c_uint),
+        ("num_raa_samples", c_uint),
+        ("error_flags", c_uint),
+        ("range", c_uint),
+        ("fish_depth", c_double),
+        ("fish_altitude", c_double),
+        ("sound_speed", c_double),
+        ("tx_waveform", c_int),
+        ("altimeter", c_int),
+        ("raw_data_config", c_uint),
+        ("spare", KLEIN5410_SPARE_BYTES),
+    ]
+
+
+DELTAT_FILE_TYPE = c_char * 4
+DELTAT_SPARE = c_char * 32
 
 
 class c_gsfDeltaTSpecific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("decode_file_type", DELTAT_FILE_TYPE),
+        ("version", c_char),
+        ("ping_byte_size", c_int),
+        ("interrogation_time", timespec.c_timespec),
+        ("samples_per_beam", c_int),
+        ("sector_size", c_double),
+        ("start_angle", c_double),
+        ("angle_increment", c_double),
+        ("acoustic_range", c_int),
+        ("acoustic_frequency", c_int),
+        ("sound_velocity", c_double),
+        ("range_resolution", c_double),
+        ("profile_tilt_angle", c_double),
+        ("repetition_rate", c_double),
+        ("ping_number", c_ulong),
+        ("intensity_flag", c_ubyte),
+        ("ping_latency", c_double),
+        ("data_latency", c_double),
+        ("sample_rate_flag", c_ubyte),
+        ("option_flags", c_ubyte),
+        ("num_pings_avg", c_int),
+        ("center_ping_time_offset", c_double),
+        ("user_defined_byte", c_ubyte),
+        ("altitude", c_double),
+        ("external_sensor_flags", c_char),
+        ("pulse_length", c_double),
+        ("fore_aft_beamwidth", c_double),
+        ("athwartships_beamwidth", c_double),
+        ("spare", DELTAT_SPARE),
+    ]
+
+
+EM12_SPARE = c_char * 32
 
 
 class c_gsfEM12Specific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("ping_number", c_int),
+        ("resolution", c_int),
+        ("ping_quality", c_int),
+        ("sound_velocity", c_double),
+        ("mode", c_int),
+        ("spare", EM12_SPARE),
+    ]
+
+
+R2SONIC_MODELNO = c_ubyte * 12
+R2SONIC_SERIALNO = c_ubyte * 12
+R2SONIC_INFO = c_double * 12
+R2SONIC_SPARE = c_ubyte * 32
 
 
 class c_gsfR2SonicSpecific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("model_number", R2SONIC_MODELNO),
+        ("serial_number", R2SONIC_SERIALNO),
+        ("dg_time", timespec.c_timespec),
+        ("ping_number", c_uint),
+        ("ping_period", c_double),
+        ("sound_speed", c_double),
+        ("frequency", c_double),
+        ("tx_power", c_double),
+        ("tx_pulse_width", c_double),
+        ("tx_beamwidth_vert", c_double),
+        ("tx_beamwidth_horiz", c_double),
+        ("tx_steering_vert", c_double),
+        ("tx_steering_horiz", c_double),
+        ("tx_misc_info", c_uint),
+        ("rx_bandwidth", c_double),
+        ("rx_sample_rate", c_double),
+        ("rx_range", c_double),
+        ("rx_gain", c_double),
+        ("rx_spreading", c_double),
+        ("rx_absorption", c_double),
+        ("rx_mount_tilt", c_double),
+        ("rx_misc_info", c_uint),
+        ("reserved", c_ushort),
+        ("num_beams", c_ushort),
+        ("A0_more_info", R2SONIC_INFO),
+        ("A2_more_info", R2SONIC_INFO),
+        ("G0_depth_gate_min", c_double),
+        ("G0_depth_gate_max", c_double),
+        ("G0_depth_gate_slope", c_double),
+        ("spare", R2SONIC_SPARE),
+    ]
+
+
+SBECHOTRAC_SPARE = c_char * 4
 
 
 class c_gsfSBEchotracSpecific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("navigation_error", c_int),
+        ("mpp_source", c_ushort),
+        ("tide_source", c_ushort),
+        ("dynamic_draft", c_double),
+        ("spare", SBECHOTRAC_SPARE),
+    ]
+
+
+SBMGD77_SPARE = c_char * 4
 
 
 class c_gsfSBMGD77Specific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("time_zone_corr", c_ushort),
+        ("position_type_code", c_ushort),
+        ("correction_code", c_ushort),
+        ("bathy_type_code", c_ushort),
+        ("quality_code", c_ushort),
+        ("travel_time", c_double),
+        ("spare", SBMGD77_SPARE),
+    ]
+
+
+SBBDB_SPARE = c_char * 4
 
 
 class c_gsfSBBDBSpecific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("doc_no", c_int),
+        ("eval", c_char),
+        ("classification", c_char),
+        ("track_adj_flag", c_char),
+        ("source_flag", c_char),
+        ("pt_or_track_ln", c_char),
+        ("datum_flag", c_char),
+        ("spare", c_char),
+    ]
+
+
+SBNOSHDB_SPARE = c_char * 4
 
 
 class c_gsfSBNOSHDBSpecific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("type_code", c_ushort),
+        ("carto_code", c_ushort),
+        ("spare", SBNOSHDB_SPARE),
+    ]
+
+
+SBNAVISOUND_SPARE = c_char * 8
 
 
 class c_gsfSBNavisoundSpecific(Structure):
-    _fields_ = [("FIXME", c_int)]
+    _fields_ = [
+        ("pulse_length", c_double),
+        ("spare", SBNAVISOUND_SPARE),
+    ]
 
 
 class c_gsfSensorSpecific(Union):
