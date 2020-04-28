@@ -9,7 +9,7 @@ coverage==5.1
 flake8-isort==3.0.0
 flake8==3.7.9
 liccheck==0.4.2
-pip==20.0.2
+pip==20.1
 pytest-cov==2.8.1
 pytest-runner==5.2
 pytest==5.4.1
