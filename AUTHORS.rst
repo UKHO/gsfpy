@@ -10,4 +10,6 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Luke Marsden (@lmarsden)
+* Joseph Egan (@eganjs)
+* Paul Cryer-Whitehead (@paulcw-ukho)
