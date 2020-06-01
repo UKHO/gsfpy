@@ -1,5 +1,3 @@
-.. highlight:: shell
-
 ============
 Contributing
 ============
@@ -38,8 +36,8 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-Generic Sensor Format for Python could always use more documentation, whether as part of the
-official Generic Sensor Format for Python docs, in docstrings, or even on the web in blog posts,
+gsfpy could always use more documentation, whether as part of the
+official gsfpy docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
@@ -64,11 +62,8 @@ Ready to contribute? Here's how to set up `gsfpy` for local development.
 
     $ git clone git@github.com:your_name_here/gsfpy.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
-
-    $ mkvirtualenv gsfpy
-    $ cd gsfpy/
-    $ python setup.py develop
+3. Install your local copy into a virtual environment. Refer to the README for
+   instructions on how to do this.
 
 4. Create a branch for local development::
 
@@ -83,7 +78,7 @@ Ready to contribute? Here's how to set up `gsfpy` for local development.
     $ python setup.py test or pytest
     $ tox
 
-   To get flake8 and tox, just pip install them into your virtualenv.
+   To get flake8 and tox, just pip install them into your virtual environment.
 
 6. Commit your changes and push your branch to GitHub::
 
@@ -100,10 +95,9 @@ Before you submit a pull request, check that it meets these guidelines:
 
 1. The pull request should include tests.
 2. If the pull request adds functionality, the docs should be updated. Put
-   your new functionality into a function with a docstring, and add the
-   feature to the list in README.rst.
-3. The pull request should work for Python 3.5, 3.6, 3.7 and 3.8, and for PyPy. Check
-   and make sure that the tests pass for all supported Python versions.
+   your new functionality into a function with a docstring, and update the README.
+3. The pull request should work for all supported Python versions. The build actions
+   in GitHub will help ensure this is the case.
 
 Tips
 ----
@@ -115,7 +109,7 @@ To run a subset of tests::
 Deploying
 ---------
 
-A reminder for the maintainers on how to deploy.
+A reminder for maintainers on how to deploy.
 Make sure all your changes are committed (including an entry in HISTORY.rst).
 Then run::
 
