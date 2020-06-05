@@ -1,6 +1,6 @@
-================================
-Generic Sensor Format for Python
-================================
+========================================
+gsfpy - Generic Sensor Format for Python
+========================================
 
 
 .. image:: https://github.com/UKHO/gsfpy/workflows/Python%20package/badge.svg
@@ -182,6 +182,20 @@ Run tests
 .. code-block:: bash
 
     make test
+
+Notes on Security
+-----------------
+Some known concerns relating to the underlying GSFlib C library are documented at
+https://github.com/dwcaress/MB-System/issues/368 and
+https://github.com/schwehr/generic-sensor-format/issues. Note that gsfpy simply wraps
+GSFlib and does not purport to stop or mitigate these potential vulnerabilities. It is
+left to the authors of applications calling gsfpy to assess these risks and mitigate
+where deemed necessary.
+
+GSF data processed using gsfpy should be sourced from reliable providers and checked for
+integrity where possible.
+
+Please also refer to the LICENSE file for the terms of use of gsfpy.
 
 Credits
 -------
