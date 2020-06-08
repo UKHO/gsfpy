@@ -1,6 +1,6 @@
 -r requirements.txt
 Pygments==2.6.1
-Sphinx==3.0.4
+Sphinx==3.1.0
 assertpy==1.0
 bandit==1.6.2
 black==19.10b0
