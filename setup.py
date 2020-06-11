@@ -4,17 +4,11 @@
 
 from setuptools import find_packages, setup
 
-with open("README.rst") as readme_file:
+with open("README.md") as readme_file:
     readme = readme_file.read()
 
-with open("HISTORY.rst") as history_file:
+with open("HISTORY.md") as history_file:
     history = history_file.read()
-
-requirements = []
-
-setup_requirements = ["pytest-runner"]
-
-test_requirements = ["pytest>=3"]
 
 setup(
     author="UK Hydrographic Office",
@@ -34,7 +28,7 @@ setup(
     description="""
     Python wrapper for the C implementation of the Generic Sensor Format library.
     """,
-    install_requires=requirements,
+    install_requires=[],
     license="MIT license",
     long_description=readme + "\n\n" + history,
     include_package_data=True,
@@ -42,9 +36,9 @@ setup(
     name="gsfpy",
     packages=find_packages(include=["gsfpy", "gsfpy.*"]),
     package_data={"libgsf03-08.so": ["libgsf/libgsf03-08.so"]},
-    setup_requires=setup_requirements,
+    setup_requires=["pytest-runner"],
     test_suite="tests",
-    tests_require=test_requirements,
+    tests_require=["pytest>=3"],
     url="https://github.com/UKHO/gsfpy",
     version="1.4.0",
     zip_safe=False,
