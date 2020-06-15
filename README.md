@@ -1,6 +1,6 @@
 # gsfpy - Generic Sensor Format for Python
 
-![Python package](https://github.com/UKHO/gsfpy/workflows/Python%20package/badge.svg)
+![Python Package](https://github.com/UKHO/gsfpy/workflows/Python%20Package/badge.svg)
 
 Python wrapper for the C implementation of the Generic Sensor Format library.
 
