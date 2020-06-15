@@ -74,7 +74,8 @@ Ready to contribute? Here's how to set up `gsfpy` for local development.
     To get the required tools for running checks and tests, install them
     into your virtual environment:
     ```shell script
-    pip install -r requirements-dev.txt
+    pip install poetry
+    poetry install
     ```
 
 6.  Commit your changes and push your branch to GitHub:
