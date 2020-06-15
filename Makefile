@@ -50,16 +50,16 @@ clean-test: ## remove test and coverage artifacts
 lint: checktypes checkstyle sast checklicenses ## run all checks
 
 checktypes: ## check types with mypy
-	mypy --ignore-missing-imports gsfpy tests setup.py
+	mypy --ignore-missing-imports gsfpy tests
 
 checkstyle: ## check style with flake8 and black
-	poetry run flake8 gsfpy tests setup.py
-	poetry run isort --check-only --recursive gsfpy tests setup.py
-	poetry run black --check --diff gsfpy tests setup.py
+	poetry run flake8 gsfpy tests
+	poetry run isort --check-only --recursive gsfpy tests
+	poetry run black --check --diff gsfpy tests
 
 fixstyle: ## fix black and isort style violations
-	poetry run isort --recursive gsfpy tests setup.py
-	poetry run black gsfpy tests setup.py
+	poetry run isort --recursive gsfpy tests
+	poetry run black gsfpy tests
 
 sast: ## run static application security testing
 	poetry run bandit -r gsfpy

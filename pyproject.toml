@@ -53,7 +53,6 @@ pytest-cases = "^1.16.0"
 dataclasses = {version = "^0.7", python = ">=3.6,<3.7"}
 
 [tool.pytest.ini_options]
-collect_ignore = ["setup.py"]
 addopts = "--cov=gsfpy --cov-fail-under=95"
 
 [build-system]
