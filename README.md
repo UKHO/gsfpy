@@ -13,12 +13,12 @@ Python wrapper for the C implementation of the Generic Sensor Format library.
 
 - For added convenience the gsfpy top level package provides the following higher level abstractions:
   - `open_gsf()`
-  - `GSFFile` (class)
-  - `GSFFile.read()`
-  - `GSFFile.get_number_records()`
-  - `GSFFile.seek()`
-  - `GSFFile.write()`
-  - `GSFFile.close()`
+  - `GsfFile` (class)
+  - `GsfFile.read()`
+  - `GsfFile.get_number_records()`
+  - `GsfFile.seek()`
+  - `GsfFile.write()`
+  - `GsfFile.close()`
 
 ## Install
 
