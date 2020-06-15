@@ -1,8 +1,9 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - '*.*.*'
 
 jobs:
   deploy:
@@ -11,6 +12,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Get tag
+      id: tag
+      run: |
+        echo ::set-output name=tag::${GITHUB_REF#refs/tags/}
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -19,8 +24,35 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install poetry
-    - name: Build and Publish
+    - name: Build
+      run: |
+        make dist
+    - name: Check tag matches package version
+      run: |
+        ls \ # check tag matches package version
+          dist/gsfpy-${{ steps.tag.outputs.tag }}.tar.gz \
+          dist/gsfpy-${{ steps.tag.outputs.tag }}-py3-none-any.whl
+    - name: Publish to PyPI
       env:
         POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
       run: |
         make release
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.tag }}
+        release_name: ${{ steps.tag.outputs.tag }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/gsfpy-${{ steps.tag.outputs.tag }}.tar.gz
+        asset_name: gsfpy-${{ steps.tag.outputs.tag }}.tar.gz
+        asset_content_type: application/gzip
