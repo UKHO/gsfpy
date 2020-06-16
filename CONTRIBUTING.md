@@ -74,7 +74,7 @@ Ready to contribute? Here's how to set up `gsfpy` for local development.
     To get the required tools for running checks and tests, install them
     into your virtual environment:
     ```shell script
-    pip install poetry
+    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
     poetry install
     ```
 

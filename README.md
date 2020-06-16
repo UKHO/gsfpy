@@ -168,7 +168,7 @@ By default Poetry will create it's own virtual environment using your system's P
 ```shell script
 git clone git@github.com:UKHO/gsfpy.git
 cd gsfpy
-pip install poetry
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 poetry install
 ```
 
@@ -181,7 +181,7 @@ cd gsfpy
 pyenv install 3.8.3
 pyenv virtualenv 3.8.3 gsfpy
 pyenv local gsfpy
-pip install poetry
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 poetry install
 ```
 
@@ -192,7 +192,7 @@ git clone git@github.com:UKHO/gsfpy.git
 virtualenv gsfpy (--always-copy)
 cd gsfpy
 source bin/activate
-pip install poetry
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 poetry install
 ```
 
