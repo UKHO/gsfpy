@@ -29,10 +29,10 @@ jobs:
       run: |
         make dist
     - name: Check tag matches package version
-      run: |
-        ls \ # check tag matches package version
-          dist/gsfpy-${{ steps.tag.outputs.tag }}.tar.gz \
-          dist/gsfpy-${{ steps.tag.outputs.tag }}-py3-none-any.whl
+      run: >
+        ls
+        dist/gsfpy-${{ steps.tag.outputs.tag }}.tar.gz
+        dist/gsfpy-${{ steps.tag.outputs.tag }}-py3-none-any.whl
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
