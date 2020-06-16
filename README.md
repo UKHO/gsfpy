@@ -162,13 +162,14 @@ More recent versions of these documents can be downloaded from the
 
 ## Dev Setup
 
+[Ensure Poetry is installed before proceeding](https://python-poetry.org/docs/#installation)
+
 ### Poetry (Recommended)
 By default Poetry will create it's own virtual environment using your system's Python. [This feature can be disabled.](https://python-poetry.org/docs/faq/#i-dont-want-poetry-to-manage-my-virtual-environments-can-i-disable-it)
 
 ```shell script
 git clone git@github.com:UKHO/gsfpy.git
 cd gsfpy
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 poetry install
 ```
 
@@ -181,7 +182,6 @@ cd gsfpy
 pyenv install 3.8.3
 pyenv virtualenv 3.8.3 gsfpy
 pyenv local gsfpy
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 poetry install
 ```
 
@@ -192,7 +192,6 @@ git clone git@github.com:UKHO/gsfpy.git
 virtualenv gsfpy (--always-copy)
 cd gsfpy
 source bin/activate
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 poetry install
 ```
 
