@@ -173,7 +173,7 @@ _gsf_lib.gsfLoadDepthScaleFactorAutoOffset.argtypes = [
     c_double,
     c_double,
     POINTER(c_double),
-    c_char,
+    POINTER(c_ubyte),
     c_double,
 ]
 _gsf_lib.gsfLoadDepthScaleFactorAutoOffset.restype = c_int
