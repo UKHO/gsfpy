@@ -173,7 +173,7 @@ _gsf_lib.gsfLoadDepthScaleFactorAutoOffset.argtypes = [
     c_double,
     c_double,
     POINTER(c_double),
-    c_char,
+    POINTER(c_ubyte),
     c_double,
 ]
 _gsf_lib.gsfLoadDepthScaleFactorAutoOffset.restype = c_int
@@ -278,7 +278,7 @@ def gsfGetNumberRecords(handle: c_int, desired_record: RecordType) -> int:
 
 
 def gsfIndexTime(
-    handle: c_int, record_type: c_int, record_number: c_int, p_sec, p_nsec
+    handle: c_int, record_type: RecordType, record_number: c_int, p_sec, p_nsec
 ) -> int:
     """
     :param handle: c_int
@@ -318,7 +318,7 @@ def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship) -> int:
 
 
 def gsfGetSwathBathyArrayMinMax(
-    p_ping, subrecordID: c_int, p_min_value, p_max_value
+    p_ping, subrecord_id: c_int, p_min_value, p_max_value
 ) -> int:
     """
     :param p_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
@@ -330,7 +330,7 @@ def gsfGetSwathBathyArrayMinMax(
              bathymetry arrays in the given ping.
     """
     return _gsf_lib.gsfGetSwathBathyArrayMinMax(
-        p_ping, subrecordID, p_min_value, p_max_value
+        p_ping, subrecord_id, p_min_value, p_max_value
     )
 
 
@@ -351,7 +351,7 @@ def gsfGetSonarTextName(p_ping) -> str:
              structure if this is defined, otherwise 'Unknown'.
     """
     p_sonar_name = _gsf_lib.gsfGetSonarTextName(p_ping)
-    return string_at(p_sonar_name)
+    return string_at(p_sonar_name).decode()
 
 
 def gsfFileSupportsRecalculateXYZ(handle: c_int, p_status) -> int:
@@ -502,11 +502,11 @@ def gsfStat(p_filename, p_sz) -> int:
 
 
 def gsfLoadScaleFactor(
-    p_sf, subRecordID: c_int, c_flag: c_char, precision: c_double, offset: c_int
+    p_sf, subrecord_id: c_int, c_flag: c_char, precision: c_double, offset: c_int
 ) -> int:
     """
     :param p_sf: POINTER(gsfpy.gsfRecords.c_gsfScaleFactors)
-    :param subRecordID: c_int
+    :param subrecord_id: c_int
     :param c_flag: c_char
     :param precision: c_double
     :param offset: c_int
@@ -515,15 +515,15 @@ def gsfLoadScaleFactor(
              into the given gsfScaleFactors structure. See GSF library documentation
              for further details.
     """
-    return _gsf_lib.gsfLoadScaleFactor(p_sf, subRecordID, c_flag, precision, offset)
+    return _gsf_lib.gsfLoadScaleFactor(p_sf, subrecord_id, c_flag, precision, offset)
 
 
 def gsfGetScaleFactor(
-    handle: c_int, subRecordID: c_int, p_c_flag, p_multiplier, p_offset
+    handle: c_int, subrecord_id: c_int, p_c_flag, p_multiplier, p_offset
 ) -> int:
     """
     :param handle: c_int
-    :param subRecordID: c_int
+    :param subrecord_id: c_int
     :param p_c_flag: POINTER(c_uchar)
     :param p_multiplier: POINTER(c_double)
     :param p_offset: POINTER(c_double)
@@ -537,7 +537,7 @@ def gsfGetScaleFactor(
              gsfGetScaleFactor().
     """
     return _gsf_lib.gsfGetScaleFactor(
-        handle, subRecordID, p_c_flag, p_multiplier, p_offset
+        handle, subrecord_id, p_c_flag, p_multiplier, p_offset
     )
 
 
@@ -553,17 +553,17 @@ def gsfSetDefaultScaleFactor(p_mb_ping) -> int:
 
 def gsfLoadDepthScaleFactorAutoOffset(
     p_mb_ping,
-    subRecordID: c_int,
+    subrecord_id: c_int,
     reset: c_int,
     min_depth: c_double,
     max_depth: c_double,
-    last_corrector: POINTER(c_double),
+    last_corrector,
     p_c_flag,
     precision: c_double,
 ) -> int:
     """
     :param p_mb_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
-    :param subRecordID: c_int
+    :param subrecord_id: c_int
     :param reset: c_int
     :param min_depth: c_double
     :param max_depth: c_double
@@ -575,7 +575,7 @@ def gsfLoadDepthScaleFactorAutoOffset(
     """
     return _gsf_lib.gsfLoadDepthScaleFactorAutoOffset(
         p_mb_ping,
-        subRecordID,
+        subrecord_id,
         reset,
         min_depth,
         max_depth,

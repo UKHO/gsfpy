@@ -47,23 +47,25 @@ If you are proposing a feature:
 
 Ready to contribute? Here's how to set up `gsfpy` for local development.
 
-1.  Fork the `gsfpy` repo on GitHub.
+1.  [Make sure Poetry is installed](https://python-poetry.org/docs/#installation)
 
-2.  Clone your fork locally:
+2.  Fork the `gsfpy` repo on GitHub.
+
+3.  Clone your fork locally:
     ```shell script
     git clone git@github.com:your_name_here/gsfpy.git
     ```
 
-3.  Install your local copy into a virtual environment. Refer to the
+4.  Install your local copy into a virtual environment. Refer to the
     README for instructions on how to do this.
 
-4.  Create a branch for local development:
+5.  Create a branch for local development:
     ```shell script
     git checkout -b name-of-your-bugfix-or-feature
     ```
     Now you can make your changes locally.
 
-5.  When you're done making changes, check that your changes pass
+6.  When you're done making changes, check that your changes pass
     the checks and tests, including testing other Python versions with
     tox:
     ```shell script
@@ -74,17 +76,19 @@ Ready to contribute? Here's how to set up `gsfpy` for local development.
     To get the required tools for running checks and tests, install them
     into your virtual environment:
     ```shell script
-    pip install -r requirements-dev.txt
+    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+    source $HOME/.poetry/env
+    poetry install
     ```
 
-6.  Commit your changes and push your branch to GitHub:
+7.  Commit your changes and push your branch to GitHub:
     ```shell script
     git add .
     git commit -m "Your detailed description of your changes."
     git push origin name-of-your-bugfix-or-feature
     ```
 
-7.  Submit a pull request through the GitHub website.
+8.  Submit a pull request through the GitHub website.
 
 ## Pull Request Guidelines
 

@@ -1,9 +1,11 @@
 __author__ = """UK Hydrographic Office"""
 __email__ = "datascienceandengineering@ukho.gov.uk"
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 
 from ctypes import byref, c_int
-from typing import Optional, Tuple
+from os import fsencode
+from pathlib import Path
+from typing import Optional, Tuple, Union
 
 from gsfpy.bindings import (
     gsfClose,
@@ -131,7 +133,9 @@ class GsfFile:
 
 
 def open_gsf(
-    path: str, mode: FileMode = FileMode.GSF_READONLY, buffer_size: Optional[int] = None
+    path: Union[str, Path],
+    mode: FileMode = FileMode.GSF_READONLY,
+    buffer_size: Optional[int] = None,
 ) -> GsfFile:
     """
     Factory function to create GsfFile objects
@@ -144,8 +148,11 @@ def open_gsf(
     """
     handle = c_int(0)
 
+    if isinstance(path, Path):
+        path = str(path)
+
     _handle_failure(
-        gsfOpen(path.encode(), mode, byref(handle))
+        gsfOpen(fsencode(path), mode, byref(handle))
         if buffer_size is None
         else gsfOpenBuffered(path.encode(), mode, byref(handle), buffer_size)
     )

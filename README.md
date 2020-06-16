@@ -1,6 +1,6 @@
 # gsfpy - Generic Sensor Format for Python
 
-![Python package](https://github.com/UKHO/gsfpy/workflows/Python%20package/badge.svg)
+![Python Package](https://github.com/UKHO/gsfpy/workflows/Python%20Package/badge.svg)
 
 Python wrapper for the C implementation of the Generic Sensor Format library.
 
@@ -13,12 +13,12 @@ Python wrapper for the C implementation of the Generic Sensor Format library.
 
 - For added convenience the gsfpy top level package provides the following higher level abstractions:
   - `open_gsf()`
-  - `GSFFile` (class)
-  - `GSFFile.read()`
-  - `GSFFile.get_number_records()`
-  - `GSFFile.seek()`
-  - `GSFFile.write()`
-  - `GSFFile.close()`
+  - `GsfFile` (class)
+  - `GsfFile.read()`
+  - `GsfFile.get_number_records()`
+  - `GsfFile.seek()`
+  - `GsfFile.write()`
+  - `GsfFile.close()`
 
 ## Install
 
@@ -162,7 +162,19 @@ More recent versions of these documents can be downloaded from the
 
 ## Dev Setup
 
-### Pyenv (Recommended)
+[Ensure Poetry is installed before proceeding](https://python-poetry.org/docs/#installation)
+
+### Poetry (Recommended)
+By default Poetry will create it's own virtual environment using your system's Python. [This feature can be disabled.](https://python-poetry.org/docs/faq/#i-dont-want-poetry-to-manage-my-virtual-environments-can-i-disable-it)
+
+```shell script
+git clone git@github.com:UKHO/gsfpy.git
+cd gsfpy
+poetry install
+```
+
+### Pyenv
+A good choice if you want to run a version of Python different than available through your system's package manager
 
 ```shell script
 git clone git@github.com:UKHO/gsfpy.git
@@ -170,7 +182,7 @@ cd gsfpy
 pyenv install 3.8.3
 pyenv virtualenv 3.8.3 gsfpy
 pyenv local gsfpy
-pip install -r requirements-dev.txt
+poetry install
 ```
 
 ### Virtualenv
@@ -180,7 +192,7 @@ git clone git@github.com:UKHO/gsfpy.git
 virtualenv gsfpy (--always-copy)
 cd gsfpy
 source bin/activate
-pip install -r requirements-dev.txt
+poetry install
 ```
 
 ## Run tests

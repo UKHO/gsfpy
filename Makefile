@@ -24,7 +24,7 @@ export PRINT_HELP_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 help:
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+	@poetry run python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 
@@ -47,47 +47,47 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
-lint: checkstyle sast checklicenses ## run all checks
+lint: checktypes checkstyle sast checklicenses ## run all checks
+
+checktypes: ## check types with mypy
+	mypy --ignore-missing-imports gsfpy tests
 
 checkstyle: ## check style with flake8 and black
-	flake8 gsfpy tests setup.py
-	isort --check-only --recursive gsfpy tests setup.py
-	black --check --diff gsfpy tests setup.py
+	poetry run flake8 gsfpy tests
+	poetry run isort --check-only --recursive gsfpy tests
+	poetry run black --check --diff gsfpy tests
 
 fixstyle: ## fix black and isort style violations
-	isort --recursive gsfpy tests setup.py
-	black gsfpy tests setup.py
+	poetry run isort --recursive gsfpy tests
+	poetry run black gsfpy tests
 
 sast: ## run static application security testing
-	bandit -r gsfpy
+	poetry run bandit -r gsfpy
 
 checklicenses: requirements.txt ## check dependencies meet licence rules
-	liccheck -s liccheck.ini -r requirements.txt
+	poetry run liccheck -s liccheck.ini
 
-test: requirements.txt ## run tests quickly with the default Python
-	pytest --verbose --capture=no
+test: install ## run tests quickly with the default Python
+	poetry run pytest --verbose --capture=no
 
 test-all: requirements.txt ## run tests on every Python version with tox
-	tox
+	poetry run tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source gsfpy -m pytest
-	coverage report -m
-	coverage html
-	$(BROWSER) htmlcov/index.html
+	poetry run coverage run --source gsfpy -m pytest
+	poetry run coverage report -m
+	poetry run coverage html
+	poetry run $(BROWSER) htmlcov/index.html
 
 release: dist ## package and upload a release
-	twine upload dist/*
+	poetry publish
 
 dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
+	poetry build
 
-install: clean requirements.txt ## install the package to the active Python's site-packages
-	python setup.py install
+install: requirements.txt ## install the package to the active Python's site-packages
+	poetry install
 
-requirements.txt: setup.py ## create/update the requirements.txt file using pip-tools
-	pip install -r requirements-dev.txt
-	pip-compile
-	pip install -r requirements.txt
+requirements.txt: poetry.lock ## create/update the requirements.txt file using poetry
+	poetry export --format requirements.txt
+	touch requirements.txt # when there are no dependencies
