@@ -33,11 +33,6 @@ jobs:
         ls \ # check tag matches package version
           dist/gsfpy-${{ steps.tag.outputs.tag }}.tar.gz \
           dist/gsfpy-${{ steps.tag.outputs.tag }}-py3-none-any.whl
-    - name: Publish to PyPI
-      env:
-        POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-      run: |
-        make release
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -57,3 +52,8 @@ jobs:
         asset_path: dist/gsfpy-${{ steps.tag.outputs.tag }}.tar.gz
         asset_name: gsfpy-${{ steps.tag.outputs.tag }}.tar.gz
         asset_content_type: application/gzip
+    - name: Publish to PyPI
+      env:
+        POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        make release
