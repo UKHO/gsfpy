@@ -5,6 +5,7 @@
 Python wrapper for the C implementation of the Generic Sensor Format library.
 
 - Free software: MIT license
+- __Note on licensing__: The bundled `libgsf/libgsf03_08.so` is covered by the [LGPL v2.1]() license. A copy of this license is included in the project at libgsf/libgsf_LICENSE.md. As required by the libgsf license, the libgsf shared object library used by gsfpy at runtime may be replaced with a different version by setting the `LD_LIBRARY_PATH` environment variable to the directory location of the new library.
 
 ## Features
 
