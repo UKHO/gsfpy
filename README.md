@@ -21,12 +21,16 @@ Python wrapper for the C implementation of the Generic Sensor Format library.
   - `GsfFile.write()`
   - `GsfFile.close()`
 
-## Install
-
+## Install using `pip`
+#### From PyPI
+```shell script
+pip install gsfpy
+```
+#### From GitHub (SSH)
 ```shell script
 pip install git+ssh://git@github.com/UKHO/gsfpy.git@master
 ```
-
+#### From GitHub (HTTPS)
 ```shell script
 pip install git+https://github.com/UKHO/gsfpy.git@master
 ```
