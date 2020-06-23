@@ -24,8 +24,6 @@ from .gsfRecords import c_gsfRecords
 from .gsfScaleFactors import c_gsfScaleFactors
 from .gsfSwathBathyPing import c_gsfSwathBathyPing
 
-# _libgsf_rel_path = "libgsf/libgsf03-08.so"
-# _libgsf_abs_path = path.join(path.abspath(path.dirname(__file__)), _libgsf_rel_path)
 _libgsf_abs_path = str(Path(__file__).parent / "libgsf" / "libgsf03-08.so")
 
 # Check if the libgsf shared object library location is specified in the environment.
