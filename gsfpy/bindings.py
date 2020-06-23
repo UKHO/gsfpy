@@ -12,7 +12,7 @@ from ctypes import (
     sizeof,
     string_at,
 )
-from os import path
+from os import environ, path
 
 from .enums import FileMode, RecordType, SeekOption
 from .GSF_POSITION import c_GSF_POSITION
@@ -25,7 +25,21 @@ from .gsfSwathBathyPing import c_gsfSwathBathyPing
 
 _gsf_lib_rel_path = "libgsf/libgsf03-08.so"
 _gsf_lib_abs_path = path.join(path.abspath(path.dirname(__file__)), _gsf_lib_rel_path)
-_gsf_lib = CDLL(_gsf_lib_abs_path)
+
+# Check if the libgsf shared object library location is specified in the environment.
+# If so, use the specified library in preference to the bundled version. Handle the
+# case where the library cannot be found.
+if "GSFPY_GSFLIB_PATH" in environ:
+    _gsf_lib_abs_path = environ["GSFPY_GSFLIB_PATH"]
+
+try:
+    _gsf_lib = CDLL(_gsf_lib_abs_path)
+except OSError as osex:
+    raise Exception(
+        f"""Cannot load shared library from {_gsf_lib_abs_path}. Set the
+            $GSFPY_GSFLIB_PATH environment variable to the correct path,
+            or remove it from the environment to use the default version."""
+    ) from osex
 
 _gsf_lib.gsfClose.argtypes = [c_int]
 _gsf_lib.gsfClose.restype = c_int
