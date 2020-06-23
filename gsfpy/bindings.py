@@ -12,7 +12,8 @@ from ctypes import (
     sizeof,
     string_at,
 )
-from os import environ, path
+from os import environ
+from pathlib import Path
 
 from .enums import FileMode, RecordType, SeekOption
 from .GSF_POSITION import c_GSF_POSITION
@@ -23,22 +24,23 @@ from .gsfRecords import c_gsfRecords
 from .gsfScaleFactors import c_gsfScaleFactors
 from .gsfSwathBathyPing import c_gsfSwathBathyPing
 
-_gsf_lib_rel_path = "libgsf/libgsf03-08.so"
-_gsf_lib_abs_path = path.join(path.abspath(path.dirname(__file__)), _gsf_lib_rel_path)
+# _libgsf_rel_path = "libgsf/libgsf03-08.so"
+# _libgsf_abs_path = path.join(path.abspath(path.dirname(__file__)), _libgsf_rel_path)
+_libgsf_abs_path = str(Path(__file__).parent / "libgsf" / "libgsf03-08.so")
 
 # Check if the libgsf shared object library location is specified in the environment.
 # If so, use the specified library in preference to the bundled version. Handle the
 # case where the library cannot be found.
-if "GSFPY_GSFLIB_PATH" in environ:
-    _gsf_lib_abs_path = environ["GSFPY_GSFLIB_PATH"]
+if "GSFPY_LIBGSF_PATH" in environ:
+    _libgsf_abs_path = environ["GSFPY_LIBGSF_PATH"]
 
 try:
-    _gsf_lib = CDLL(_gsf_lib_abs_path)
+    _gsf_lib = CDLL(_libgsf_abs_path)
 except OSError as osex:
     raise Exception(
-        f"""Cannot load shared library from {_gsf_lib_abs_path}. Set the
-            $GSFPY_GSFLIB_PATH environment variable to the correct path,
-            or remove it from the environment to use the default version."""
+        f"Cannot load shared library from {_libgsf_abs_path}. Set the "
+        f"$GSFPY_LIBGSF_PATH environment variable to the correct path, "
+        f"or remove it from the environment to use the default version."
     ) from osex
 
 _gsf_lib.gsfClose.argtypes = [c_int]

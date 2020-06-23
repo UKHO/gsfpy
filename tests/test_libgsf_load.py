@@ -1,47 +1,54 @@
-from os import environ, path
-from unittest import TestCase
+import os
+from importlib import reload
+
+import mock
+from assertpy import assert_that
+from pytest import fail, raises
 
 
-class test_libgsf_load(TestCase):
-    def test_libgsf_load_fails_with_incorrect_path(self):
-        # Arrange
-        environ["GSFPY_GSFLIB_PATH"] = "/does/not/exist"
-        expected_errmsg = f"""Cannot load shared library from
-            {environ["GSFPY_GSFLIB_PATH"]}. Set the $GSFPY_GSFLIB_PATH
-            environment variable to the correct path, or remove
-            it from the environment to use the default version."""
+@mock.patch.dict(os.environ, {"GSFPY_LIBGSF_PATH": "/does/not/exist"})
+def test_libgsf_load_fails_with_incorrect_path():
+    # Arrange
+    with raises(Exception) as context:
+        expected_errmsg_start = "Cannot load shared library"
 
         # Act
-        with self.assertRaises(Exception) as context:
-            import_gsfpy()
+        import gsfpy  # noqa
 
-            # Assert
-            self.assertTrue(expected_errmsg in context.exception)
+        reload(gsfpy)
 
-    def test_libgsf_load_succeeds_with_valid_path(self):
-        # Arrange
-        environ["GSFPY_GSFLIB_PATH"] = path.join(
-            path.abspath(path.dirname(__file__)), "libgsf/libgsf03-09.so"
+    # Assert
+    assert_that(str(context.value)).starts_with(expected_errmsg_start)
+
+
+@mock.patch.dict(os.environ, {})
+def test_libgsf_load_succeeds_with_no_path():
+    try:
+        # Act
+        import gsfpy  # noqa
+
+        reload(gsfpy)
+
+    except Exception:
+        # Assert
+        fail("Exception raised unexpectedly when importing gsfpy: {ex}")
+
+
+@mock.patch.dict(
+    os.environ,
+    {
+        "GSFPY_LIBGSF_PATH": os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), "libgsf/libgsf03-09.so"
         )
-
+    },
+)
+def test_libgsf_load_succeeds_with_valid_path():
+    try:
         # Act
-        try:
-            import_gsfpy()
-        except Exception:
-            # Assert
-            self.fail("Exception raised unexpectedly when importing gsfpy")
+        import gsfpy  # noqa
 
-    def test_libgsf_load_succeeds_with_no_path(self):
-        # Arrange
-        del environ["GSFPY_GSFLIB_PATH"]
+        reload(gsfpy)
 
-        # Act
-        try:
-            import_gsfpy()
-        except Exception:
-            # Assert
-            self.fail("Exception raised unexpectedly when importing gsfpy")
-
-
-def import_gsfpy():
-    import gsfpy  # noqa
+    except Exception:
+        # Assert
+        fail("Exception raised unexpectedly when importing gsfpy: {ex}")
