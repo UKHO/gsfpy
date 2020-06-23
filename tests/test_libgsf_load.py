@@ -8,7 +8,7 @@ from pytest import fail, raises
 
 @mock.patch.dict(os.environ, {"GSFPY_LIBGSF_PATH": "/does/not/exist"})
 def test_libgsf_load_fails_with_incorrect_path():
-    # Arrange
+    # Arrange test data
     with raises(Exception) as context:
         expected_errmsg_start = "Cannot load shared library"
 
