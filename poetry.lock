@@ -454,7 +454,7 @@ description = "Separate test code from test cases in pytest."
 name = "pytest-cases"
 optional = false
 python-versions = "*"
-version = "1.16.0"
+version = "1.17.0"
 
 [package.dependencies]
 decopatch = "*"
@@ -663,7 +663,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "e3169e393821ccf9b2af5d69271438cc60a9b9eed29144a02ceab38a295cf91d"
+content-hash = "8524fff35244bdfbab28a7891c0c1c5d5be71a56719e289cfd9aa5e40b9b622e"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -858,8 +858,8 @@ pytest = [
     {file = "pytest-5.4.3.tar.gz", hash = "sha256:7979331bfcba207414f5e1263b5a0f8f521d0f457318836a7355531ed1a4c7d8"},
 ]
 pytest-cases = [
-    {file = "pytest-cases-1.16.0.tar.gz", hash = "sha256:02620db013a2fb2c50693ec2629aa98ae9db2697ab9c5541130e59c806f5e73e"},
-    {file = "pytest_cases-1.16.0-py2.py3-none-any.whl", hash = "sha256:893af1ed98eda22181343eeb6740d250c4b9d95db50b13d0732fbafaf00ad2c3"},
+    {file = "pytest-cases-1.17.0.tar.gz", hash = "sha256:362ab82b36a692081aba9aceb779922dcfea7f43b6658872e07f5d3eeac25a73"},
+    {file = "pytest_cases-1.17.0-py2.py3-none-any.whl", hash = "sha256:4162157a12371ad11954da5b349dd1b9c380a56e366b0d821a475d00542fc7fc"},
 ]
 pytest-cov = [
     {file = "pytest-cov-2.10.0.tar.gz", hash = "sha256:1a629dc9f48e53512fcbfda6b07de490c374b0c83c55ff7a1720b3fccff0ac87"},
