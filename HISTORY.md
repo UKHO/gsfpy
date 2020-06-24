@@ -1,7 +1,7 @@
 # History
 
-## 1.5.2 (2020-06-24)
-- Patch release.
+## 1.6.0 (2020-06-24)
+- Add environment variable `GSFPY_LIBGSF_PATH` to enable swapping out libgsf at runtime
 
 ## 1.5.1 (2020-06-16)
 - First automated release on PyPI.
