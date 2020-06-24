@@ -1,6 +1,6 @@
 __author__ = """UK Hydrographic Office"""
 __email__ = "datascienceandengineering@ukho.gov.uk"
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
 from ctypes import byref, c_int
 from os import fsencode
