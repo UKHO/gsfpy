@@ -33,7 +33,7 @@ if "GSFPY_LIBGSF_PATH" in environ:
     _libgsf_abs_path = environ["GSFPY_LIBGSF_PATH"]
 
 try:
-    _gsf_lib = CDLL(_libgsf_abs_path)
+    _libgsf = CDLL(_libgsf_abs_path)
 except OSError as osex:
     raise Exception(
         f"Cannot load shared library from {_libgsf_abs_path}. Set the "
@@ -41,19 +41,19 @@ except OSError as osex:
         f"or remove it from the environment to use the default version."
     ) from osex
 
-_gsf_lib.gsfClose.argtypes = [c_int]
-_gsf_lib.gsfClose.restype = c_int
+_libgsf.gsfClose.argtypes = [c_int]
+_libgsf.gsfClose.restype = c_int
 
-_gsf_lib.gsfIntError.argtypes = []
-_gsf_lib.gsfIntError.restype = c_int
+_libgsf.gsfIntError.argtypes = []
+_libgsf.gsfIntError.restype = c_int
 
-_gsf_lib.gsfOpen.argtypes = [c_char_p, c_int, (POINTER(c_int))]
-_gsf_lib.gsfOpen.restype = c_int
+_libgsf.gsfOpen.argtypes = [c_char_p, c_int, (POINTER(c_int))]
+_libgsf.gsfOpen.restype = c_int
 
-_gsf_lib.gsfOpenBuffered.argtypes = [c_char_p, c_int, (POINTER(c_int)), c_int]
-_gsf_lib.gsfOpenBuffered.restype = c_int
+_libgsf.gsfOpenBuffered.argtypes = [c_char_p, c_int, (POINTER(c_int)), c_int]
+_libgsf.gsfOpenBuffered.restype = c_int
 
-_gsf_lib.gsfRead.argtypes = [
+_libgsf.gsfRead.argtypes = [
     c_int,
     c_int,
     POINTER(c_gsfDataID),
@@ -61,126 +61,126 @@ _gsf_lib.gsfRead.argtypes = [
     POINTER(c_ubyte),
     c_int,
 ]
-_gsf_lib.gsfRead.restype = c_int
+_libgsf.gsfRead.restype = c_int
 
-_gsf_lib.gsfSeek.argtypes = [c_int, c_int]
-_gsf_lib.gsfSeek.restype = c_int
+_libgsf.gsfSeek.argtypes = [c_int, c_int]
+_libgsf.gsfSeek.restype = c_int
 
-_gsf_lib.gsfStringError.argtypes = []
-_gsf_lib.gsfStringError.restype = c_char_p
+_libgsf.gsfStringError.argtypes = []
+_libgsf.gsfStringError.restype = c_char_p
 
-_gsf_lib.gsfWrite.argtypes = [c_int, POINTER(c_gsfDataID), POINTER(c_gsfRecords)]
-_gsf_lib.gsfWrite.restype = c_int
+_libgsf.gsfWrite.argtypes = [c_int, POINTER(c_gsfDataID), POINTER(c_gsfRecords)]
+_libgsf.gsfWrite.restype = c_int
 
-_gsf_lib.gsfGetNumberRecords.argtypes = [c_int, c_int]
-_gsf_lib.gsfGetNumberRecords.restype = c_int
+_libgsf.gsfGetNumberRecords.argtypes = [c_int, c_int]
+_libgsf.gsfGetNumberRecords.restype = c_int
 
-_gsf_lib.gsfGetSwathBathyBeamWidths.argtypes = [
+_libgsf.gsfGetSwathBathyBeamWidths.argtypes = [
     POINTER(c_gsfRecords),
     POINTER(c_double),
     POINTER(c_double),
 ]
-_gsf_lib.gsfGetSwathBathyBeamWidths.restype = c_int
+_libgsf.gsfGetSwathBathyBeamWidths.restype = c_int
 
-_gsf_lib.gsfGetSwathBathyArrayMinMax.argtypes = [
+_libgsf.gsfGetSwathBathyArrayMinMax.argtypes = [
     POINTER(c_gsfSwathBathyPing),
     c_int,
     POINTER(c_double),
     POINTER(c_double),
 ]
-_gsf_lib.gsfGetSwathBathyArrayMinMax.restype = c_int
+_libgsf.gsfGetSwathBathyArrayMinMax.restype = c_int
 
-_gsf_lib.gsfIsStarboardPing.argtypes = [POINTER(c_gsfRecords)]
-_gsf_lib.gsfIsStarboardPing.restype = c_int
+_libgsf.gsfIsStarboardPing.argtypes = [POINTER(c_gsfRecords)]
+_libgsf.gsfIsStarboardPing.restype = c_int
 
-_gsf_lib.gsfGetSonarTextName.argtypes = [POINTER(c_gsfSwathBathyPing)]
-_gsf_lib.gsfGetSonarTextName.restype = c_char_p
+_libgsf.gsfGetSonarTextName.argtypes = [POINTER(c_gsfSwathBathyPing)]
+_libgsf.gsfGetSonarTextName.restype = c_char_p
 
-_gsf_lib.gsfFileSupportsRecalculateXYZ.argtypes = [c_int, POINTER(c_int)]
-_gsf_lib.gsfFileSupportsRecalculateXYZ.restype = c_int
+_libgsf.gsfFileSupportsRecalculateXYZ.argtypes = [c_int, POINTER(c_int)]
+_libgsf.gsfFileSupportsRecalculateXYZ.restype = c_int
 
-_gsf_lib.gsfFileSupportsRecalculateTPU.argtypes = [c_int, POINTER(c_int)]
-_gsf_lib.gsfFileSupportsRecalculateTPU.restype = c_int
+_libgsf.gsfFileSupportsRecalculateTPU.argtypes = [c_int, POINTER(c_int)]
+_libgsf.gsfFileSupportsRecalculateTPU.restype = c_int
 
-_gsf_lib.gsfFileSupportsRecalculateNominalDepth.argtypes = [c_int, POINTER(c_int)]
-_gsf_lib.gsfFileSupportsRecalculateNominalDepth.restype = c_int
+_libgsf.gsfFileSupportsRecalculateNominalDepth.argtypes = [c_int, POINTER(c_int)]
+_libgsf.gsfFileSupportsRecalculateNominalDepth.restype = c_int
 
-_gsf_lib.gsfFileContainsMBAmplitude.argtypes = [c_int, POINTER(c_int)]
-_gsf_lib.gsfFileContainsMBAmplitude.restype = c_int
+_libgsf.gsfFileContainsMBAmplitude.argtypes = [c_int, POINTER(c_int)]
+_libgsf.gsfFileContainsMBAmplitude.restype = c_int
 
-_gsf_lib.gsfFileContainsMBImagery.argtypes = [c_int, POINTER(c_int)]
-_gsf_lib.gsfFileContainsMBImagery.restype = c_int
+_libgsf.gsfFileContainsMBImagery.argtypes = [c_int, POINTER(c_int)]
+_libgsf.gsfFileContainsMBImagery.restype = c_int
 
-_gsf_lib.gsfIsNewSurveyLine.argtypes = [
+_libgsf.gsfIsNewSurveyLine.argtypes = [
     c_int,
     POINTER(c_gsfRecords),
     c_double,
     POINTER(c_double),
 ]
-_gsf_lib.gsfIsNewSurveyLine.restype = c_int
+_libgsf.gsfIsNewSurveyLine.restype = c_int
 
-_gsf_lib.gsfInitializeMBParams.argtypes = [POINTER(c_gsfMBParams)]
-_gsf_lib.gsfInitializeMBParams.restype = None
+_libgsf.gsfInitializeMBParams.argtypes = [POINTER(c_gsfMBParams)]
+_libgsf.gsfInitializeMBParams.restype = None
 
-_gsf_lib.gsfPutMBParams.argtypes = [
+_libgsf.gsfPutMBParams.argtypes = [
     POINTER(c_gsfMBParams),
     POINTER(c_gsfRecords),
     c_int,
     c_int,
 ]
-_gsf_lib.gsfPutMBParams.restype = c_int
+_libgsf.gsfPutMBParams.restype = c_int
 
-_gsf_lib.gsfGetMBParams.argtypes = [
+_libgsf.gsfGetMBParams.argtypes = [
     POINTER(c_gsfRecords),
     POINTER(c_gsfMBParams),
     POINTER(c_int),
 ]
-_gsf_lib.gsfGetMBParams.restype = c_int
+_libgsf.gsfGetMBParams.restype = c_int
 
-_gsf_lib.gsfStat.argtypes = [
+_libgsf.gsfStat.argtypes = [
     POINTER(c_char),
     POINTER(c_longlong),
 ]
-_gsf_lib.gsfStat.restype = c_int
+_libgsf.gsfStat.restype = c_int
 
-_gsf_lib.gsfGetPositionDestination.argtypes = [
+_libgsf.gsfGetPositionDestination.argtypes = [
     c_GSF_POSITION,
     c_GSF_POSITION_OFFSETS,
     c_double,
     c_double,
 ]
-_gsf_lib.gsfGetPositionDestination.restype = POINTER(c_GSF_POSITION)
+_libgsf.gsfGetPositionDestination.restype = POINTER(c_GSF_POSITION)
 
-_gsf_lib.gsfGetPositionOffsets.argtypes = [
+_libgsf.gsfGetPositionOffsets.argtypes = [
     c_GSF_POSITION,
     c_GSF_POSITION,
     c_double,
     c_double,
 ]
-_gsf_lib.gsfGetPositionOffsets.restype = POINTER(c_GSF_POSITION_OFFSETS)
+_libgsf.gsfGetPositionOffsets.restype = POINTER(c_GSF_POSITION_OFFSETS)
 
-_gsf_lib.gsfLoadScaleFactor.argtypes = [
+_libgsf.gsfLoadScaleFactor.argtypes = [
     POINTER(c_gsfScaleFactors),
     c_int,
     c_char,
     c_double,
     c_int,
 ]
-_gsf_lib.gsfLoadScaleFactor.restype = c_int
+_libgsf.gsfLoadScaleFactor.restype = c_int
 
-_gsf_lib.gsfGetScaleFactor.argtypes = [
+_libgsf.gsfGetScaleFactor.argtypes = [
     c_int,
     c_int,
     POINTER(c_ubyte),
     POINTER(c_double),
     POINTER(c_double),
 ]
-_gsf_lib.gsfGetScaleFactor.restype = c_int
+_libgsf.gsfGetScaleFactor.restype = c_int
 
-_gsf_lib.gsfSetDefaultScaleFactor.argtypes = [POINTER(c_gsfSwathBathyPing)]
-_gsf_lib.gsfSetDefaultScaleFactor.restype = c_int
+_libgsf.gsfSetDefaultScaleFactor.argtypes = [POINTER(c_gsfSwathBathyPing)]
+_libgsf.gsfSetDefaultScaleFactor.restype = c_int
 
-_gsf_lib.gsfLoadDepthScaleFactorAutoOffset.argtypes = [
+_libgsf.gsfLoadDepthScaleFactorAutoOffset.argtypes = [
     POINTER(c_gsfSwathBathyPing),
     c_int,
     c_int,
@@ -190,7 +190,7 @@ _gsf_lib.gsfLoadDepthScaleFactorAutoOffset.argtypes = [
     POINTER(c_ubyte),
     c_double,
 ]
-_gsf_lib.gsfLoadDepthScaleFactorAutoOffset.restype = c_int
+_libgsf.gsfLoadDepthScaleFactorAutoOffset.restype = c_int
 
 
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
@@ -200,7 +200,7 @@ def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     :param p_handle: Instance of POINTER(c_int)
     :return: 0 if successful, otherwise -1
     """
-    return _gsf_lib.gsfOpen(filename, mode, p_handle)
+    return _libgsf.gsfOpen(filename, mode, p_handle)
 
 
 def gsfOpenBuffered(filename: bytes, mode: FileMode, p_handle, buf_size: int) -> int:
@@ -211,7 +211,7 @@ def gsfOpenBuffered(filename: bytes, mode: FileMode, p_handle, buf_size: int) ->
     :param buf_size: c_int
     :return: 0 if successful, otherwise -1
     """
-    return _gsf_lib.gsfOpenBuffered(filename, mode, p_handle, buf_size)
+    return _libgsf.gsfOpenBuffered(filename, mode, p_handle, buf_size)
 
 
 def gsfClose(handle: c_int) -> int:
@@ -219,7 +219,7 @@ def gsfClose(handle: c_int) -> int:
     :param handle: c_int
     :return: 0 if successful, otherwise -1
     """
-    return _gsf_lib.gsfClose(handle)
+    return _libgsf.gsfClose(handle)
 
 
 def gsfSeek(handle: c_int, option: SeekOption) -> int:
@@ -228,21 +228,21 @@ def gsfSeek(handle: c_int, option: SeekOption) -> int:
     :param option: gsfpy.enums.SeekOption
     :return: 0 if successful, otherwise -1
     """
-    return _gsf_lib.gsfSeek(handle, option)
+    return _libgsf.gsfSeek(handle, option)
 
 
 def gsfIntError() -> int:
     """
     :return: The last value that the GSF error code was set to (c_int).
     """
-    return _gsf_lib.gsfIntError()
+    return _libgsf.gsfIntError()
 
 
 def gsfStringError() -> bytes:
     """
     :return: The last value that the GSF error message was set to (c_char_p).
     """
-    return _gsf_lib.gsfStringError()
+    return _libgsf.gsfStringError()
 
 
 def gsfRead(
@@ -264,7 +264,7 @@ def gsfRead(
              POINTER parameters p_data_id, p_records and p_stream will be updated upon
              successful read.
     """
-    return _gsf_lib.gsfRead(
+    return _libgsf.gsfRead(
         handle, desired_record, p_data_id, p_records, p_stream, max_size,
     )
 
@@ -278,7 +278,7 @@ def gsfWrite(handle: c_int, p_data_id, p_records) -> int:
              the POINTER parameters p_data_id and p_records will be updated upon
              successful read.
     """
-    return _gsf_lib.gsfWrite(handle, p_data_id, p_records)
+    return _libgsf.gsfWrite(handle, p_data_id, p_records)
 
 
 def gsfGetNumberRecords(handle: c_int, desired_record: RecordType) -> int:
@@ -288,7 +288,7 @@ def gsfGetNumberRecords(handle: c_int, desired_record: RecordType) -> int:
     :param desired_record: gsfpy.enums.RecordType
     :return: number of records of type desired_record, otherwise -1
     """
-    return _gsf_lib.gsfGetNumberRecords(handle, desired_record)
+    return _libgsf.gsfGetNumberRecords(handle, desired_record)
 
 
 def gsfIndexTime(
@@ -305,7 +305,7 @@ def gsfIndexTime(
              successful read with seconds since the beginning of the epoch (p_sec)
              and nanoseconds since the beginning of the second (p_nsec).
     """
-    return _gsf_lib.gsfIndexTime(handle, record_type, record_number, p_sec, p_nsec)
+    return _libgsf.gsfIndexTime(handle, record_type, record_number, p_sec, p_nsec)
 
 
 def gsfPercent(handle: c_int) -> int:
@@ -314,7 +314,7 @@ def gsfPercent(handle: c_int) -> int:
     :return: The current file position as a percentage of the file size if successful,
              otherwise -1.
     """
-    return _gsf_lib.gsfPercent(handle)
+    return _libgsf.gsfPercent(handle)
 
 
 def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship) -> int:
@@ -328,7 +328,7 @@ def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship) -> int:
              gsfRecords data structure containing a populated gsfSwathBathyPing
              structure.
     """
-    return _gsf_lib.gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship)
+    return _libgsf.gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship)
 
 
 def gsfGetSwathBathyArrayMinMax(
@@ -343,7 +343,7 @@ def gsfGetSwathBathyArrayMinMax(
              the minimum and maximum supportable values for each of the swath
              bathymetry arrays in the given ping.
     """
-    return _gsf_lib.gsfGetSwathBathyArrayMinMax(
+    return _libgsf.gsfGetSwathBathyArrayMinMax(
         p_ping, subrecord_id, p_min_value, p_max_value
     )
 
@@ -355,7 +355,7 @@ def gsfIsStarboardPing(p_data) -> int:
              looking ping from a dual headed sonar installation. Otherwise, zero. If
              the sonar does not have dual transducers, zero is returned.
     """
-    return _gsf_lib.gsfIsStarboardPing(p_data)
+    return _libgsf.gsfIsStarboardPing(p_data)
 
 
 def gsfGetSonarTextName(p_ping) -> str:
@@ -364,7 +364,7 @@ def gsfGetSonarTextName(p_ping) -> str:
     :return: The name of the sensor based on the sensor id contained in the ping
              structure if this is defined, otherwise 'Unknown'.
     """
-    p_sonar_name = _gsf_lib.gsfGetSonarTextName(p_ping)
+    p_sonar_name = _libgsf.gsfGetSonarTextName(p_ping)
     return string_at(p_sonar_name).decode()
 
 
@@ -377,7 +377,7 @@ def gsfFileSupportsRecalculateXYZ(handle: c_int, p_status) -> int:
               the given handle provides sufficient information to support full
               recalculation of the platform relative XYZ values, otherwise 0.
     """
-    return _gsf_lib.gsfFileSupportsRecalculateXYZ(handle, p_status)
+    return _libgsf.gsfFileSupportsRecalculateXYZ(handle, p_status)
 
 
 def gsfFileSupportsRecalculateTPU(handle: c_int, p_status) -> int:
@@ -389,7 +389,7 @@ def gsfFileSupportsRecalculateTPU(handle: c_int, p_status) -> int:
               the given handle contains sufficient information to support calculation
               of total propagated uncertainty (TPU) values, otherwise 0.
     """
-    return _gsf_lib.gsfFileSupportsRecalculateTPU(handle, p_status)
+    return _libgsf.gsfFileSupportsRecalculateTPU(handle, p_status)
 
 
 def gsfFileSupportsRecalculateNominalDepth(handle: c_int, p_status) -> int:
@@ -401,7 +401,7 @@ def gsfFileSupportsRecalculateNominalDepth(handle: c_int, p_status) -> int:
               the given handle contains sufficient information to support calculation
               of the nominal depth array, otherwise 0.
     """
-    return _gsf_lib.gsfFileSupportsRecalculateNominalDepth(handle, p_status)
+    return _libgsf.gsfFileSupportsRecalculateNominalDepth(handle, p_status)
 
 
 def gsfFileContainsMBAmplitude(handle: c_int, p_status) -> int:
@@ -413,7 +413,7 @@ def gsfFileContainsMBAmplitude(handle: c_int, p_status) -> int:
               the given handle contains the average per receive beam amplitude data,
               otherwise 0.
     """
-    return _gsf_lib.gsfFileContainsMBAmplitude(handle, p_status)
+    return _libgsf.gsfFileContainsMBAmplitude(handle, p_status)
 
 
 def gsfFileContainsMBImagery(handle: c_int, p_status) -> int:
@@ -425,7 +425,7 @@ def gsfFileContainsMBImagery(handle: c_int, p_status) -> int:
               the given handle contains the per-receive-beam imagery time series data,
               otherwise 0.
     """
-    return _gsf_lib.gsfFileContainsMBImagery(handle, p_status)
+    return _libgsf.gsfFileContainsMBImagery(handle, p_status)
 
 
 def gsfIsNewSurveyLine(
@@ -442,7 +442,7 @@ def gsfIsNewSurveyLine(
               azimuth_change parameter. Note that p_rec must be populated with a
               gsfSwathBathyPing structure.
     """
-    return _gsf_lib.gsfIsNewSurveyLine(handle, p_rec, azimuth_change, p_last_heading)
+    return _libgsf.gsfIsNewSurveyLine(handle, p_rec, azimuth_change, p_last_heading)
 
 
 def gsfInitializeMBParams(p_mbparams) -> int:
@@ -452,7 +452,7 @@ def gsfInitializeMBParams(p_mbparams) -> int:
              of the given gsfMBParams structure will be initialized to unknown (-99
              for int fields)
     """
-    return _gsf_lib.gsfInitializeMBParams(p_mbparams)
+    return _libgsf.gsfInitializeMBParams(p_mbparams)
 
 
 def gsfCopyRecords(p_target, p_source):
@@ -466,7 +466,7 @@ def gsfCopyRecords(p_target, p_source):
              the target structure.
     """
     try:
-        # Note - implement using memmove() as calling _gsf_lib.gsfCopyRecords()
+        # Note - implement using memmove() as calling _libgsf.gsfCopyRecords()
         #        results in segfault due to memory ownership clashes between
         #        calling application and library.
         memmove(p_target, p_source, sizeof(p_source.contents))
@@ -488,7 +488,7 @@ def gsfPutMBParams(p_mbparams, p_rec, handle: c_int, numArrays: c_int) -> int:
              into the gsfProcessingParameters field of the given gsfRecords data
              structure.
     """
-    return _gsf_lib.gsfPutMBParams(p_mbparams, p_rec, handle, numArrays)
+    return _libgsf.gsfPutMBParams(p_mbparams, p_rec, handle, numArrays)
 
 
 def gsfGetMBParams(p_rec, p_mbparams, p_numArrays) -> int:
@@ -501,7 +501,7 @@ def gsfGetMBParams(p_rec, p_mbparams, p_numArrays) -> int:
              given gsfRecords data structure are written into the given gsfMBParams
              structure.
     """
-    return _gsf_lib.gsfGetMBParams(p_rec, p_mbparams, p_numArrays)
+    return _libgsf.gsfGetMBParams(p_rec, p_mbparams, p_numArrays)
 
 
 def gsfStat(p_filename, p_sz) -> int:
@@ -512,7 +512,7 @@ def gsfStat(p_filename, p_sz) -> int:
              call, the contents of the p_sz parameter are updated with the size
              (in bytes) of the file identified by p_filename.
     """
-    return _gsf_lib.gsfStat(p_filename, p_sz)
+    return _libgsf.gsfStat(p_filename, p_sz)
 
 
 def gsfLoadScaleFactor(
@@ -529,7 +529,7 @@ def gsfLoadScaleFactor(
              into the given gsfScaleFactors structure. See GSF library documentation
              for further details.
     """
-    return _gsf_lib.gsfLoadScaleFactor(p_sf, subrecord_id, c_flag, precision, offset)
+    return _libgsf.gsfLoadScaleFactor(p_sf, subrecord_id, c_flag, precision, offset)
 
 
 def gsfGetScaleFactor(
@@ -550,7 +550,7 @@ def gsfGetScaleFactor(
              from, or written to, the file specified by handle prior to calling
              gsfGetScaleFactor().
     """
-    return _gsf_lib.gsfGetScaleFactor(
+    return _libgsf.gsfGetScaleFactor(
         handle, subrecord_id, p_c_flag, p_multiplier, p_offset
     )
 
@@ -562,7 +562,7 @@ def gsfSetDefaultScaleFactor(p_mb_ping) -> int:
     :return: 0 if successful. Note that, in the event of a successful call, estimated
              scale factors for each of the beam arrays in the ping will be set.
     """
-    return _gsf_lib.gsfSetDefaultScaleFactor(p_mb_ping)
+    return _libgsf.gsfSetDefaultScaleFactor(p_mb_ping)
 
 
 def gsfLoadDepthScaleFactorAutoOffset(
@@ -587,7 +587,7 @@ def gsfLoadDepthScaleFactorAutoOffset(
     :return: 0 if successful. Note that, in the event of a successful call, estimated
              scale factors for each of the beam arrays in the ping will be set.
     """
-    return _gsf_lib.gsfLoadDepthScaleFactorAutoOffset(
+    return _libgsf.gsfLoadDepthScaleFactorAutoOffset(
         p_mb_ping,
         subrecord_id,
         reset,
@@ -608,7 +608,7 @@ def gsfGetPositionDestination(gp, offsets, heading: c_double, dist_step: c_doubl
 
     :return: POINTER(gsfpy.GSF_POSITION.GSF_POSITION) - the destination position.
     """
-    return _gsf_lib.gsfGetPositionDestination(gp, offsets, heading, dist_step)
+    return _libgsf.gsfGetPositionDestination(gp, offsets, heading, dist_step)
 
 
 def gsfGetPositionOffsets(gp_from, gp_to, heading: c_double, dist_step: c_double):
@@ -621,7 +621,7 @@ def gsfGetPositionOffsets(gp_from, gp_to, heading: c_double, dist_step: c_double
     :return: POINTER(gsfpy.c_GSF_POSITION_OFFSETS.c_GSF_POSITION_OFFSETS) -
              the offsets between the two given positions.
     """
-    return _gsf_lib.gsfGetPositionOffsets(gp_from, gp_to, heading, dist_step)
+    return _libgsf.gsfGetPositionOffsets(gp_from, gp_to, heading, dist_step)
 
 
 def gsfTestPingStatus(ping_flags: c_ushort, usflag: c_ushort) -> bool:
