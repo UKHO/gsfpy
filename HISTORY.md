@@ -1,5 +1,8 @@
 # History
 
+## 1.5.2 (2020-06-16)
+- Patch release.
+
 ## 1.5.1 (2020-06-16)
 - First automated release on PyPI.
 
