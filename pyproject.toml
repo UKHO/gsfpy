@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gsfpy"
-version = "1.5.2"
+version = "1.6.0"
 authors = [
     "UK Hydrographic Office <datascienceandengineering@ukho.gov.uk>"
 ]
