@@ -68,7 +68,10 @@ checklicenses: requirements.txt ## check dependencies meet licence rules
 	poetry run liccheck -s liccheck.ini
 
 test: install ## run tests quickly with the default Python
-	poetry run pytest --verbose --capture=no
+	poetry run pytest tests/test_libgsf_load_valid.py --verbose --capture=no
+	poetry run pytest tests/test_libgsf_load_invalid.py --verbose --capture=no
+	poetry run pytest tests/test_libgsf_load_default.py --verbose --capture=no
+	poetry run pytest --ignore-glob=tests/test_libgsf_load_*.py --verbose --capture=no
 
 test-all: requirements.txt ## run tests on every Python version with tox
 	poetry run tox

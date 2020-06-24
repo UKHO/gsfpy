@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gsfpy"
-version = "1.5.1"
+version = "1.5.2"
 authors = [
     "UK Hydrographic Office <datascienceandengineering@ukho.gov.uk>"
 ]
@@ -51,6 +51,7 @@ immutabledict = "^1.0.0"
 mypy = "^0.782"
 pytest-cases = "^1.17.0"
 dataclasses = {version = "^0.7", python = ">=3.6,<3.7"}
+pytest-mock = "^3.1.1"
 
 [tool.pytest.ini_options]
 addopts = "--cov=gsfpy --cov-fail-under=95"
