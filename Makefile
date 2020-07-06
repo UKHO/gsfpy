@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
+.PHONY: clean clean-test clean-pyc clean-build docs help lint checktypes checkstyle sast checklicenses test test-all coverage release
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -49,31 +49,31 @@ clean-test: ## remove test and coverage artifacts
 
 lint: checktypes checkstyle sast checklicenses ## run all checks
 
-checktypes: ## check types with mypy
-	mypy --ignore-missing-imports gsfpy tests
+checktypes: .venv ## check types with mypy
+	poetry run mypy --ignore-missing-imports gsfpy tests
 
-checkstyle: ## check style with flake8 and black
+checkstyle: .venv ## check style with flake8 and black
 	poetry run flake8 gsfpy tests
-	poetry run isort --check-only --recursive gsfpy tests
+	poetry run isort --check-only --profile black gsfpy tests
 	poetry run black --check --diff gsfpy tests
 
-fixstyle: ## fix black and isort style violations
-	poetry run isort --recursive gsfpy tests
+fixstyle: .venv ## fix black and isort style violations
+	poetry run isort --profile black gsfpy tests
 	poetry run black gsfpy tests
 
-sast: ## run static application security testing
+sast: .venv ## run static application security testing
 	poetry run bandit -r gsfpy
 
-checklicenses: requirements.txt ## check dependencies meet licence rules
+checklicenses: .venv requirements.txt ## check dependencies meet licence rules
 	poetry run liccheck -s liccheck.ini
 
-test: install ## run tests quickly with the default Python
+test: .venv ## run tests quickly with the default Python
 	poetry run pytest tests/test_libgsf_load_valid.py --verbose --capture=no
 	poetry run pytest tests/test_libgsf_load_invalid.py --verbose --capture=no
 	poetry run pytest tests/test_libgsf_load_default.py --verbose --capture=no
 	poetry run pytest --ignore-glob=tests/test_libgsf_load_*.py --verbose --capture=no
 
-test-all: requirements.txt ## run tests on every Python version with tox
+test-all: .venv ## run tests on every Python version with tox
 	poetry run tox
 
 coverage: ## check code coverage quickly with the default Python
@@ -88,9 +88,15 @@ release: dist ## package and upload a release
 dist: clean ## builds source and wheel package
 	poetry build
 
-install: requirements.txt ## install the package to the active Python's site-packages
-	poetry install
+requirements.txt: poetry.lock
+	poetry export --format requirements.txt --output requirements.txt
+	@touch requirements.txt # when there are no dependencies
 
-requirements.txt: poetry.lock ## create/update the requirements.txt file using poetry
-	poetry export --format requirements.txt
-	touch requirements.txt # when there are no dependencies
+.venv: poetry.lock
+	poetry config virtualenvs.in-project true
+	poetry install
+	@touch -c .venv
+
+poetry.lock: pyproject.toml
+	poetry update
+	@touch -c poetry.lock
