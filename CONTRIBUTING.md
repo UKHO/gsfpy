@@ -1,7 +1,6 @@
 # Contributing
 
-Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given.
+Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given.
 
 You can contribute in many ways:
 
@@ -12,27 +11,21 @@ You can contribute in many ways:
 Report bugs at <https://github.com/UKHO/gsfpy/issues>.
 
 If you are reporting a bug, please include:
-
 - Your operating system name and version.
 - Any details about your local setup that might be helpful in troubleshooting.
 - Detailed steps to reproduce the bug.
 
 ### Fix Bugs
 
-Look through the GitHub issues for bugs. Anything tagged with "bug"
-and "help wanted" is open to whoever wants to implement it.
+Look through the GitHub issues for bugs. Anything tagged with "bug" and "help wanted" is open to whoever wants to implement it.
 
 ### Implement Features
 
-Look through the GitHub issues for features. Anything tagged with
-"enhancement" and "help wanted" is open to whoever wants to
-implement it.
+Look through the GitHub issues for features. Anything tagged with "enhancement" and "help wanted" is open to whoever wants to implement it.
 
 ### Write Documentation
 
-gsfpy could always use more documentation, whether as part of the
-official gsfpy docs, in docstrings, or even on the web in blog posts,
-articles, and such.
+gsfpy could always use more documentation, whether as part of the official gsfpy docs, in docstrings, or even on the web in blog posts, articles, and such.
 
 ### Submit Feedback
 
@@ -65,20 +58,11 @@ Ready to contribute? Here's how to set up `gsfpy` for local development.
     ```
     Now you can make your changes locally.
 
-6.  When you're done making changes, check that your changes pass
-    the checks and tests, including testing other Python versions with
-    tox:
+6.  When you're done making changes, check that your changes pass the checks and tests, including testing other Python versions with tox:
     ```shell script
     make lint
     make test
     make test-all # runs tox
-    ```
-    To get the required tools for running checks and tests, install them
-    into your virtual environment:
-    ```shell script
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-    source $HOME/.poetry/env
-    poetry install
     ```
 
 7.  Commit your changes and push your branch to GitHub:
@@ -95,11 +79,8 @@ Ready to contribute? Here's how to set up `gsfpy` for local development.
 Before you submit a pull request, check that it meets these guidelines:
 
 1.  The pull request should include tests.
-2.  If the pull request adds functionality, the docs should be updated.
-    Put your new functionality into a function with a docstring, and
-    update the README.
-3.  The pull request should work for all supported Python versions. The
-    build actions in GitHub will help ensure this is the case.
+2.  If the pull request adds functionality, the docs should be updated. Put your new functionality into a function with a docstring, and update the README.
+3.  The pull request should work for all supported Python versions. The build actions in GitHub will help ensure this is the case.
 
 ## Tips
 
@@ -115,12 +96,9 @@ make coverage
 
 ## Deploying
 
-A reminder for maintainers on how to deploy. Make sure all your changes
-are committed (including an entry in HISTORY.md). Then run:
+A reminder for maintainers on how to deploy. Make sure all your changes are committed and merged into master (including an entry in HISTORY.md). Then create a tag:
 ```shell script
-bump2version patch # possible: major / minor / patch
-git push
-git push --tags
+git tag $(poetry version | awk '{print $2}')
+git push $(poetry version | awk '{print $2}')
 ```
-
-GitHub Actions will then deploy to PyPI (when implemented) if tests pass.
+GitHub Actions will then verify the tag matches the version in the commit, create a GitHub release and finally deploy to PyPI.
