@@ -136,7 +136,7 @@ print(retValStringError)
 ### gsfPrintError()
 
 The `gsfPrintError()` method of GSFlib is not implemented as there is no
-FILE* equivalent in Python. Use `gsfStringError()` instead - this will
+`FILE*` equivalent in Python. Use `gsfStringError()` instead - this will
 give the same error message, which can then be written to file as
 required.
 
@@ -180,6 +180,7 @@ poetry install
 ```
 
 ### Pyenv
+
 A good choice if you want to run a version of Python different than available through your system's package manager
 
 ```shell script
@@ -191,20 +192,16 @@ pyenv local gsfpy
 poetry install
 ```
 
-### Virtualenv
-
-```shell script
-git clone git@github.com:UKHO/gsfpy.git
-virtualenv gsfpy (--always-copy)
-cd gsfpy
-source bin/activate
-poetry install
-```
-
-## Run tests
+## Run Tests
 
 ```shell script
 make test
+```
+
+## Run Checks
+
+```shell script
+make lint
 ```
 
 ## Notes on Security
