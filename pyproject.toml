@@ -51,7 +51,7 @@ mypy = "^0.782"
 pytest-cases = "^1.17.0"
 dataclasses = {version = "^0.7", python = ">=3.6,<3.7"}
 pytest-mock = "^3.1.1"
-isort = "^5.0.6"
+isort = "^5.0.9"
 
 [tool.pytest.ini_options]
 addopts = "--cov=gsfpy --cov-fail-under=95"
