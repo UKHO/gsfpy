@@ -46,7 +46,7 @@ Ready to contribute? Here's how to set up `gsfpy` for local development.
 
 3.  Clone your fork locally:
     ```shell script
-    git clone git@github.com:your_name_here/gsfpy3.git
+    git clone git@github.com:your_name_here/gsfpy.git
     ```
 
 4.  Install your local copy into a virtual environment. Refer to the
