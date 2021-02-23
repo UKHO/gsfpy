@@ -38,6 +38,8 @@ MANIFEST.in
 pip-wheel-metadata
 /poetry.toml
 
+notebooks/
+
 # gsf
 *.nsf
 *.mbn21

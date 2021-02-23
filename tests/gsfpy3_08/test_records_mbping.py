@@ -3,14 +3,14 @@ from ctypes import byref, c_int, c_ubyte
 
 from assertpy import assert_that
 
-import gsfpy
-from gsfpy import c_gsfDataID, c_gsfRecords
-from gsfpy.enums import FileMode, RecordType, SeekOption
-from tests.conftest import GsfDatafile
+import gsfpy3_08
+from gsfpy3_08 import c_gsfDataID, c_gsfRecords
+from gsfpy3_08.enums import FileMode, RecordType, SeekOption
+from tests.gsfpy3_08.conftest import GsfDatafile
 
 
 def test_read(gsf_test_data: GsfDatafile):
-    with gsfpy.open_gsf(gsf_test_data.path, FileMode.GSF_READONLY) as gsf_file:
+    with gsfpy3_08.open_gsf(gsf_test_data.path, FileMode.GSF_READONLY) as gsf_file:
         _, record = gsf_file.read(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, 1)
 
     assert_that(record.mb_ping.number_beams).is_equal_to(gsf_test_data.num_beams)
@@ -25,7 +25,7 @@ def test_read(gsf_test_data: GsfDatafile):
 
 
 def test_write_update_sequential(gsf_test_data: GsfDatafile):
-    with gsfpy.open_gsf(gsf_test_data.path, FileMode.GSF_UPDATE) as gsf_file:
+    with gsfpy3_08.open_gsf(gsf_test_data.path, FileMode.GSF_UPDATE) as gsf_file:
         _, record = gsf_file.read(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING)
 
         orig_beam_flags = record.mb_ping.beam_flags[: record.mb_ping.number_beams]
@@ -37,7 +37,9 @@ def test_write_update_sequential(gsf_test_data: GsfDatafile):
         gsf_file.seek(SeekOption.GSF_PREVIOUS_RECORD)
         gsf_file.write(record, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING)
 
-    with gsfpy.open_gsf(gsf_test_data.path, FileMode.GSF_READONLY) as reopened_gsf_file:
+    with gsfpy3_08.open_gsf(
+        gsf_test_data.path, FileMode.GSF_READONLY
+    ) as reopened_gsf_file:
         _, updated_record = reopened_gsf_file.read(
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
         )
@@ -56,7 +58,7 @@ def test_write_update_sequential(gsf_test_data: GsfDatafile):
 def test_update_by_index(gsf_test_data: GsfDatafile):
     first_record_index = 1
     third_record_index = 3
-    with gsfpy.open_gsf(gsf_test_data.path, FileMode.GSF_UPDATE_INDEX) as gsf_file:
+    with gsfpy3_08.open_gsf(gsf_test_data.path, FileMode.GSF_UPDATE_INDEX) as gsf_file:
         _, record = gsf_file.read(
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, third_record_index
         )
@@ -71,7 +73,7 @@ def test_update_by_index(gsf_test_data: GsfDatafile):
             record, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING, third_record_index
         )
 
-    with gsfpy.open_gsf(
+    with gsfpy3_08.open_gsf(
         gsf_test_data.path, FileMode.GSF_READONLY_INDEX
     ) as reopened_gsf_file:
         _, read_gsf_records = reopened_gsf_file.read(
@@ -102,7 +104,9 @@ def test_update_by_index(gsf_test_data: GsfDatafile):
 
 
 def test_read_by_index(gsf_test_data: GsfDatafile):
-    with gsfpy.open_gsf(gsf_test_data.path, FileMode.GSF_READONLY) as gsf_file_by_seq:
+    with gsfpy3_08.open_gsf(
+        gsf_test_data.path, FileMode.GSF_READONLY
+    ) as gsf_file_by_seq:
         # Read a couple of records forwards, so its at position 3.
         # Records are 1-indexed.
         # This is using read because Seek only does start/end/previous not next.
@@ -112,7 +116,7 @@ def test_read_by_index(gsf_test_data: GsfDatafile):
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
         )
 
-    with gsfpy.open_gsf(
+    with gsfpy3_08.open_gsf(
         gsf_test_data.path, FileMode.GSF_READONLY_INDEX
     ) as gsf_file_by_idx:
         _, third_record_by_idx = gsf_file_by_idx.read(
@@ -141,16 +145,16 @@ def test_low_level_read(gsf_test_data: GsfDatafile):
 
     record = c_gsfRecords()
 
-    open_return_value = gsfpy.bindings.gsfOpen(
+    open_return_value = gsfpy3_08.bindings.gsfOpen(
         os.fsencode(str(gsf_test_data.path)), mode, byref(gsf_file_ref)
     )
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_08.bindings.gsfRead(
         gsf_file_ref,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(gsf_data_id),
         byref(record),
     )
-    close_return_value = gsfpy.bindings.gsfClose(gsf_file_ref)
+    close_return_value = gsfpy3_08.bindings.gsfClose(gsf_file_ref)
 
     assert_that(open_return_value).is_zero()
     assert_that(close_return_value).is_zero()

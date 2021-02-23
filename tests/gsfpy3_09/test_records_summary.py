@@ -4,13 +4,13 @@ from dataclasses import dataclass
 
 from assertpy import assert_that
 
-import gsfpy
-from gsfpy.enums import FileMode, RecordType, SeekOption
-from gsfpy.gsfDataID import c_gsfDataID
-from gsfpy.gsfRecords import c_gsfRecords
-from gsfpy.gsfSwathBathySummary import c_gsfSwathBathySummary
-from gsfpy.timespec import c_timespec
-from tests.conftest import GsfDatafile
+import gsfpy3_09
+from gsfpy3_09.enums import FileMode, RecordType, SeekOption
+from gsfpy3_09.gsfDataID import c_gsfDataID
+from gsfpy3_09.gsfRecords import c_gsfRecords
+from gsfpy3_09.gsfSwathBathySummary import c_gsfSwathBathySummary
+from gsfpy3_09.timespec import c_timespec
+from tests.gsfpy3_09.conftest import GsfDatafile
 
 SUMMARY_RECORD_LENGTH = 48  # (bytes)
 
@@ -80,7 +80,7 @@ SUMMARY_RECORD = SummaryRecord(
 )
 
 
-def test_gsf_swath_summary(gsf_test_data_03_06: GsfDatafile):
+def test_gsf_swath_summary(gsf_test_data_03_09: GsfDatafile):
     file_handle = c_int(0)
 
     swath_summary_id = c_gsfDataID()
@@ -89,14 +89,14 @@ def test_gsf_swath_summary(gsf_test_data_03_06: GsfDatafile):
     records = c_gsfRecords()
 
     # Read from file
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY,
         byref(swath_summary_id),
@@ -104,7 +104,7 @@ def test_gsf_swath_summary(gsf_test_data_03_06: GsfDatafile):
     )
     assert_that(bytes_read).is_equal_to(SUMMARY_RECORD_LENGTH)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     assert_that(SummaryRecord.from_summary(records.summary)).is_equal_to(
@@ -123,7 +123,7 @@ def test_gsf_swath_summary(gsf_test_data_03_06: GsfDatafile):
     )
 
 
-def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
+def test_gsf_swath_summary_save_update(gsf_test_data_03_09: GsfDatafile):
     file_handle = c_int(0)
 
     swath_summary_data_id = c_gsfDataID()
@@ -131,14 +131,14 @@ def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
 
     record = c_gsfRecords()
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_UPDATE,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY,
         byref(swath_summary_data_id),
@@ -155,15 +155,17 @@ def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
 
     # Go back to the first record so it doesn't write
     # the updated first summary over the top of the second one
-    return_value = gsfpy.bindings.gsfSeek(file_handle, SeekOption.GSF_PREVIOUS_RECORD)
+    return_value = gsfpy3_09.bindings.gsfSeek(
+        file_handle, SeekOption.GSF_PREVIOUS_RECORD
+    )
     assert_that(return_value).is_zero()
 
-    bytes_written = gsfpy.bindings.gsfWrite(
+    bytes_written = gsfpy3_09.bindings.gsfWrite(
         file_handle, byref(swath_summary_data_id), byref(record)
     )
     assert_that(bytes_written).is_equal_to(SUMMARY_RECORD_LENGTH)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Read it back out and check it was saved correctly
@@ -174,14 +176,14 @@ def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
 
     updated_record = c_gsfRecords()
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY,
         byref(updated_swath_summary_data_id),
@@ -189,7 +191,7 @@ def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
     )
     assert_that(bytes_read).is_equal_to(SUMMARY_RECORD_LENGTH)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     assert_that(SummaryRecord.from_summary(updated_record.summary)).is_equal_to(
@@ -197,7 +199,7 @@ def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
     )
 
 
-def test_gsf_swath_summary_save_create(gsf_test_data_03_06: GsfDatafile):
+def test_gsf_swath_summary_save_create(gsf_test_data_03_09: GsfDatafile):
     file_handle = c_int(0)
 
     swath_summary_id = c_gsfDataID()
@@ -215,19 +217,19 @@ def test_gsf_swath_summary_save_create(gsf_test_data_03_06: GsfDatafile):
         max_depth=SUMMARY_RECORD.max_depth,
     )
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_CREATE,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_written = gsfpy.bindings.gsfWrite(
+    bytes_written = gsfpy3_09.bindings.gsfWrite(
         file_handle, byref(swath_summary_id), byref(record)
     )
     assert_that(bytes_written).is_equal_to(SUMMARY_RECORD_LENGTH)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Read it back out and check that it matches expected values
@@ -237,14 +239,14 @@ def test_gsf_swath_summary_save_create(gsf_test_data_03_06: GsfDatafile):
 
     written_record = c_gsfRecords()
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHY_SUMMARY,
         byref(gsf_read_data_id),
@@ -252,7 +254,7 @@ def test_gsf_swath_summary_save_create(gsf_test_data_03_06: GsfDatafile):
     )
     assert_that(bytes_read).is_equal_to(SUMMARY_RECORD_LENGTH)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     assert_that(SummaryRecord.from_summary(written_record.summary)).is_equal_to(

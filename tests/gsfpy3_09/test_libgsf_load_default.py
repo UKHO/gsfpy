@@ -10,9 +10,9 @@ def test_libgsf_load_succeeds_with_no_path(mocker):
         mocker.patch.dict(os.environ, {})
 
         # Act
-        import gsfpy  # noqa
+        import gsfpy3_09  # noqa
 
-        reload(gsfpy)
+        reload(gsfpy3_09)
 
     except Exception:
         # Assert

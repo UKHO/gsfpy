@@ -5,11 +5,19 @@
 Python wrapper for the C implementation of the Generic Sensor Format library.
 
 - Free software: MIT license
-- __Notes on licensing__: The bundled `libgsf/libgsf03_08.so` is covered by the [LGPL v2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html) license. A copy of this license is included in the project at `libgsf/libgsf_LICENSE.md`. This does not affect the top-level MIT licensing of the project. However, as required by the libgsf license, the libgsf shared object library used by gsfpy at runtime may be replaced with a different version by setting the `GSFPY_LIBGSF_PATH` environment variable to the absolute file path of the new library.
+- __Notes on licensing__: The bundled `gsfpy3_0x/libgsf/libgsf03_0x.so` binaries are covered by the [LGPL v2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html) license. Copies of this license are included in the project at `gsfpy3_0x/libgsf/libgsf_LICENSE.md`. The top-level MIT licensing of the  overall `gsfpy` project is not affected by this. However, as required by the libgsf license, the libgsf shared object libraries used by the `gsfpy3_0x` packages at runtime may be replaced with a different version by setting the `GSFPY3_08_LIBGSF_PATH` and/or `GSFPY3_09_LIBGSF_PATH` environment variables to the absolute file path of the new library.
+
+## Supported GSF versions
+The default version of GSF supported is `3.08`. Top level package functionality for `3.08` can be used either via `import gsfpy` (without setting the `DEFAULT_GSF_VERSION` environment variable - see below) or `import gsfpy3_08`. Note that `import gsfpy` should also work for versions 3.06 and 3.07 of GSF as well (older versions have not been tested).
+
+If you are using GSF v3.09, there are two options:
+* Set the `DEFAULT_GSF_VERSION` environment variable to `"3.09"`, then `import gsfpy`
+* Import the 3.09 package directly with `import gsfpy3_09`
+
 
 ## Features
 
-- gsfpy.bindings provides wrappers for all GSFlib functions, including I/O, utility and info functions.
+- The `gsfpy(3_0x).bindings` modules provide wrappers for all GSFlib functions, including I/O, utility and info functions.
   Minor exceptions are noted in the sections below.
 
 - For added convenience the gsfpy top level package provides the following higher level abstractions:
@@ -29,11 +37,11 @@ pip install gsfpy
 ```
 #### From GitHub (SSH)
 ```shell script
-pip install git+ssh://git@github.com/UKHO/gsfpy.git@master
+pip install git+ssh://git@github.com/UKHO/gsfpy3_08.git@master
 ```
 #### From GitHub (HTTPS)
 ```shell script
-pip install git+https://github.com/UKHO/gsfpy.git@master
+pip install git+https://github.com/UKHO/gsfpy3_08.git@master
 ```
 
 ## Examples of usage
@@ -43,8 +51,8 @@ pip install git+https://github.com/UKHO/gsfpy.git@master
 ```python
 from ctypes import string_at
 
-from gsfpy import open_gsf
-from gsfpy.enums import RecordType
+from gsfpy3_08 import open_gsf
+from gsfpy3_08.enums import RecordType
 
 with open_gsf("path/to/file.gsf") as gsf_file:
     # Note - file is closed automatically upon exiting 'with' block
@@ -60,11 +68,11 @@ with open_gsf("path/to/file.gsf") as gsf_file:
 ```python
 from ctypes import c_int, create_string_buffer
 
-from gsfpy import open_gsf
-from gsfpy.enums import FileMode, RecordType
-from gsfpy.gsfRecords import c_gsfRecords
+from gsfpy3_08 import open_gsf
+from gsfpy3_08.enums import FileMode, RecordType
+from gsfpy3_08.gsfRecords import c_gsfRecords
 
-comment = "My comment"
+comment = b"My comment"
 
 # Initialize the contents of the record that will be written.
 # Note use of ctypes.create_string_buffer() to set POINTER(c_char) contents.
@@ -83,24 +91,24 @@ with open_gsf("path/to/file.gsf", mode=FileMode.GSF_CREATE) as gsf_file:
 from ctypes import byref, c_int, pointer
 
 import gsfpy
-from gsfpy.enums import FileMode, RecordType
-from gsfpy.gsfDataID import c_gsfDataID
-from gsfpy.gsfRecords import c_gsfRecords
+from gsfpy3_08.enums import FileMode, RecordType
+from gsfpy3_08.gsfDataID import c_gsfDataID
+from gsfpy3_08.gsfRecords import c_gsfRecords
 
 
-# This example uses gsfpy.bindings to illustrate use of the lower level functions
+# This example uses gsfpy3_08.bindings to illustrate use of the lower level functions
 file_handle = c_int(0)
 data_id = c_gsfDataID()
 source_records = c_gsfRecords()
 target_records = c_gsfRecords()
 
-ret_val_open = gsfpy.bindings.gsfOpen(
+ret_val_open = gsfpy3_08.bindings.gsfOpen(
     "path/to/file.gsf", FileMode.GSF_READONLY, byref(file_handle)
 )
 
 # Note use of ctypes.byref() as a shorthand way of passing POINTER parameters to
 # the underlying foreign function call. ctypes.pointer() may also be used.
-bytes_read = gsfpy.bindings.gsfRead(
+bytes_read = gsfpy3_08.bindings.gsfRead(
     file_handle,
     RecordType.GSF_RECORD_COMMENT,
     byref(data_id),
@@ -112,10 +120,10 @@ bytes_read = gsfpy.bindings.gsfRead(
 # the native underlying function causes memory ownership clashes. byref()
 # is only suitable for passing parameters to foreign function calls (see
 # ctypes docs).
-ret_val_cpy = gsfpy.bindings.gsfCopyRecords(
+ret_val_cpy = gsfpy3_08.bindings.gsfCopyRecords(
     pointer(target_records), pointer(source_records)
 )
-ret_val_close = gsfpy.bindings.gsfClose(file_handle)
+ret_val_close = gsfpy3_08.bindings.gsfClose(file_handle)
 ```
 
 ### Troubleshoot
@@ -126,8 +134,8 @@ import gsfpy
 # The gsfIntError() and gsfStringError() functions are useful for
 # diagnostics. They return an error code and corresponding error
 # message, respectively.
-retValIntError = gsfpy.bindings.gsfIntError()
-retValStringError = gsfpy.bindings.gsfStringError()
+retValIntError = gsfpy3_08.bindings.gsfIntError()
+retValStringError = gsfpy3_08.bindings.gsfStringError()
 print(retValStringError)
 ```
 
@@ -174,7 +182,7 @@ More recent versions of these documents can be downloaded from the
 By default Poetry will create it's own virtual environment using your system's Python. [This feature can be disabled.](https://python-poetry.org/docs/faq/#i-dont-want-poetry-to-manage-my-virtual-environments-can-i-disable-it)
 
 ```shell script
-git clone git@github.com:UKHO/gsfpy.git
+git clone git@github.com:UKHO/gsfpy3_08.git
 cd gsfpy
 poetry install
 ```
@@ -184,7 +192,7 @@ poetry install
 A good choice if you want to run a version of Python different than available through your system's package manager
 
 ```shell script
-git clone git@github.com:UKHO/gsfpy.git
+git clone git@github.com:UKHO/gsfpy3_08.git
 cd gsfpy
 pyenv install 3.8.3
 pyenv virtualenv 3.8.3 gsfpy
@@ -216,7 +224,7 @@ calling gsfpy to assess these risks and mitigate where deemed necessary.
 GSF data processed using gsfpy should be sourced from reliable providers
 and checked for integrity where possible.
 
-Please also refer to the LICENSE file for the terms of use of gsfpy.
+Please also refer to the LICENSE file for the terms of use of gsfpy3_08.
 
 ## Credits
 

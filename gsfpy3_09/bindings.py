@@ -24,20 +24,20 @@ from .gsfRecords import c_gsfRecords
 from .gsfScaleFactors import c_gsfScaleFactors
 from .gsfSwathBathyPing import c_gsfSwathBathyPing
 
-_libgsf_abs_path = str(Path(__file__).parent / "libgsf" / "libgsf03-08.so")
+_libgsf_abs_path = str(Path(__file__).parent / "libgsf" / "libgsf03-09.so")
 
 # Check if the libgsf shared object library location is specified in the environment.
 # If so, use the specified library in preference to the bundled version. Handle the
 # case where the library cannot be found.
-if "GSFPY_LIBGSF_PATH" in environ:
-    _libgsf_abs_path = environ["GSFPY_LIBGSF_PATH"]
+if "GSFPY3_09_LIBGSF_PATH" in environ:
+    _libgsf_abs_path = environ["GSFPY3_09_LIBGSF_PATH"]
 
 try:
     _libgsf = CDLL(_libgsf_abs_path)
 except OSError as osex:
     raise Exception(
         f"Cannot load shared library from {_libgsf_abs_path}. Set the "
-        f"$GSFPY_LIBGSF_PATH environment variable to the correct path, "
+        f"$GSFPY3_09_LIBGSF_PATH environment variable to the correct path, "
         f"or remove it from the environment to use the default version."
     ) from osex
 
@@ -196,7 +196,7 @@ _libgsf.gsfLoadDepthScaleFactorAutoOffset.restype = c_int
 def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
     """
     :param filename: bytestring e.g. b'path/to/file.gsf'
-    :param mode: gsfpy.enums.FileMode
+    :param mode: gsfpy3_09.enums.FileMode
     :param p_handle: Instance of POINTER(c_int)
     :return: 0 if successful, otherwise -1
     """
@@ -206,7 +206,7 @@ def gsfOpen(filename: bytes, mode: FileMode, p_handle) -> int:
 def gsfOpenBuffered(filename: bytes, mode: FileMode, p_handle, buf_size: int) -> int:
     """
     :param filename: bytestring e.g. b'path/to/file.gsf'
-    :param mode: gsfpy.enums.FileMode
+    :param mode: gsfpy3_09.enums.FileMode
     :param p_handle: Instance of POINTER(c_int)
     :param buf_size: c_int
     :return: 0 if successful, otherwise -1
@@ -225,7 +225,7 @@ def gsfClose(handle: c_int) -> int:
 def gsfSeek(handle: c_int, option: SeekOption) -> int:
     """
     :param handle: c_int
-    :param option: gsfpy.enums.SeekOption
+    :param option: gsfpy3_09.enums.SeekOption
     :return: 0 if successful, otherwise -1
     """
     return _libgsf.gsfSeek(handle, option)
@@ -255,9 +255,9 @@ def gsfRead(
 ) -> int:
     """
     :param handle: int
-    :param desired_record: gsfpy.enums.RecordType
-    :param p_data_id: POINTER(gsfpy.gsfDataID.c_gsfDataID)
-    :param p_records: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param desired_record: gsfpy3_09.enums.RecordType
+    :param p_data_id: POINTER(gsfpy3_09.gsfDataID.c_gsfDataID)
+    :param p_records: POINTER(gsfpy3_09.gsfRecords.c_gsfRecords)
     :param p_stream: POINTER(c_ubyte)
     :param max_size: int
     :return: number of bytes read if successful, otherwise -1. Note that contents of the
@@ -272,8 +272,8 @@ def gsfRead(
 def gsfWrite(handle: c_int, p_data_id, p_records) -> int:
     """
     :param handle: c_int
-    :param p_data_id: POINTER(gsfpy.gsfDataID.c_gsfDataID)
-    :param p_records: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param p_data_id: POINTER(gsfpy3_09.gsfDataID.c_gsfDataID)
+    :param p_records: POINTER(gsfpy3_09.gsfRecords.c_gsfRecords)
     :return: number of bytes written if successful, otherwise -1. Note that contents of
              the POINTER parameters p_data_id and p_records will be updated upon
              successful read.
@@ -285,7 +285,7 @@ def gsfGetNumberRecords(handle: c_int, desired_record: RecordType) -> int:
     """
     File must be open for direct access (GSF_READONLY_INDEX or GSF_UPDATE_INDEX)
     :param handle: c_int
-    :param desired_record: gsfpy.enums.RecordType
+    :param desired_record: gsfpy3_09.enums.RecordType
     :return: number of records of type desired_record, otherwise -1
     """
     return _libgsf.gsfGetNumberRecords(handle, desired_record)
@@ -296,7 +296,7 @@ def gsfIndexTime(
 ) -> int:
     """
     :param handle: c_int
-    :param record_type: gsfpy.enums.RecordType
+    :param record_type: gsfpy3_09.enums.RecordType
     :param record_number: c_int
     :param p_sec: POINTER(c_int)
     :param p_nsec: POINTER(c_long)
@@ -319,7 +319,7 @@ def gsfPercent(handle: c_int) -> int:
 
 def gsfGetSwathBathyBeamWidths(p_data, p_fore_aft, p_athwartship) -> int:
     """
-    :param p_data: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param p_data: POINTER(gsfpy3_09.gsfRecords.c_gsfRecords)
     :param p_fore_aft: POINTER(double)
     :param p_athwartship: POINTER(double)
     :return: 0 if successful, otherwise -1. Note that, in the event of a successful
@@ -335,7 +335,7 @@ def gsfGetSwathBathyArrayMinMax(
     p_ping, subrecord_id: c_int, p_min_value, p_max_value
 ) -> int:
     """
-    :param p_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
+    :param p_ping: POINTER(gsfpy3_09.gsfSwathBathyPing.c_gsfSwathBathyPing)
     :param p_min_value: POINTER(double)
     :param p_max_value: POINTER(double)
     :return: 0 if successful, otherwise -1. Note that, in the event of a successful
@@ -350,7 +350,7 @@ def gsfGetSwathBathyArrayMinMax(
 
 def gsfIsStarboardPing(p_data) -> int:
     """
-    :param p_data: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param p_data: POINTER(gsfpy3_09.gsfRecords.c_gsfRecords)
     :return: Non-zero if the ping contained in the passed data represents a starboard
              looking ping from a dual headed sonar installation. Otherwise, zero. If
              the sonar does not have dual transducers, zero is returned.
@@ -360,7 +360,7 @@ def gsfIsStarboardPing(p_data) -> int:
 
 def gsfGetSonarTextName(p_ping) -> str:
     """
-    :param p_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
+    :param p_ping: POINTER(gsfpy3_09.gsfSwathBathyPing.c_gsfSwathBathyPing)
     :return: The name of the sensor based on the sensor id contained in the ping
              structure if this is defined, otherwise 'Unknown'.
     """
@@ -433,7 +433,7 @@ def gsfIsNewSurveyLine(
 ) -> int:
     """
     :param handle: c_int
-    :param p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param p_rec: POINTER(gsfpy3_09.gsfRecords.c_gsfRecords)
     :param azimuth_change: c_double
     :param p_last_heading: POINTER(c_double)
     :return:  0 if the last ping in the given ping is not considered to be from a
@@ -447,7 +447,7 @@ def gsfIsNewSurveyLine(
 
 def gsfInitializeMBParams(p_mbparams) -> int:
     """
-    :param p_mbparams: POINTER(gsfpy.gsfMBParams.c_gsfMBParams)
+    :param p_mbparams: POINTER(gsfpy3_09.gsfMBParams.c_gsfMBParams)
     :return: None (return value should be ignored). Note that, upon return, all fields
              of the given gsfMBParams structure will be initialized to unknown (-99
              for int fields)
@@ -457,9 +457,9 @@ def gsfInitializeMBParams(p_mbparams) -> int:
 
 def gsfCopyRecords(p_target, p_source):
     """
-    :param p_target: POINTER(gsfpy.gsfRecords.c_gsfRecords). Note that this parameter
+    :param p_target: POINTER(gsfpy3_09.gsfRecords.c_gsfRecords). Note that this parameter
                      must be passed as a pointer() rather than a byref().
-    :param p_source: POINTER(gsfpy.gsfRecords.c_gsfRecords). Note that this parameter
+    :param p_source: POINTER(gsfpy3_09.gsfRecords.c_gsfRecords). Note that this parameter
                      must be passed as a pointer() rather than a byref().
     :return: 0 if successful, otherwise -1. Note that, in the event of a successful
              call, all content from the source gsfRecords structure is copied to
@@ -479,8 +479,8 @@ def gsfCopyRecords(p_target, p_source):
 
 def gsfPutMBParams(p_mbparams, p_rec, handle: c_int, numArrays: c_int) -> int:
     """
-    :param p_mbparams: POINTER(gsfpy.gsfMBParams.c_gsfMBParams)
-    :param p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
+    :param p_mbparams: POINTER(gsfpy3_09.gsfMBParams.c_gsfMBParams)
+    :param p_rec: POINTER(gsfpy3_09.gsfRecords.c_gsfRecords)
     :param handle: c_int
     :param numArrays: c_int
     :return: 0 if successful, otherwise -1. Note that, in the event of a successful
@@ -493,8 +493,8 @@ def gsfPutMBParams(p_mbparams, p_rec, handle: c_int, numArrays: c_int) -> int:
 
 def gsfGetMBParams(p_rec, p_mbparams, p_numArrays) -> int:
     """
-    :param p_rec: POINTER(gsfpy.gsfRecords.c_gsfRecords)
-    :param p_mbparams: POINTER(gsfpy.gsfMBParams.c_gsfMBParams)
+    :param p_rec: POINTER(gsfpy3_09.gsfRecords.c_gsfRecords)
+    :param p_mbparams: POINTER(gsfpy3_09.gsfMBParams.c_gsfMBParams)
     :param p_numArrays: POINTER(c_int)
     :return: 0 if successful, otherwise -1. Note that, in the event of a successful
              call, form parameters from the gsfProcessingParameters field of the
@@ -519,7 +519,7 @@ def gsfLoadScaleFactor(
     p_sf, subrecord_id: c_int, c_flag: c_char, precision: c_double, offset: c_int
 ) -> int:
     """
-    :param p_sf: POINTER(gsfpy.gsfRecords.c_gsfScaleFactors)
+    :param p_sf: POINTER(gsfpy3_09.gsfRecords.c_gsfScaleFactors)
     :param subrecord_id: c_int
     :param c_flag: c_char
     :param precision: c_double
@@ -557,7 +557,7 @@ def gsfGetScaleFactor(
 
 def gsfSetDefaultScaleFactor(p_mb_ping) -> int:
     """
-    :param p_mb_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
+    :param p_mb_ping: POINTER(gsfpy3_09.gsfSwathBathyPing.c_gsfSwathBathyPing)
 
     :return: 0 if successful. Note that, in the event of a successful call, estimated
              scale factors for each of the beam arrays in the ping will be set.
@@ -576,7 +576,7 @@ def gsfLoadDepthScaleFactorAutoOffset(
     precision: c_double,
 ) -> int:
     """
-    :param p_mb_ping: POINTER(gsfpy.gsfSwathBathyPing.c_gsfSwathBathyPing)
+    :param p_mb_ping: POINTER(gsfpy3_09.gsfSwathBathyPing.c_gsfSwathBathyPing)
     :param subrecord_id: c_int
     :param reset: c_int
     :param min_depth: c_double
@@ -601,24 +601,24 @@ def gsfLoadDepthScaleFactorAutoOffset(
 
 def gsfGetPositionDestination(gp, offsets, heading: c_double, dist_step: c_double):
     """
-    :param gp: gsfpy.GSF_POSTIION.c_GSF_POSITION
-    :param offsets: gsfpy.GSF_POSTIION_OFFSETS.c_GSF_POSITION_OFFSETS
+    :param gp: gsfpy3_09.GSF_POSTIION.c_GSF_POSITION
+    :param offsets: gsfpy3_09.GSF_POSTIION_OFFSETS.c_GSF_POSITION_OFFSETS
     :param heading: c_double
     :param dist_step: c_double
 
-    :return: POINTER(gsfpy.GSF_POSITION.GSF_POSITION) - the destination position.
+    :return: POINTER(gsfpy3_09.GSF_POSITION.GSF_POSITION) - the destination position.
     """
     return _libgsf.gsfGetPositionDestination(gp, offsets, heading, dist_step)
 
 
 def gsfGetPositionOffsets(gp_from, gp_to, heading: c_double, dist_step: c_double):
     """
-    :param gp_from: gsfpy.GSF_POSTIION.c_GSF_POSITION
-    :param gp_to: gsfpy.GSF_POSTIION.c_GSF_POSITION
+    :param gp_from: gsfpy3_09.GSF_POSTIION.c_GSF_POSITION
+    :param gp_to: gsfpy3_09.GSF_POSTIION.c_GSF_POSITION
     :param heading: c_double
     :param dist_step: c_double
 
-    :return: POINTER(gsfpy.c_GSF_POSITION_OFFSETS.c_GSF_POSITION_OFFSETS) -
+    :return: POINTER(gsfpy3_09.c_GSF_POSITION_OFFSETS.c_GSF_POSITION_OFFSETS) -
              the offsets between the two given positions.
     """
     return _libgsf.gsfGetPositionOffsets(gp_from, gp_to, heading, dist_step)

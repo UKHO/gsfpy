@@ -10,6 +10,7 @@ from pytest_cases import fixture_union
 class GsfVersion(Enum):
     V03_06 = auto()
     V03_07 = auto()
+    V03_08 = auto()
 
 
 @dataclass(frozen=True)
@@ -21,15 +22,27 @@ class GsfDatafile:
 
 GSF_03_06_DATAFILE = GsfDatafile(
     GsfVersion.V03_06,
-    Path(__file__).parent / "0029_20160323_185603_EX1604_MB.gsf.mb121",
+    Path(__file__).parent.parent
+    / "test_data"  # noqa: W503
+    / "0029_20160323_185603_EX1604_MB.gsf.mb121",  # noqa: W503
     num_beams=432,
 )
 
 GSF_03_07_DATAFILE = GsfDatafile(
     GsfVersion.V03_07,
-    Path(__file__).parent / "0059_20181102_212138_EX1811_MB_EM302.gsf.mb121",
+    Path(__file__).parent.parent
+    / "test_data"  # noqa: W503
+    / "0059_20181102_212138_EX1811_MB_EM302.gsf.mb121",  # noqa: W503
     num_beams=432,
 )
+
+# GSF_03_08_DATAFILE = GsfDatafile(
+#     GsfVersion.V03_08,
+#     Path(__file__).parent.parent
+#     / "test_data"
+#     / "0059_20181102_212138_EX1811_MB_EM302.gsf.mb121",
+#     num_beams=432,
+# )
 
 
 def _setup_gsf_test_data(src_datafile: GsfDatafile, tmp_path: Path):
@@ -52,10 +65,28 @@ def gsf_test_data_03_07(tmp_path):
     yield from _setup_gsf_test_data(GSF_03_07_DATAFILE, tmp_path)
 
 
-fixture_union("gsf_test_data", [gsf_test_data_03_06, gsf_test_data_03_07])
+# @pytest.fixture
+# def gsf_test_data_03_08(tmp_path):
+#     yield from _setup_gsf_test_data(GSF_03_08_DATAFILE, tmp_path)
 
 
-@pytest.fixture(params=[GSF_03_06_DATAFILE, GSF_03_07_DATAFILE])
+fixture_union(
+    "gsf_test_data",
+    [
+        gsf_test_data_03_06,
+        gsf_test_data_03_07,
+        # gsf_test_data_03_08,
+    ],
+)
+
+
+@pytest.fixture(
+    params=[
+        GSF_03_06_DATAFILE,
+        GSF_03_07_DATAFILE,
+        # GSF_03_08_DATAFILE,
+    ]
+)
 def gsf_test_data(request, tmp_path):
     src_datafile: GsfDatafile = request.param
     yield from _setup_gsf_test_data(src_datafile, tmp_path)

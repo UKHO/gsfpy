@@ -501,7 +501,7 @@ class c_gsfEM4TxSector(Structure):
     ]
 
 
-EM4_SECTORS = c_gsfEM4TxSector * 16
+EM4_SECTORS = c_gsfEM4TxSector * 9
 
 
 class c_gsfEM4Specific(Structure):

@@ -16,133 +16,135 @@ from ctypes import (
 
 from assertpy import assert_that, soft_assertions
 
-import gsfpy.bindings
-import gsfpy.enums
-from gsfpy.constants import GSF_MAX_PING_ARRAY_SUBRECORDS
-from gsfpy.enums import (
+import gsfpy3_09.bindings
+import gsfpy3_09.enums
+from gsfpy3_09.constants import GSF_MAX_PING_ARRAY_SUBRECORDS
+from gsfpy3_09.enums import (
     FileMode,
     PingFlag,
     RecordType,
     ScaledSwathBathySubRecord,
     SeekOption,
 )
-from gsfpy.GSF_POSITION import c_GSF_POSITION
-from gsfpy.GSF_POSITION_OFFSETS import c_GSF_POSITION_OFFSETS
-from gsfpy.gsfDataID import c_gsfDataID
-from gsfpy.gsfMBParams import c_gsfMBParams
-from gsfpy.gsfRecords import c_gsfRecords
-from gsfpy.gsfScaleFactors import c_gsfScaleFactors
-from gsfpy.gsfSwathBathyPing import c_gsfSwathBathyPing
+from gsfpy3_09.GSF_POSITION import c_GSF_POSITION
+from gsfpy3_09.GSF_POSITION_OFFSETS import c_GSF_POSITION_OFFSETS
+from gsfpy3_09.gsfDataID import c_gsfDataID
+from gsfpy3_09.gsfMBParams import c_gsfMBParams
+from gsfpy3_09.gsfRecords import c_gsfRecords
+from gsfpy3_09.gsfScaleFactors import c_gsfScaleFactors
+from gsfpy3_09.gsfSwathBathyPing import c_gsfSwathBathyPing
 
 
-def test_gsfOpenClose_success(gsf_test_data_03_06):
+def test_gsfOpenClose_success(gsf_test_data_03_09):
     """
     Open the test GSF file, then close.
     """
     file_handle = c_int(0)
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
 
-def test_gsfOpenBuffered_success(gsf_test_data_03_06):
+def test_gsfOpenBuffered_success(gsf_test_data_03_09):
     """
     Open the test GSF file, then close.
     """
     file_handle = c_int(0)
     buf_size = 100
 
-    return_value = gsfpy.bindings.gsfOpenBuffered(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpenBuffered(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
         buf_size,
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
 
-def test_gsfSeek_success(gsf_test_data_03_06):
+def test_gsfSeek_success(gsf_test_data_03_09):
     """
     Open the test GSF file, seek to end of file, then close.
     """
     file_handle = c_int(0)
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfSeek(file_handle, SeekOption.GSF_END_OF_FILE)
+    return_value = gsfpy3_09.bindings.gsfSeek(file_handle, SeekOption.GSF_END_OF_FILE)
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
 
-def test_gsfError_non_existent_file(gsf_test_data_03_06):
+def test_gsfError_non_existent_file(gsf_test_data_03_09):
     """
     Try to open a non-existent GSF file and check that gsfError() returns the
     correct error code and error message.
     """
     file_handle = c_int(0)
 
-    return_value = gsfpy.bindings.gsfOpen(
+    return_value = gsfpy3_09.bindings.gsfOpen(
         b"non-existent.gsf", FileMode.GSF_READONLY, byref(file_handle)
     )
     assert_that(return_value).is_not_zero()
 
     with soft_assertions():
-        return_value = gsfpy.bindings.gsfIntError()
+        return_value = gsfpy3_09.bindings.gsfIntError()
         assert_that(return_value).described_as(
-            "Error code for 'GSF Unable to open requested file'"
+            "Error code for 'GSF Error: Unable to open requested file'"
         ).is_equal_to(-1)
 
-        string_error = gsfpy.bindings.gsfStringError()
-        assert_that(string_error).is_equal_to(b"GSF Unable to open requested file")
+        string_error = gsfpy3_09.bindings.gsfStringError()
+        assert_that(string_error).is_equal_to(
+            b"GSF Error: Unable to open requested file"
+        )
 
 
-def test_gsfError_operation_in_wrong_file_mode(gsf_test_data_03_06):
+def test_gsfError_operation_in_wrong_file_mode(gsf_test_data_03_09):
     """
     Open a GSF file, try to get the number of GSF  and check that gsfError() returns the
     correct error code and error message.
     """
     file_handle = c_int(0)
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfGetNumberRecords(
+    return_value = gsfpy3_09.bindings.gsfGetNumberRecords(
         file_handle, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
     )
     assert_that(return_value).is_not_zero()
 
     with soft_assertions():
-        return_value = gsfpy.bindings.gsfIntError()
+        return_value = gsfpy3_09.bindings.gsfIntError()
         assert_that(return_value).described_as(
-            "Error code for 'GSF Error illegal access mode'"
+            "Error code for 'GSF Error: Illegal access mode'"
         ).is_equal_to(-3)
 
-        string_error = gsfpy.bindings.gsfStringError()
-        assert_that(string_error).is_equal_to(b"GSF Error illegal access mode")
+        string_error = gsfpy3_09.bindings.gsfStringError()
+        assert_that(string_error).is_equal_to(b"GSF Error: Illegal access mode")
 
 
-def test_gsfRead_success(gsf_test_data_03_06):
+def test_gsfRead_success(gsf_test_data_03_09):
     """
     Read a comment record from a GSF file.
     """
@@ -150,28 +152,22 @@ def test_gsfRead_success(gsf_test_data_03_06):
     data_id = c_gsfDataID()
     records = c_gsfRecords()
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle, RecordType.GSF_RECORD_COMMENT, byref(data_id), byref(records),
     )
-    assert_that(bytes_read).is_equal_to(156)
+    assert_that(bytes_read).is_equal_to(32)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
-    assert_that(string_at(records.comment.comment)).is_equal_to(
-        (
-            b"Bathy converted from HIPS file: "
-            b"M:\\CCOM_Processing\\CARIS_v9\\HIPS\\HDCS_Data\\EX1604"
-            b"\\Okeanos_2016\\2016-083\\0029_20160323_185603_EX1604_MB"
-        )
-    )
+    assert_that(string_at(records.comment.comment)).is_equal_to((b"My comment"))
 
 
 def test_gsfWrite_success(tmp_path):
@@ -195,15 +191,17 @@ def test_gsfWrite_success(tmp_path):
     tmp_gsf_file_path = os.fsencode(str(tmp_path / "temp.gsf"))
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
+    return_value = gsfpy3_09.bindings.gsfOpen(
         tmp_gsf_file_path, FileMode.GSF_CREATE, byref(file_handle)
     )
     assert_that(return_value).is_zero()
 
-    bytes_written = gsfpy.bindings.gsfWrite(file_handle, byref(data_id), byref(records))
+    bytes_written = gsfpy3_09.bindings.gsfWrite(
+        file_handle, byref(data_id), byref(records)
+    )
     assert_that(bytes_written).is_equal_to(record_size)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Read comment from newly created file to check it is as expected
@@ -212,46 +210,46 @@ def test_gsfWrite_success(tmp_path):
 
     records = c_gsfRecords()
 
-    return_value = gsfpy.bindings.gsfOpen(
+    return_value = gsfpy3_09.bindings.gsfOpen(
         tmp_gsf_file_path, FileMode.GSF_READONLY, byref(file_handle)
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle, RecordType.GSF_RECORD_COMMENT, byref(data_id), byref(records),
     )
     assert_that(bytes_read).is_equal_to(record_size)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     assert_that(string_at(records.comment.comment)).is_equal_to(comment)
 
 
-def test_gsfGetNumberRecords_success(gsf_test_data_03_06):
+def test_gsfGetNumberRecords_success(gsf_test_data_03_09):
     """
     Open the test GSF file, count the number of GSF_RECORD_SWATH_BATHYMETRY_PING
     records, then close.
     """
     file_handle = c_int(0)
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY_INDEX,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    number_of_records = gsfpy.bindings.gsfGetNumberRecords(
+    number_of_records = gsfpy3_09.bindings.gsfGetNumberRecords(
         file_handle, RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
     )
-    assert_that(number_of_records).is_equal_to(8)
+    assert_that(number_of_records).is_equal_to(3)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
 
-def test_gsfIndexTime_success(gsf_test_data_03_06):
+def test_gsfIndexTime_success(gsf_test_data_03_09):
     """
     Open the test GSF file, get the index time and record number of the last
     multibeam ping record.
@@ -260,14 +258,14 @@ def test_gsfIndexTime_success(gsf_test_data_03_06):
     sec = c_int(-1)
     nsec = c_long(-1)
 
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY_INDEX,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    index_time = gsfpy.bindings.gsfIndexTime(
+    index_time = gsfpy3_09.bindings.gsfIndexTime(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         c_int(-1),
@@ -275,16 +273,16 @@ def test_gsfIndexTime_success(gsf_test_data_03_06):
         byref(nsec),
     )
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     with soft_assertions():
-        assert_that(index_time).is_equal_to(8)
-        assert_that(sec.value).is_equal_to(1458759418)
-        assert_that(nsec.value).is_equal_to(332999944)
+        assert_that(index_time).is_equal_to(3)
+        assert_that(sec.value).is_equal_to(1541193704)
+        assert_that(nsec.value).is_equal_to(559999465)
 
 
-def test_gsfPercent_success(gsf_test_data_03_06):
+def test_gsfPercent_success(gsf_test_data_03_09):
     """
     Open the test GSF file, read 4 records, then retrieve the location of the file
     pointer as a percentage of the total file size.
@@ -295,26 +293,26 @@ def test_gsfPercent_success(gsf_test_data_03_06):
     records = c_gsfRecords()
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY_INDEX,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
     for i in range(4):
-        gsfpy.bindings.gsfRead(
+        gsfpy3_09.bindings.gsfRead(
             file_handle, RecordType.GSF_NEXT_RECORD, byref(data_id), byref(records)
         )
 
-    percent = gsfpy.bindings.gsfPercent(file_handle)
-    assert_that(percent).is_equal_to(4)
+    percent = gsfpy3_09.bindings.gsfPercent(file_handle)
+    assert_that(percent).is_equal_to(76)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
 
-def test_gsfGetSwathBathyBeamWidths_success(gsf_test_data_03_06):
+def test_gsfGetSwathBathyBeamWidths_success(gsf_test_data_03_09):
     """
     Open the test GSF file, read a multibeam ping record, then get fore-aft and
     port-starboard beam widths, in degrees, for the given ping.
@@ -327,36 +325,37 @@ def test_gsfGetSwathBathyBeamWidths_success(gsf_test_data_03_06):
     athwartship = c_double()
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(data_id),
         byref(records),
     )
-    assert_that(bytes_read).is_equal_to(6116)
+    assert_that(bytes_read).is_equal_to(132)
 
-    return_value = gsfpy.bindings.gsfGetSwathBathyBeamWidths(
+    return_value = gsfpy3_09.bindings.gsfGetSwathBathyBeamWidths(
         byref(records), byref(fore_aft), byref(athwartship),
     )
-    assert_that(return_value).is_zero()
+    # There is nsufficient info in the test file to calculate beam widths
+    assert_that(return_value).is_equal_to(-1)
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     with soft_assertions():
-        assert_that(fore_aft.value).is_equal_to(1.5)
-        assert_that(athwartship.value).is_equal_to(1.5)
+        assert_that(fore_aft.value).is_equal_to(-1.0)  # GSF_BEAM_WIDTH_UNKNOWN
+        assert_that(athwartship.value).is_equal_to(-1.0)  # GSF_BEAM_WIDTH_UNKNOWN
 
 
-def test_gsfGetSwathBathyArrayMinMax_success(gsf_test_data_03_06):
+def test_gsfGetSwathBathyArrayMinMax_success(gsf_test_data_03_09):
     """
     Open the test GSF file, read a multibeam ping record, then get min and
     max supportable values for the swath bathymetry arrays in the given ping.
@@ -370,36 +369,36 @@ def test_gsfGetSwathBathyArrayMinMax_success(gsf_test_data_03_06):
     subrecord_id = c_int(1)
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(data_id),
         byref(records),
     )
-    assert_that(bytes_read).is_equal_to(6116)
+    assert_that(bytes_read).is_equal_to(132)
 
-    return_value = gsfpy.bindings.gsfGetSwathBathyArrayMinMax(
+    return_value = gsfpy3_09.bindings.gsfGetSwathBathyArrayMinMax(
         byref(records.mb_ping), subrecord_id, byref(min_value), byref(max_value),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     with soft_assertions():
-        assert_that(min_value.value).is_equal_to(3562.32)
-        assert_that(max_value.value).is_equal_to(4217.67)
+        assert_that(min_value.value).is_equal_to(0.0)
+        assert_that(max_value.value).is_equal_to(655.35)
 
 
-def test_gsfIsStarboardPing_success(gsf_test_data_03_06):
+def test_gsfIsStarboardPing_success(gsf_test_data_03_09):
     """
     Open the test GSF file, read a multibeam ping record, then find out if
     it is a starboard ping.
@@ -410,31 +409,31 @@ def test_gsfIsStarboardPing_success(gsf_test_data_03_06):
     records = c_gsfRecords()
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(data_id),
         byref(records),
     )
-    assert_that(bytes_read).is_equal_to(6116)
+    assert_that(bytes_read).is_equal_to(132)
 
-    is_starboard_ping: int = gsfpy.bindings.gsfIsStarboardPing(byref(records))
+    is_starboard_ping: int = gsfpy3_09.bindings.gsfIsStarboardPing(byref(records))
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     assert_that(is_starboard_ping).is_false()
 
 
-def test_gsfGetSonarTextName_success(gsf_test_data_03_06):
+def test_gsfGetSonarTextName_success(gsf_test_data_03_09):
     """
     Open the test GSF file, read a multibeam ping record, then retrieve
     the name of the sonar equipment used to capture it.
@@ -445,31 +444,31 @@ def test_gsfGetSonarTextName_success(gsf_test_data_03_06):
     records = c_gsfRecords()
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(data_id),
         byref(records),
     )
-    assert_that(bytes_read).is_equal_to(6116)
+    assert_that(bytes_read).is_equal_to(132)
 
-    sonar_text_name = gsfpy.bindings.gsfGetSonarTextName(byref(records.mb_ping))
+    sonar_text_name = gsfpy3_09.bindings.gsfGetSonarTextName(byref(records.mb_ping))
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
-    assert_that(sonar_text_name).is_equal_to("Kongsberg EM3002D")
+    assert_that(sonar_text_name).is_equal_to("Unknown")
 
 
-def test_gsfFileSupportsRecalculateXYZ_success(gsf_test_data_03_06):
+def test_gsfFileSupportsRecalculateXYZ_success(gsf_test_data_03_09):
     """
     Open the test GSF file then discover whether it contains enough information
     for platform-relative XYZ values to be recalculated.
@@ -479,26 +478,26 @@ def test_gsfFileSupportsRecalculateXYZ_success(gsf_test_data_03_06):
     status = c_int(0)
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfFileSupportsRecalculateXYZ(
+    return_value = gsfpy3_09.bindings.gsfFileSupportsRecalculateXYZ(
         file_handle, byref(status)
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     assert_that(status.value).is_false()
 
 
-def test_gsfFileSupportsRecalculateTPU_success(gsf_test_data_03_06):
+def test_gsfFileSupportsRecalculateTPU_success(gsf_test_data_03_09):
     """
     Open the test GSF file then discover whether it contains enough information
     for Total Propagated Uncertainty (TPU) values to be calculated.
@@ -508,26 +507,26 @@ def test_gsfFileSupportsRecalculateTPU_success(gsf_test_data_03_06):
     status = c_int(0)
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfFileSupportsRecalculateTPU(
+    return_value = gsfpy3_09.bindings.gsfFileSupportsRecalculateTPU(
         file_handle, byref(status)
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
-    assert_that(status.value).is_equal_to(1)
+    assert_that(status.value).is_equal_to(0)
 
 
-def test_gsfFileSupportsRecalculateNominalDepth_success(gsf_test_data_03_06):
+def test_gsfFileSupportsRecalculateNominalDepth_success(gsf_test_data_03_09):
     """
     Open the test GSF file then discover whether it contains enough information
     for the nominal depth array to be calculated.
@@ -537,26 +536,26 @@ def test_gsfFileSupportsRecalculateNominalDepth_success(gsf_test_data_03_06):
     status = c_int(0)
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfFileSupportsRecalculateNominalDepth(
+    return_value = gsfpy3_09.bindings.gsfFileSupportsRecalculateNominalDepth(
         file_handle, byref(status)
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
-    assert_that(status.value).is_equal_to(1)
+    assert_that(status.value).is_equal_to(0)
 
 
-def test_gsfFileContainsMBAmplitude_success(gsf_test_data_03_06):
+def test_gsfFileContainsMBAmplitude_success(gsf_test_data_03_09):
     """
     Open the test GSF file then discover whether it contains amplitude data.
     """
@@ -565,24 +564,26 @@ def test_gsfFileContainsMBAmplitude_success(gsf_test_data_03_06):
     status = c_int(0)
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfFileContainsMBAmplitude(file_handle, byref(status))
+    return_value = gsfpy3_09.bindings.gsfFileContainsMBAmplitude(
+        file_handle, byref(status)
+    )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     assert_that(status.value).is_equal_to(0)
 
 
-def test_gsfFileContainsMBImagery_success(gsf_test_data_03_06):
+def test_gsfFileContainsMBImagery_success(gsf_test_data_03_09):
     """
     Open the test GSF file then discover whether it contains beam imagery.
     """
@@ -591,24 +592,26 @@ def test_gsfFileContainsMBImagery_success(gsf_test_data_03_06):
     status = c_int(0)
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfFileContainsMBImagery(file_handle, byref(status))
+    return_value = gsfpy3_09.bindings.gsfFileContainsMBImagery(
+        file_handle, byref(status)
+    )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     assert_that(status.value).is_equal_to(0)
 
 
-def test_gsfFileIsNewSurveyLine_success(gsf_test_data_03_06):
+def test_gsfFileIsNewSurveyLine_success(gsf_test_data_03_09):
     """
     Open the test GSF file, read a ping, then discover whether it comes
     from a new survey line.
@@ -618,36 +621,36 @@ def test_gsfFileIsNewSurveyLine_success(gsf_test_data_03_06):
     data_id = c_gsfDataID()
     records = c_gsfRecords()
     azimuth_change = c_double(90)
-    last_heading = c_double(180)
+    last_heading = c_double(1)
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(data_id),
         byref(records),
     )
-    assert_that(bytes_read).is_equal_to(6116)
+    assert_that(bytes_read).is_equal_to(132)
 
-    is_new_survey_line: int = gsfpy.bindings.gsfIsNewSurveyLine(
+    is_new_survey_line: int = gsfpy3_09.bindings.gsfIsNewSurveyLine(
         file_handle, byref(records), azimuth_change, byref(last_heading)
     )
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     assert_that(is_new_survey_line).is_true()
 
 
-def test_gsfInitializeMBParams_success(gsf_test_data_03_06):
+def test_gsfInitializeMBParams_success(gsf_test_data_03_09):
     """
     Create a gsfMBParams structure and initialize all fields.
     """
@@ -655,16 +658,18 @@ def test_gsfInitializeMBParams_success(gsf_test_data_03_06):
     mbparams = c_gsfMBParams()
 
     # Act
-    gsfpy.bindings.gsfInitializeMBParams(byref(mbparams))
+    gsfpy3_09.bindings.gsfInitializeMBParams(byref(mbparams))
 
     # Assert two of the fields here to check they are set to the unknown
     # value.
     with soft_assertions():
         assert_that(mbparams.horizontal_datum).is_equal_to(-99)
-        assert_that(mbparams.vessel_type).is_equal_to(-99)
+        # vessel_type Defaults to GSF_PLATFORM_TYPE_SURFACE_SHIP instead of
+        # GSF_UNKNOWN_PARAM_INT from GSF v3.09 onwards
+        assert_that(mbparams.vessel_type).is_equal_to(0)
 
 
-def test_gsfCopyRecords_success(gsf_test_data_03_06):
+def test_gsfCopyRecords_success(gsf_test_data_03_09):
     """
     Open the test GSF file, read a record, then copy the contents to
     a new gsfRecords structure.
@@ -676,27 +681,27 @@ def test_gsfCopyRecords_success(gsf_test_data_03_06):
     target_records = c_gsfRecords()
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_COMMENT,
         byref(data_id),
         byref(source_records),
     )
-    assert_that(bytes_read).is_equal_to(156)
+    assert_that(bytes_read).is_equal_to(32)
 
-    return_value = gsfpy.bindings.gsfCopyRecords(
+    return_value = gsfpy3_09.bindings.gsfCopyRecords(
         pointer(target_records), pointer(source_records)
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
@@ -718,14 +723,14 @@ def test_gsfCopyRecords_success(gsf_test_data_03_06):
         )
 
 
-def test_gsfPutMBParams_success(gsf_test_data_03_06):
+def test_gsfPutMBParams_success(gsf_test_data_03_09):
     """
     Create a gsfMBParams structure and copy fields to a gsfRecords
     structure.
     """
     # Arrange
     mbparams = c_gsfMBParams()
-    gsfpy.bindings.gsfInitializeMBParams(byref(mbparams))
+    gsfpy3_09.bindings.gsfInitializeMBParams(byref(mbparams))
 
     # Only WGS-84 (57) and NAD-83 (38) horizontal datum values are
     # supported by GSF - see gsf.h
@@ -749,19 +754,19 @@ def test_gsfPutMBParams_success(gsf_test_data_03_06):
     num_arrays = c_int(1)
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfPutMBParams(
+    return_value = gsfpy3_09.bindings.gsfPutMBParams(
         byref(mbparams), byref(records), file_handle, num_arrays
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
@@ -801,18 +806,18 @@ def test_gsfPutMBParams_success(gsf_test_data_03_06):
         )
 
 
-def test_gsfGetMBParams_success(gsf_test_data_03_06):
+def test_gsfGetMBParams_success(gsf_test_data_03_09):
     """
     Set MB params, read a GSF record and copy fields to a gsfMBParams
     structure.
     """
     # Arrange
     mbparams_in = c_gsfMBParams()
-    gsfpy.bindings.gsfInitializeMBParams(byref(mbparams_in))
+    gsfpy3_09.bindings.gsfInitializeMBParams(byref(mbparams_in))
     mbparams_in.horizontal_datum = c_int(57)
 
     mbparams_out = c_gsfMBParams()
-    gsfpy.bindings.gsfInitializeMBParams(byref(mbparams_out))
+    gsfpy3_09.bindings.gsfInitializeMBParams(byref(mbparams_out))
 
     records = c_gsfRecords()
     data_id = c_gsfDataID()
@@ -821,32 +826,32 @@ def test_gsfGetMBParams_success(gsf_test_data_03_06):
     num_arrays = c_int(1)
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfPutMBParams(
+    return_value = gsfpy3_09.bindings.gsfPutMBParams(
         byref(mbparams_in), byref(records), file_handle, num_arrays
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(data_id),
         byref(records),
     )
-    assert_that(bytes_read).is_equal_to(6116)
+    assert_that(bytes_read).is_equal_to(132)
 
-    return_value = gsfpy.bindings.gsfGetMBParams(
+    return_value = gsfpy3_09.bindings.gsfGetMBParams(
         byref(records), byref(mbparams_out), byref(num_arrays)
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
@@ -858,7 +863,7 @@ def test_gsfGetMBParams_success(gsf_test_data_03_06):
         assert_that(mbparams_out.number_of_receivers).is_equal_to(1)
 
 
-def test_gsfStat_success(gsf_test_data_03_06):
+def test_gsfStat_success(gsf_test_data_03_09):
     """
     Get the size in bytes of a GSF file.
     """
@@ -866,16 +871,16 @@ def test_gsfStat_success(gsf_test_data_03_06):
     sz = c_longlong(0)
 
     # Act
-    return_value = gsfpy.bindings.gsfStat(
-        os.fsencode(str(gsf_test_data_03_06.path)), byref(sz)
+    return_value = gsfpy3_09.bindings.gsfStat(
+        os.fsencode(str(gsf_test_data_03_09.path)), byref(sz)
     )
     assert_that(return_value).is_zero()
 
     # Assert
-    assert_that(sz.value).is_equal_to(165292)
+    assert_that(sz.value).is_equal_to(432)
 
 
-def test_gsfLoadScaleFactor_success(gsf_test_data_03_06):
+def test_gsfLoadScaleFactor_success(gsf_test_data_03_09):
     """
     Create a gsfScaleFactors structure and initialize all fields.
     """
@@ -891,7 +896,7 @@ def test_gsfLoadScaleFactor_success(gsf_test_data_03_06):
     offset = c_int(4)
 
     # Act
-    return_value = gsfpy.bindings.gsfLoadScaleFactor(
+    return_value = gsfpy3_09.bindings.gsfLoadScaleFactor(
         byref(scaleFactors), subrecord_id, c_flag, precision, offset
     )
     assert_that(return_value).is_zero()
@@ -911,7 +916,7 @@ def test_gsfLoadScaleFactor_success(gsf_test_data_03_06):
         )
 
 
-def test_gsfGetScaleFactor_success(gsf_test_data_03_06):
+def test_gsfGetScaleFactor_success(gsf_test_data_03_09):
     """
     Read a GSF record and get the beam array field size, compression flag,
     multiplier and DC offset applied to it.
@@ -920,46 +925,44 @@ def test_gsfGetScaleFactor_success(gsf_test_data_03_06):
     file_handle = c_int(0)
     records = c_gsfRecords()
     data_id = c_gsfDataID()
-    subrecord_id = (
-        ScaledSwathBathySubRecord.GSF_SWATH_BATHY_SUBRECORD_MEAN_CAL_AMPLITUDE_ARRAY
-    )
+    subrecord_id = ScaledSwathBathySubRecord.GSF_SWATH_BATHY_SUBRECORD_BEAM_FLAGS_ARRAY
 
     c_flag = c_ubyte()
     multiplier = c_double()
     offset = c_double()
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(data_id),
         byref(records),
     )
-    assert_that(bytes_read).is_equal_to(6116)
+    assert_that(bytes_read).is_equal_to(132)
 
-    return_value = gsfpy.bindings.gsfGetScaleFactor(
+    return_value = gsfpy3_09.bindings.gsfGetScaleFactor(
         file_handle, subrecord_id, byref(c_flag), byref(multiplier), byref(offset)
     )
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     with soft_assertions():
-        assert_that(c_flag.value).is_equal_to(0)
-        assert_that(multiplier.value).is_equal_to(2)
+        assert_that(c_flag.value).is_equal_to(0x10)
+        assert_that(multiplier.value).is_equal_to(1.0)
         assert_that(offset.value).is_equal_to(0)
 
 
-def test_gsfSetDefaultScaleFactor_success(gsf_test_data_03_06):
+def test_gsfSetDefaultScaleFactor_success(gsf_test_data_03_09):
     """
     Set estimated scale factors for a gsfSwathBathyPing structure.
     """
@@ -969,45 +972,45 @@ def test_gsfSetDefaultScaleFactor_success(gsf_test_data_03_06):
     data_id = c_gsfDataID()
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(data_id),
         byref(records),
     )
-    assert_that(bytes_read).is_equal_to(6116)
+    assert_that(bytes_read).is_equal_to(132)
 
     # Set multibeam ping scale factors to be empty
     records.mb_ping.scaleFactors = c_gsfScaleFactors()
 
-    return_value = gsfpy.bindings.gsfSetDefaultScaleFactor(byref(records.mb_ping))
+    return_value = gsfpy3_09.bindings.gsfSetDefaultScaleFactor(byref(records.mb_ping))
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     with soft_assertions():
-        index = 2
+        index = 0
         assert_that(
             records.mb_ping.scaleFactors.scaleTable[index].compressionFlag
         ).is_equal_to(0x00)
         assert_that(
             records.mb_ping.scaleFactors.scaleTable[index].multiplier
-        ).is_equal_to(25)
+        ).is_equal_to(100.0)
         assert_that(records.mb_ping.scaleFactors.scaleTable[index].offset).is_equal_to(
             0
         )
 
 
-def test_gsfLoadDepthScaleFactorAutoOffset_success(gsf_test_data_03_06):
+def test_gsfLoadDepthScaleFactorAutoOffset_success(gsf_test_data_03_09):
     """
     Load scale factors for the depth subrecords of a gsfSwathBathyPing structure.
     """
@@ -1017,43 +1020,43 @@ def test_gsfLoadDepthScaleFactorAutoOffset_success(gsf_test_data_03_06):
     data_id = c_gsfDataID()
 
     # Act
-    return_value = gsfpy.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+    return_value = gsfpy3_09.bindings.gsfOpen(
+        os.fsencode(str(gsf_test_data_03_09.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
     assert_that(return_value).is_zero()
 
-    bytes_read = gsfpy.bindings.gsfRead(
+    bytes_read = gsfpy3_09.bindings.gsfRead(
         file_handle,
         RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING,
         byref(data_id),
         byref(records),
     )
-    assert_that(bytes_read).is_equal_to(6116)
+    assert_that(bytes_read).is_equal_to(132)
 
     # Set multibeam ping scale factors to be empty
-    return_value = gsfpy.bindings.gsfSetDefaultScaleFactor(byref(records.mb_ping))
+    return_value = gsfpy3_09.bindings.gsfSetDefaultScaleFactor(byref(records.mb_ping))
     assert_that(return_value).is_zero()
 
-    return_value = gsfpy.bindings.gsfClose(file_handle)
+    return_value = gsfpy3_09.bindings.gsfClose(file_handle)
     assert_that(return_value).is_zero()
 
     # Assert
     with soft_assertions():
-        index = 2
+        index = 0
         assert_that(
             records.mb_ping.scaleFactors.scaleTable[index].compressionFlag
         ).is_equal_to(0x00)
         assert_that(
             records.mb_ping.scaleFactors.scaleTable[index].multiplier
-        ).is_equal_to(25)
+        ).is_equal_to(100.0)
         assert_that(records.mb_ping.scaleFactors.scaleTable[index].offset).is_equal_to(
             0
         )
 
 
-def test_gsfGetPositionDestination(gsf_test_data_03_06):
+def test_gsfGetPositionDestination(gsf_test_data_03_09):
     """
     Get a destination position (in degrees) given a starting position (in degrees)
     and a set of offsets (in m).
@@ -1073,7 +1076,7 @@ def test_gsfGetPositionDestination(gsf_test_data_03_06):
     dist_step = c_double(1)
 
     # Act
-    position_destination = gsfpy.bindings.gsfGetPositionDestination(
+    position_destination = gsfpy3_09.bindings.gsfGetPositionDestination(
         pos_start, offsets, heading, dist_step
     )
 
@@ -1084,7 +1087,7 @@ def test_gsfGetPositionDestination(gsf_test_data_03_06):
         assert_that(position_destination.contents.z).is_close_to(33.0, 0.000001)
 
 
-def test_gsfGetPositionOffsets(gsf_test_data_03_06):
+def test_gsfGetPositionOffsets(gsf_test_data_03_09):
     """
     Get offsets (in m) between given a starting position and a destination
     position (measured in degrees).
@@ -1104,7 +1107,7 @@ def test_gsfGetPositionOffsets(gsf_test_data_03_06):
     dist_step = c_double(1)
 
     # Act
-    position_offsets = gsfpy.bindings.gsfGetPositionOffsets(
+    position_offsets = gsfpy3_09.bindings.gsfGetPositionOffsets(
         pos_start, pos_end, heading, dist_step
     )
 
@@ -1115,7 +1118,7 @@ def test_gsfGetPositionOffsets(gsf_test_data_03_06):
         assert_that(position_offsets.contents.z).is_close_to(20.0, 0.000001)
 
 
-def test_gsfTestPingStatus(gsf_test_data_03_06):
+def test_gsfTestPingStatus(gsf_test_data_03_09):
     """
     Test the status of a ping flag.
     """
@@ -1124,10 +1127,10 @@ def test_gsfTestPingStatus(gsf_test_data_03_06):
     mb_ping.ping_flags = 0x0024
 
     # Act
-    set_ping_status = gsfpy.bindings.gsfTestPingStatus(
+    set_ping_status = gsfpy3_09.bindings.gsfTestPingStatus(
         c_ushort(mb_ping.ping_flags), c_ushort(PingFlag.GSF_PING_USER_FLAG_05)
     )
-    unset_ping_status = gsfpy.bindings.gsfTestPingStatus(
+    unset_ping_status = gsfpy3_09.bindings.gsfTestPingStatus(
         c_ushort(mb_ping.ping_flags), c_ushort(PingFlag.GSF_PING_USER_FLAG_15)
     )
 
@@ -1136,7 +1139,7 @@ def test_gsfTestPingStatus(gsf_test_data_03_06):
     assert_that(unset_ping_status).is_false()
 
 
-def test_gsfSetPingStatus(gsf_test_data_03_06):
+def test_gsfSetPingStatus(gsf_test_data_03_09):
     """
     Set the status of a ping flag.
     """
@@ -1145,7 +1148,7 @@ def test_gsfSetPingStatus(gsf_test_data_03_06):
     mb_ping.ping_flags = 0x0024
 
     # Act
-    new_ping_status = gsfpy.bindings.gsfSetPingStatus(
+    new_ping_status = gsfpy3_09.bindings.gsfSetPingStatus(
         c_ushort(mb_ping.ping_flags), c_ushort(PingFlag.GSF_PING_USER_FLAG_15)
     )
 
@@ -1153,7 +1156,7 @@ def test_gsfSetPingStatus(gsf_test_data_03_06):
     assert_that(new_ping_status.value).is_equal_to(0x8024)
 
 
-def test_gsfClearPingStatus(gsf_test_data_03_06):
+def test_gsfClearPingStatus(gsf_test_data_03_09):
     """
     Clear the status of a ping flag.
     """
@@ -1162,7 +1165,7 @@ def test_gsfClearPingStatus(gsf_test_data_03_06):
     mb_ping.ping_flags = 0x0024
 
     # Act
-    new_ping_status = gsfpy.bindings.gsfClearPingStatus(
+    new_ping_status = gsfpy3_09.bindings.gsfClearPingStatus(
         c_ushort(mb_ping.ping_flags), c_ushort(PingFlag.GSF_PING_USER_FLAG_02)
     )
 

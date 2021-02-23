@@ -10,17 +10,17 @@ def test_libgsf_load_succeeds_with_valid_path(mocker):
         mocker.patch.dict(
             os.environ,
             {
-                "GSFPY_LIBGSF_PATH": os.path.join(
+                "GSFPY3_09_LIBGSF_PATH": os.path.join(
                     os.path.abspath(os.path.dirname(__file__)), "libgsf/libgsf03-09.so"
                 )
             },
         )
 
         # Act
-        import gsfpy  # noqa
+        import gsfpy3_09  # noqa
 
-        reload(gsfpy)
+        reload(gsfpy3_09)
 
     except Exception:
         # Assert
-        fail("Exception raised unexpectedly when importing gsfpy: {ex}")
+        fail("Exception raised unexpectedly when importing gsfpy3_09: {ex}")
