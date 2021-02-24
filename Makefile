@@ -73,11 +73,11 @@ test: .venv ## run tests quickly with the default Python
 	poetry run pytest tests/gsfpy3_08/test_libgsf_load_valid.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_08/test_libgsf_load_invalid.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_08/test_libgsf_load_default.py --verbose --capture=no
-	poetry run pytest --ignore-glob=tests/gsfpy3_08/test_libgsf_load_*.py --ignore-glob=tests/gsfpy3_09/* --verbose --capture=no
+	poetry run pytest --ignore-glob=tests/gsfpy3_08/test_libgsf_load_*.py --ignore-glob=tests/gsfpy3_09/* --verbose --capture=no --cov=gsfpy3_08 --cov-fail-under=95 --cov-config=tox.ini
 	poetry run pytest tests/gsfpy3_09/test_libgsf_load_valid.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_09/test_libgsf_load_invalid.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_09/test_libgsf_load_default.py --verbose --capture=no
-	poetry run pytest --ignore-glob=tests/gsfpy3_09/test_libgsf_load_*.py --ignore-glob=tests/gsfpy3_08/* --verbose --capture=no
+	poetry run pytest --ignore-glob=tests/gsfpy3_09/test_libgsf_load_*.py --ignore-glob=tests/gsfpy3_08/* --verbose --capture=no --cov=gsfpy3_09 --cov-fail-under=95 --cov-config=tox.ini
 
 test-all: .venv ## run tests on every Python version with tox
 	poetry run tox
