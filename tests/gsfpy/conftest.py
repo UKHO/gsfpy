@@ -36,7 +36,6 @@ GSF_03_09_DATAFILE = GsfDatafile(
 )
 
 
-
 def _setup_gsf_test_data(src_datafile: GsfDatafile, tmp_path: Path):
     tmp_path.mkdir(parents=True, exist_ok=True)
     tmp_datafile_path = tmp_path / src_datafile.path.name
