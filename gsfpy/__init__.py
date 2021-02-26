@@ -4,8 +4,6 @@ __version__ = "2.0.0"
 
 import os
 
-GSF_V03_09 = "3_09"
-
 
 def get_default_gsf_version() -> str:
     """
