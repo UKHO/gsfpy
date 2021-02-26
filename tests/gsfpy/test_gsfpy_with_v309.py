@@ -17,14 +17,13 @@ def test_correct_gsf_version_when_set_via_env(mocker, gsf_test_data_03_09):
 
         # Act
         import gsfpy
+        from gsfpy.enums import RecordType
 
         reload(gsfpy)
 
         # Check that we can open a v3.09 file successfully and read a record
         with gsfpy.open_gsf(gsf_test_data_03_09.path) as gsf_file:
-            _, _ = gsf_file.read(
-                gsfpy.enums.RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
-            )
+            _, _ = gsf_file.read(RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING)
 
         assert_that(gsfpy.bindings.gsfIntError()).is_equal_to(0)
         assert_that(gsfpy.bindings.gsfStringError()).is_equal_to(b"GSF Error: None")

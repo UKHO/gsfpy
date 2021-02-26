@@ -1,6 +1,7 @@
 from ctypes import Structure
 
 from . import (
+    gsfAttitude,
     gsfComment,
     gsfHeader,
     gsfHistory,
@@ -28,4 +29,5 @@ class c_gsfRecords(Structure):
         ("history", gsfHistory.c_gsfHistory),
         ("nav_error", gsfNavigationError.c_gsfNavigationError),
         ("hv_nav_error", gsfHVNavigationError.c_gsfHVNavigationError),
+        ("attitude", gsfAttitude.c_gsfAttitude),
     ]
