@@ -223,7 +223,7 @@ calling gsfpy to assess these risks and mitigate where deemed necessary.
 GSF data processed using gsfpy should be sourced from reliable providers
 and checked for integrity where possible.
 
-Please also refer to the LICENSE file for the terms of use of gsfpy3_08.
+Please also refer to the LICENSE file for the terms of use of gsfpy.
 
 ## Credits
 
