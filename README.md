@@ -39,11 +39,11 @@ pip install gsfpy
 ```
 #### From GitHub (SSH)
 ```shell script
-pip install git+ssh://git@github.com/UKHO/gsfpy3_08.git@master
+pip install git+ssh://git@github.com/UKHO/gsfpy.git@master
 ```
 #### From GitHub (HTTPS)
 ```shell script
-pip install git+https://github.com/UKHO/gsfpy3_08.git@master
+pip install git+https://github.com/UKHO/gsfpy.git@master
 ```
 
 ## Examples of usage
@@ -181,7 +181,7 @@ More recent versions of these documents can be downloaded from the
 By default Poetry will create it's own virtual environment using your system's Python. [This feature can be disabled.](https://python-poetry.org/docs/faq/#i-dont-want-poetry-to-manage-my-virtual-environments-can-i-disable-it)
 
 ```shell script
-git clone git@github.com:UKHO/gsfpy3_08.git
+git clone git@github.com:UKHO/gsfpy.git
 cd gsfpy
 poetry install
 ```
@@ -191,7 +191,7 @@ poetry install
 A good choice if you want to run a version of Python different than available through your system's package manager
 
 ```shell script
-git clone git@github.com:UKHO/gsfpy3_08.git
+git clone git@github.com:UKHO/gsfpy.git
 cd gsfpy
 pyenv install 3.8.3
 pyenv virtualenv 3.8.3 gsfpy
