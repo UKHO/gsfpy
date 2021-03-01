@@ -80,7 +80,7 @@ SUMMARY_RECORD = SummaryRecord(
 )
 
 
-def test_gsf_swath_summary(gsf_test_data_03_06: GsfDatafile):
+def test_gsf_swath_summary(gsf_test_data_03_08: GsfDatafile):
     file_handle = c_int(0)
 
     swath_summary_id = c_gsfDataID()
@@ -90,7 +90,7 @@ def test_gsf_swath_summary(gsf_test_data_03_06: GsfDatafile):
 
     # Read from file
     return_value = gsfpy3_08.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+        os.fsencode(str(gsf_test_data_03_08.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
@@ -123,7 +123,7 @@ def test_gsf_swath_summary(gsf_test_data_03_06: GsfDatafile):
     )
 
 
-def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
+def test_gsf_swath_summary_save_update(gsf_test_data_03_08: GsfDatafile):
     file_handle = c_int(0)
 
     swath_summary_data_id = c_gsfDataID()
@@ -132,7 +132,7 @@ def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
     record = c_gsfRecords()
 
     return_value = gsfpy3_08.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+        os.fsencode(str(gsf_test_data_03_08.path)),
         FileMode.GSF_UPDATE,
         byref(file_handle),
     )
@@ -177,7 +177,7 @@ def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
     updated_record = c_gsfRecords()
 
     return_value = gsfpy3_08.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+        os.fsencode(str(gsf_test_data_03_08.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )
@@ -199,7 +199,7 @@ def test_gsf_swath_summary_save_update(gsf_test_data_03_06: GsfDatafile):
     )
 
 
-def test_gsf_swath_summary_save_create(gsf_test_data_03_06: GsfDatafile):
+def test_gsf_swath_summary_save_create(gsf_test_data_03_08: GsfDatafile):
     file_handle = c_int(0)
 
     swath_summary_id = c_gsfDataID()
@@ -218,7 +218,7 @@ def test_gsf_swath_summary_save_create(gsf_test_data_03_06: GsfDatafile):
     )
 
     return_value = gsfpy3_08.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+        os.fsencode(str(gsf_test_data_03_08.path)),
         FileMode.GSF_CREATE,
         byref(file_handle),
     )
@@ -240,7 +240,7 @@ def test_gsf_swath_summary_save_create(gsf_test_data_03_06: GsfDatafile):
     written_record = c_gsfRecords()
 
     return_value = gsfpy3_08.bindings.gsfOpen(
-        os.fsencode(str(gsf_test_data_03_06.path)),
+        os.fsencode(str(gsf_test_data_03_08.path)),
         FileMode.GSF_READONLY,
         byref(file_handle),
     )

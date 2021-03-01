@@ -9,34 +9,34 @@ from gsfpy3_08.enums import FileMode, RecordType, SeekOption
 from gsfpy3_08.gsfRecords import c_gsfRecords
 
 
-def test_open_gsf_success(gsf_test_data_03_06):
+def test_open_gsf_success(gsf_test_data_03_08):
     """
     Open the test GSF file, then close.
     """
     # Act
-    with open_gsf(gsf_test_data_03_06.path) as _:
+    with open_gsf(gsf_test_data_03_08.path) as _:
         pass
 
 
-def test_open_gsf_buffered_success(gsf_test_data_03_06):
+def test_open_gsf_buffered_success(gsf_test_data_03_08):
     """
     Open the test GSF file in buffered mode, then close.
     """
     # Act
-    with open_gsf(gsf_test_data_03_06.path, buffer_size=100) as _:
+    with open_gsf(gsf_test_data_03_08.path, buffer_size=100) as _:
         pass
 
 
-def test_seek_success(gsf_test_data_03_06):
+def test_seek_success(gsf_test_data_03_08):
     """
     Open the test GSF file, seek to end of file, then close.
     """
     # Act
-    with open_gsf(gsf_test_data_03_06.path) as gsf_file:
+    with open_gsf(gsf_test_data_03_08.path) as gsf_file:
         gsf_file.seek(SeekOption.GSF_END_OF_FILE)
 
 
-def test_GsfException(gsf_test_data_03_06):
+def test_GsfException(gsf_test_data_03_08):
     """
     Try to open a non-existent GSF file, ensure a GsfException is raised and check
     that it contains the correct error code and error message.
@@ -47,12 +47,12 @@ def test_GsfException(gsf_test_data_03_06):
     ).is_equal_to("[-1] GSF Unable to open requested file")
 
 
-def test_read_success(gsf_test_data_03_06):
+def test_read_success(gsf_test_data_03_08):
     """
     Read a comment record from a GSF file.
     """
     # Act
-    with open_gsf(gsf_test_data_03_06.path) as gsf_file:
+    with open_gsf(gsf_test_data_03_08.path) as gsf_file:
         _, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
 
     # Assert
@@ -65,12 +65,12 @@ def test_read_success(gsf_test_data_03_06):
     )
 
 
-def test_read_buffered_success(gsf_test_data_03_06):
+def test_read_buffered_success(gsf_test_data_03_08):
     """
     Read a comment record from a GSF file using a buffer.
     """
     # Act
-    with open_gsf(gsf_test_data_03_06.path, buffer_size=1) as gsf_file:
+    with open_gsf(gsf_test_data_03_08.path, buffer_size=1) as gsf_file:
         _, record = gsf_file.read(RecordType.GSF_RECORD_COMMENT)
 
     # Assert
@@ -83,7 +83,7 @@ def test_read_buffered_success(gsf_test_data_03_06):
     )
 
 
-def test_write_success(gsf_test_data_03_06):
+def test_write_success(gsf_test_data_03_08):
     """
     Write a single comment record to a new GSF file
     """
@@ -147,13 +147,13 @@ def test_direct_access_write_and_read_success(tmp_path):
     assert_that(string_at(direct_access_record.comment.comment)).is_equal_to(comment_4)
 
 
-def test_get_number_records_success(gsf_test_data_03_06):
+def test_get_number_records_success(gsf_test_data_03_08):
     """
     Open the test GSF file in GSF_READONLY_INDEX mode, count the number of
     GSF_RECORD_SWATH_BATHYMETRY_PING records, then close.
     """
     # Act
-    with open_gsf(gsf_test_data_03_06.path, FileMode.GSF_READONLY_INDEX) as gsf_file:
+    with open_gsf(gsf_test_data_03_08.path, FileMode.GSF_READONLY_INDEX) as gsf_file:
         number_of_pings = gsf_file.get_number_records(
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
         )
@@ -161,13 +161,13 @@ def test_get_number_records_success(gsf_test_data_03_06):
     assert_that(number_of_pings).is_equal_to(8)
 
 
-def test_get_number_records_failure(gsf_test_data_03_06):
+def test_get_number_records_failure(gsf_test_data_03_08):
     """
     Open the test GSF file in GSF_READONLY mode, attempt to count the number of
     GSF_RECORD_SWATH_BATHYMETRY_PING records and verify the exception.
     """
     # Act
-    with open_gsf(gsf_test_data_03_06.path) as gsf_file:
+    with open_gsf(gsf_test_data_03_08.path) as gsf_file:
         assert_that(gsf_file.get_number_records).raises(GsfException).when_called_with(
             RecordType.GSF_RECORD_SWATH_BATHYMETRY_PING
         ).is_equal_to("[-3] GSF Error illegal access mode")

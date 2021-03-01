@@ -23,7 +23,7 @@ GSF_03_06_DATAFILE = GsfDatafile(
     GsfVersion.V03_06,
     Path(__file__).parent.parent
     / "test_data"  # noqa: W503
-    / "0029_20160323_185603_EX1604_MB.gsf.mb121",  # noqa: W503
+    / "GSF3_08_test_file.gsf",  # noqa: W503
     num_beams=432,
 )
 
@@ -47,7 +47,7 @@ def _setup_gsf_test_data(src_datafile: GsfDatafile, tmp_path: Path):
 
 
 @pytest.fixture
-def gsf_test_data_03_06(tmp_path):
+def gsf_test_data_03_08(tmp_path):
     yield from _setup_gsf_test_data(GSF_03_06_DATAFILE, tmp_path)
 
 
