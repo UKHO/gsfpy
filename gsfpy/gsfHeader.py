@@ -1,8 +1,3 @@
-from ctypes import Structure, c_char
+from gsfpy import mirror_default_gsf_version_submodule
 
-GSF_VERSION_SIZE = 12
-HEADER_VERSION = c_char * (GSF_VERSION_SIZE + 1)
-
-
-class c_gsfHeader(Structure):
-    _fields_ = [("version", HEADER_VERSION)]
+mirror_default_gsf_version_submodule(globals(), "gsfHeader")

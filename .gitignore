@@ -9,7 +9,6 @@
 build
 _build
 .cache
-*.so
 
 # Installer logs
 pip-log.txt
@@ -37,6 +36,8 @@ MANIFEST.in
 /releases/*
 pip-wheel-metadata
 /poetry.toml
+
+notebooks/
 
 # gsf
 *.nsf

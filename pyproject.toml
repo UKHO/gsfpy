@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gsfpy"
-version = "1.6.0"
+version = "2.0.0"
 authors = [
     "UK Hydrographic Office <datascienceandengineering@ukho.gov.uk>"
 ]
@@ -27,6 +27,12 @@ homepage = "https://github.com/UKHO/gsfpy"
 repository = "https://github.com/UKHO/gsfpy"
 
 readme = "README.md"
+
+packages = [
+    { include = "gsfpy" },
+    { include = "gsfpy3_08" },
+    { include = "gsfpy3_09" },
+]
 
 # Do not manually edit, use poetry add/remove (--dev) to manage dependencies
 [tool.poetry.dependencies]

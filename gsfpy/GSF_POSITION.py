@@ -1,9 +1,3 @@
-from ctypes import Structure, c_double
+from gsfpy import mirror_default_gsf_version_submodule
 
-
-class c_GSF_POSITION(Structure):
-    _fields_ = [
-        ("lon", c_double),
-        ("lat", c_double),
-        ("z", c_double),
-    ]
+mirror_default_gsf_version_submodule(globals(), "GSF_POSITION")

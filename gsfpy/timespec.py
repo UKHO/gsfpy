@@ -1,10 +1,3 @@
-"""Types"""
-from ctypes import Structure, c_int, c_long
+from gsfpy import mirror_default_gsf_version_submodule
 
-
-class c_timespec(Structure):
-    _fields_ = [
-        # NOTE - defined as time_t in gsf.h, but equivalent to int
-        ("tv_sec", c_int),
-        ("tv_nsec", c_long),
-    ]
+mirror_default_gsf_version_submodule(globals(), "timespec")

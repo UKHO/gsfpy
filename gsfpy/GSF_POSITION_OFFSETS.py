@@ -1,11 +1,3 @@
-from ctypes import Structure, c_double
+from gsfpy import mirror_default_gsf_version_submodule
 
-
-# Note: the coordinate system is:
-#       +x forward, +y starboard, + z down, +hdg cw from north
-class c_GSF_POSITION_OFFSETS(Structure):
-    _fields_ = [
-        ("x", c_double),
-        ("y", c_double),
-        ("z", c_double),
-    ]
+mirror_default_gsf_version_submodule(globals(), "GSF_POSITION_OFFSETS")
