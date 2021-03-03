@@ -67,7 +67,10 @@ sast: .venv ## run static application security testing
 checklicenses: .venv requirements.txt ## check dependencies meet licence rules
 	poetry run liccheck -s liccheck.ini
 
-test: .venv ## run tests quickly with the default Python
+## run tests quickly with the default Python
+## Multiple pytest runs are necessary as once the gsfpy package has been loaded for a
+## specific version of GSF, or with a custom shared object library, it cannot be unloaded.
+test: .venv
 	poetry run pytest --ignore-glob=tests/gsfpy3_08/* --ignore-glob=tests/gsfpy3_09/* --ignore-glob=tests/gsfpy/test_gsffile_with_*.py --verbose --capture=no
 	poetry run pytest --ignore-glob=tests/gsfpy3_08/* --ignore-glob=tests/gsfpy3_09/* --ignore-glob=tests/gsfpy/test_gsffile.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_08/test_libgsf_load_valid.py --verbose --capture=no
