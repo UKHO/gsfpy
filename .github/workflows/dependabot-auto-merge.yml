@@ -18,18 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' && github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Dependabot metadata
-        id: dependabot-metadata
-        uses: dependabot/fetch-metadata@v1.1.1
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Auto-approve Dependabot PR
-        run: gh pr review --approve "$PR_URL"
+        run: gh pr review --approve "$GITHUB_HEAD_REF"
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Auto-merge Dependabot PR
-        run: gh pr merge --auto --merge "$PR_URL"
+        run: gh pr merge --auto --merge "$GITHUB_HEAD_REF"
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
