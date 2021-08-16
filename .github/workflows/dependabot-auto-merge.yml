@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' && github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - uses: actions/checkout@v2
       - name: Auto-approve Dependabot PR
         run: gh pr review --approve "${GITHUB_REF##refs/heads/}"
         env:
