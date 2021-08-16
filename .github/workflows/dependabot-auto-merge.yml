@@ -26,6 +26,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Auto-merge Dependabot PR
-        run: gh pr merge --auto --merge ${{ github.event.workflow_run.head_branch }}
+        run: gh pr merge --auto --squash ${{ github.event.workflow_run.head_branch }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
