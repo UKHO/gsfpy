@@ -19,10 +19,10 @@ jobs:
     if: ${{ github.actor == 'dependabot[bot]' && github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Auto-approve Dependabot PR
-        run: gh pr review --approve "$GITHUB_REF##/refs/heads/"
+        run: gh pr review --approve "$GITHUB_REF##refs/heads/"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Auto-merge Dependabot PR
-        run: gh pr merge --auto --merge "$GITHUB_REF##/refs/heads/"
+        run: gh pr merge --auto --merge "$GITHUB_REF##refs/heads/"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
