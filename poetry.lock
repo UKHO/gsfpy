@@ -191,7 +191,7 @@ gitdb = ">=4.0.1,<5"
 
 [[package]]
 name = "immutabledict"
-version = "2.1.0"
+version = "2.2.0"
 description = "Immutable wrapper around dictionaries (a fork of frozendict)"
 category = "dev"
 optional = false
@@ -607,7 +607,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "65baa5e54d7b080bbbc5321352873e01342da0ed1bedd64005fe71e8b1692fea"
+content-hash = "73eb02bb9ddf763bac64b413fe9f4d9bbbec49bf173b90f88064322873426993"
 
 [metadata.files]
 appdirs = [
@@ -732,8 +732,8 @@ gitpython = [
     {file = "GitPython-3.1.13.tar.gz", hash = "sha256:8621a7e777e276a5ec838b59280ba5272dd144a18169c36c903d8b38b99f750a"},
 ]
 immutabledict = [
-    {file = "immutabledict-2.1.0-py3-none-any.whl", hash = "sha256:df82965be169dace24e715a717bbf07df2d68894acbe50029f21a769e4264719"},
-    {file = "immutabledict-2.1.0.tar.gz", hash = "sha256:673fb8f30f46d23dd394050b979f5b7f4c5398982b99ebc854fb873e646b967a"},
+    {file = "immutabledict-2.2.0-py3-none-any.whl", hash = "sha256:1f95dc5595f4f857a447d9066f361d70200820cb4352a7ad4aaf48ecdc8836d4"},
+    {file = "immutabledict-2.2.0.tar.gz", hash = "sha256:ed65fc95ed84413ea3bd8dd94c3af6d5e4aed12089719e8e4d77394c5409cf00"},
 ]
 importlib-metadata = [
     {file = "importlib_metadata-3.4.0-py3-none-any.whl", hash = "sha256:ace61d5fc652dc280e7b6b4ff732a9c2d40db2c0f92bc6cb74e07b73d53a1771"},
