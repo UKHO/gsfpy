@@ -52,7 +52,7 @@ pytest = "^5.4.3"
 tox-gh-actions = "^2.8.1"
 tox = "^3.24.4"
 toml = "^0.10.1"
-immutabledict = "^2.2.0"
+immutabledict = "^2.2.1"
 mypy = "^0.782"
 pytest-cases = "^3.6.4"
 dataclasses = {version = "^0.8", python = ">=3.6,<3.7"}
