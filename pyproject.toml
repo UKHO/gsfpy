@@ -54,7 +54,7 @@ tox = "^3.24.4"
 toml = "^0.10.1"
 immutabledict = "^2.2.1"
 mypy = "^0.782"
-pytest-cases = "^3.6.4"
+pytest-cases = "^3.6.5"
 dataclasses = {version = "^0.8", python = ">=3.6,<3.7"}
 pytest-mock = "^3.1.1"
 isort = "^5.8.0"
