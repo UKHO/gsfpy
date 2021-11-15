@@ -40,7 +40,7 @@ python = "^3.6"
 
 [tool.poetry.dev-dependencies]
 assertpy = "^1.0"
-bandit = "^1.6.2"
+bandit = "^1.7.1"
 black = "^19.10b0"
 bump2version = "^1.0.0"
 coverage = "^6.1"
