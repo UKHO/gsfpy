@@ -53,7 +53,7 @@ tox-gh-actions = "^2.8.1"
 tox = "^3.24.4"
 toml = "^0.10.1"
 immutabledict = "^2.2.1"
-mypy = "^0.782"
+mypy = "^0.910"
 pytest-cases = "^3.6.5"
 dataclasses = {version = "^0.8", python = ">=3.6,<3.7"}
 pytest-mock = "^3.1.1"
