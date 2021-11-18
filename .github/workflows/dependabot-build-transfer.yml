@@ -1,0 +1,14 @@
+name: Dependabot Build Transfer
+
+on:
+  push:
+    branches:
+      - 'dependabot/**'
+
+jobs:
+  build-pass:
+    runs-on: ubuntu-latest
+    steps:
+      # Secrets are not available to dependabot from pull_request events, but are needed for build
+      - name: "Skip pull_request event"
+        run: echo "Pass Dependabot build to workflow_run event"

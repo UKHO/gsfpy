@@ -12,7 +12,8 @@ def test_correct_gsf_version_when_set_via_env(mocker, gsf_test_data_03_09):
     try:
         # Arrange
         mocker.patch.dict(
-            os.environ, {"DEFAULT_GSF_VERSION": "3.09"},
+            os.environ,
+            {"DEFAULT_GSF_VERSION": "3.09"},
         )
 
         # Act

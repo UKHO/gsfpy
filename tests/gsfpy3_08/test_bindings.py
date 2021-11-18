@@ -158,7 +158,10 @@ def test_gsfRead_success(gsf_test_data_03_08):
     assert_that(return_value).is_zero()
 
     bytes_read = gsfpy3_08.bindings.gsfRead(
-        file_handle, RecordType.GSF_RECORD_COMMENT, byref(data_id), byref(records),
+        file_handle,
+        RecordType.GSF_RECORD_COMMENT,
+        byref(data_id),
+        byref(records),
     )
     assert_that(bytes_read).is_equal_to(156)
 
@@ -220,7 +223,10 @@ def test_gsfWrite_success(tmp_path):
     assert_that(return_value).is_zero()
 
     bytes_read = gsfpy3_08.bindings.gsfRead(
-        file_handle, RecordType.GSF_RECORD_COMMENT, byref(data_id), byref(records),
+        file_handle,
+        RecordType.GSF_RECORD_COMMENT,
+        byref(data_id),
+        byref(records),
     )
     assert_that(bytes_read).is_equal_to(record_size)
 
@@ -345,7 +351,9 @@ def test_gsfGetSwathBathyBeamWidths_success(gsf_test_data_03_08):
     assert_that(bytes_read).is_equal_to(6116)
 
     return_value = gsfpy3_08.bindings.gsfGetSwathBathyBeamWidths(
-        byref(records), byref(fore_aft), byref(athwartship),
+        byref(records),
+        byref(fore_aft),
+        byref(athwartship),
     )
     assert_that(return_value).is_zero()
 
@@ -388,7 +396,10 @@ def test_gsfGetSwathBathyArrayMinMax_success(gsf_test_data_03_08):
     assert_that(bytes_read).is_equal_to(6116)
 
     return_value = gsfpy3_08.bindings.gsfGetSwathBathyArrayMinMax(
-        byref(records.mb_ping), subrecord_id, byref(min_value), byref(max_value),
+        byref(records.mb_ping),
+        subrecord_id,
+        byref(min_value),
+        byref(max_value),
     )
     assert_that(return_value).is_zero()
 
