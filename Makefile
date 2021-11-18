@@ -43,7 +43,7 @@ clean-pyc: ## remove Python file artifacts
 
 clean-test: ## remove test and coverage artifacts (including legacy .tox directory from older versions)
 	rm -fr .tox/
-	rm -f .coverage*
+	rm -f .coverage
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
