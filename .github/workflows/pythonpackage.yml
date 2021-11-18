@@ -36,7 +36,6 @@ jobs:
           df -h
 
       - name: Run tests
-        env:
         run: |
           poetry install
           make test-all
