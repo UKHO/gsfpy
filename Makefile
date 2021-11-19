@@ -26,7 +26,7 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@poetry run python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
+clean: clean-build clean-pyc clean-test clean-venv ## remove all build, test, coverage and Python artifacts
 
 clean-build: ## remove build artifacts
 	rm -fr build/
@@ -41,19 +41,25 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
-clean-test: ## remove test and coverage artifacts
+clean-test: ## remove test and coverage artifacts (including legacy .tox directory from older versions)
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
-lint: checktypes checkstyle sast checklicenses ## run all checks
+clean-venv:  ## remove .venv artifacts
+	rm -fr .venv/
+
+## run all static checks
+lint: checktypes checkstyle sast checklicenses
 
 checktypes: .venv ## check types with mypy
 	poetry run mypy --ignore-missing-imports gsfpy tests
 
 checkstyle: .venv ## check style with flake8 and black
-	poetry run flake8 --ignore F401,F403,F405 gsfpy tests
+	## Ignore flake8 F401, F403 and F405 errors as we want to be able to use star (*) imports
+	## Ignore flake8 F811, 821 and W503 errors as enforcement changed between python 3.7 and 3.8
+	poetry run flake8 --ignore F401,F403,F405,F811,F821,W503 gsfpy tests
 	poetry run isort --check-only --profile black gsfpy tests
 	poetry run black --check --diff gsfpy tests
 
@@ -67,23 +73,21 @@ sast: .venv ## run static application security testing
 checklicenses: .venv requirements.txt ## check dependencies meet licence rules
 	poetry run liccheck -s liccheck.ini
 
-## run tests quickly with the default Python
-## Multiple pytest runs are necessary as once the gsfpy package has been loaded for a
-## specific version of GSF, or with a custom shared object library, it cannot be unloaded.
+## run unit and component tests quickly with the default Python
 test: .venv
 	poetry run pytest --ignore-glob=tests/gsfpy3_08/* --ignore-glob=tests/gsfpy3_09/* --ignore-glob=tests/gsfpy/test_gsffile_with_*.py --verbose --capture=no
 	poetry run pytest --ignore-glob=tests/gsfpy3_08/* --ignore-glob=tests/gsfpy3_09/* --ignore-glob=tests/gsfpy/test_gsffile.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_08/test_libgsf_load_valid.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_08/test_libgsf_load_invalid.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_08/test_libgsf_load_default.py --verbose --capture=no
-	poetry run pytest --ignore-glob=tests/gsfpy3_08/test_libgsf_load_*.py --ignore-glob=tests/gsfpy3_09/* --verbose --capture=no --cov=gsfpy3_08 --cov-fail-under=95 --cov-config=tox.ini
+	poetry run pytest --ignore-glob=tests/gsfpy3_08/test_libgsf_load_*.py --ignore-glob=tests/gsfpy3_09/* --verbose --capture=no --cov=gsfpy3_08
 	poetry run pytest tests/gsfpy3_09/test_libgsf_load_valid.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_09/test_libgsf_load_invalid.py --verbose --capture=no
 	poetry run pytest tests/gsfpy3_09/test_libgsf_load_default.py --verbose --capture=no
-	poetry run pytest --ignore-glob=tests/gsfpy3_09/test_libgsf_load_*.py --ignore-glob=tests/gsfpy3_08/* --verbose --capture=no --cov=gsfpy3_09 --cov-fail-under=95 --cov-config=tox.ini
+	poetry run pytest --ignore-glob=tests/gsfpy3_09/test_libgsf_load_*.py --ignore-glob=tests/gsfpy3_08/* --verbose --capture=no --cov=gsfpy3_09
 
-test-all: .venv ## run tests on every Python version with tox
-	poetry run tox
+## run all static checks and tests
+test-all: .venv lint test
 
 coverage: ## check code coverage quickly with the default Python
 	poetry run coverage run --source gsfpy -m pytest
@@ -106,6 +110,8 @@ requirements.txt: poetry.lock
 	poetry install
 	@touch -c .venv
 
-poetry.lock: pyproject.toml
-	poetry update
+poetry.lock:
+	poetry lock -vvv
 	@touch -c poetry.lock
+
+## end Makefile

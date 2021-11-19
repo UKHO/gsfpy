@@ -1,7 +1,3 @@
-__author__ = """UK Hydrographic Office"""
-__email__ = "datascienceandengineering@ukho.gov.uk"
-__version__ = "2.0.0"
-
 import os
 
 

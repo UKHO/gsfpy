@@ -41,7 +41,8 @@ def gsf_test_data_03_09(tmp_path):
 
 
 fixture_union(
-    "gsf_test_data", [gsf_test_data_03_09],
+    "gsf_test_data",
+    [gsf_test_data_03_09],
 )
 
 
